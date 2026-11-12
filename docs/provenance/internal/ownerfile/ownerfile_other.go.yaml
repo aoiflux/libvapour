@@ -1,0 +1,12 @@
+file: internal/ownerfile/ownerfile_other.go
+replaces: [internal/ownerfile/ownerfile_other.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "The Open Group Base Specifications Issue 8, IEEE Std 1003.1-2024, open()"
+    url: https://pubs.opengroup.org/onlinepubs/9799919799/functions/open.html
+    accessed: 2026-11-12
+decisions:
+  - rule: "O_EXCL with 0600; O_TRUNC then fchmod of a regular file; 0700 directories; private means no group or other bits"
+    justification: "S74 4.11, P1, P2, P3, O10"
+date: 2026-11-12

@@ -1,0 +1,18 @@
+file: util/pointerstring.go
+replaces: [util/pointerstring.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "The Unicode Standard, Version 16.0.0, Chapter 3 (D75, D91, D93a, D93b, Table 3-7, 3.9.6 and Tables 3-8 to 3-11)"
+    url: https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-3/
+    accessed: 2026-11-12
+  - title: "RFC 3629, UTF-8, a transformation format of ISO 10646, section 4"
+    url: https://www.rfc-editor.org/rfc/rfc3629.txt
+    accessed: 2026-11-12
+  - title: "Project measurement: helperfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: helperfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Page-bounded reads; NUL, count, unreadable or short read end the text; over limit is ErrStringPastLimit"
+    justification: "S74 4.4, M5"
+date: 2026-11-12

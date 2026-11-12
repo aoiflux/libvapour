@@ -1,0 +1,19 @@
+file: internal/testsupport/pagedmemory.go
+replaces: [internal/testsupport/pagedmemory.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, sections 4.5 (4-level paging) and 4.10.1 (CR3 and PCIDs)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: fixturefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (MmProtectToValue, KUSER_SHARED_DATA, NtBuildNumber, KdVersionBlock)"
+    path: fixturefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Four 512-entry levels from bits 47:39; tables on the way carry P only; leaf carries P, frame bits 51:12 and the caller's flags"
+    justification: "S79 4.1 step 3, D7"
+  - rule: "Frame 0 never handed out; frames in order; exhaustion panics"
+    justification: "S79 4.1 step 1"
+  - rule: "SetEntry writes a whole leaf entry, for not-present Windows entries such as a prototype entry"
+    justification: "owner decision 2026-11-12, follow-up D13; S57 9 item 1"
+date: 2026-11-12

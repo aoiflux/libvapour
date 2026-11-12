@@ -1,0 +1,22 @@
+file: symbols/vsymread.go
+replaces: [the reader of symbols/vsym.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format"
+    url: https://www.rfc-editor.org/rfc/rfc8259
+    accessed: 2026-11-12
+  - title: "Project measurement: tablefacts over the BuilderVersion 10 cache (42 and 50 tables) and the tables the session builds for mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24 and mem4_fedora40"
+    path: tablefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "ErrNotVsym for text that is not an object with a vsym key"
+    justification: "S58 4.8 step 3"
+  - rule: "Format 1, pointer width 4 or 8, required keys per entry, addresses 0x lower-case hex within 64 bits"
+    justification: "S58 4.8 step 4, F2, F3, V5"
+  - rule: "File read bounded by MaxTableFile"
+    justification: "S58 4.8 step 1"
+date: 2026-11-12

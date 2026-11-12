@@ -1,0 +1,23 @@
+file: tools/windows/threadlist/trapframe.go
+replaces: [tools/windows/threadlist/trapframe.go]
+spec: S50-windows-threads
+spec_sha256: 6e00b270533e2376ae2851cb766004e981b1b23a65e8cd8a4b4ed3abc8bbece5
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A (253668-093US): Protection, Privilege Levels; Interrupt and Exception Handling, 64-Bit Mode Stack Frame"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _ETHREAD, _KTHREAD, _KTRAP_FRAME, _CLIENT_ID, _EPROCESS, _KPROCESS, _KTHREAD_STATE, _KWAIT_REASON; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: threadfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: threadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: threadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Rip, Rsp and SegCs required; other T5 registers optional"
+    justification: "S50 4.5 step 2, T5"
+  - rule: "User-mode state only with SegCs RPL 3 and Rip and Rsp in user space"
+    justification: "S50 4.5 step 4, D5-D7, M9"
+date: 2026-11-12

@@ -1,0 +1,27 @@
+file: symbols/autoload/low_stub.go
+replaces: [symbols/autoload/low_stub.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "Intel SDM Vol. 3A, MP Initialization Protocol Algorithm and the ICR Start-Up delivery mode (STARTUP IPI vector, start address 000VV000H)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Intel SDM Vol. 2A, JMP (E9 cw); Vol. 3A, Use of CR3 with 4-Level Paging; Vol. 1, canonical addressing"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _KPROCESSOR_STATE (SpecialRegisters, ContextFrame), _KSPECIAL_REGISTERS.Cr3, _CONTEXT.Rip; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: pdbfacts lowstub
+    accessed: 2026-11-12
+  - title: "Project measurement: pdbfacts (fingerprints, streams, convert, lowstub) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 and their 29 PDBs"
+    path: pdbfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Start page: page-aligned below 1 MiB, E9 rel16 jump into the page past 0xA8"
+    justification: "S32 4.7 step 1, F21, F22, M9"
+  - rule: "Long-mode target at 0x70; CR3 at 0x90 + 0x10, frame bits 51:12"
+    justification: "S32 4.7 step 2, K1, K2, M9, F23, O5"
+  - rule: "Kernel base: first image below the target whose CodeView names a kernel PDB, within MaxKernelImageBytes; other images and unmapped pages passed over"
+    justification: "S32 4.7 steps 3-4, F24, M9"
+  - rule: "Start pages that name different kernels refused"
+    justification: "S32 4.7 step 5"
+date: 2026-11-12

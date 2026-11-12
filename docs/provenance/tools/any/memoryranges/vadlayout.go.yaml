@@ -1,0 +1,23 @@
+file: tools/any/memoryranges/vadlayout.go
+replaces: [tools/any/memoryranges/memory_list_pages.go, tools/any/memoryranges/tree.go, tools/any/memoryranges/vadfile.go, tools/any/memoryranges/protection.go, tools/any/memoryranges/pages.go, tools/any/memoryranges/address.go]
+spec: S24-windows-vad-walk
+spec_sha256: 3e38a1f8c17baa6446f432c54a759d6d2f1ec952bff13eb795be1e7c936e32dc
+sources:
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.VadRoot, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _MMVAD_FLAGS1, _MM_PRIVATE_VAD_FLAGS, _MM_SHARED_VAD_FLAGS, _POOL_HEADER, _SUBSECTION, _CONTROL_AREA, _MMSECTION_FLAGS, _EX_FAST_REF, _FILE_OBJECT, globals MmProtectToValue and MmHighestUserAddress; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: vadfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: vadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: vadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Required members VadRoot, Root, Left, Right, StartingVpn, EndingVpn; otherwise ErrVADLayout"
+    justification: "S24 4.1 step 1, T1-T3"
+  - rule: "Flags from _MMVAD_SHORT members when named, else _MMVAD_FLAGS bit fields in the word at _MMVAD_SHORT.u"
+    justification: "S24 4.1 step 4, T3, T5, O1"
+  - rule: "Commit from _MMVAD_SHORT.CommitCharge or _MMVAD_FLAGS1.CommitCharge at u1, with CommitChargeHigh"
+    justification: "S24 4.1 step 5, T3, T5"
+  - rule: "Parent is ParentValue with the Balance and Red bits cleared"
+    justification: "S24 4.1 step 6, T2"
+  - rule: "Pool tag at size of _POOL_HEADER minus PoolTag offset before the VAD; 12 for 64-bit tables without the type"
+    justification: "S24 4.1 step 7, T8, O5"
+date: 2026-11-12

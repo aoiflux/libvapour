@@ -1,0 +1,18 @@
+file: tools/gui/prototype.go
+replaces: []
+spec: S57-windows-gui-objects
+spec_sha256: 2021f18ea7c0b4dfe4c8d3309e74107c6845213b69a0fcae3bbea36805d4f042
+sources:
+  - title: "ntoskrnl types _MMPTE_PROTOTYPE (ProtoAddress, a signed 48-bit member at bits 63:16), _MMPTE_HARDWARE and _MMPTE_TRANSITION of builds 14393, 19045, 26100, read through the project's symbol tables"
+    path: symbols/autoload
+    accessed: 2026-11-12
+  - title: "S53 address translation layers: W4, 4.3 (prototype entries, ResolveProtoPTE, PrototypeEntryAddress)"
+    path: docs/specs/S53-address-translation-layers.md
+    accessed: 2026-11-12
+  - title: "Project measurement: guifacts -prototype and -tools on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: guifacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "A kernel page whose leaf is a prototype entry is read from the frame its system-space target entry gives, valid or transition; any other target refuses the page"
+    justification: "owner decision 2026-11-12, follow-up D13; S57 4.1 step 2, M10"
+date: 2026-11-12

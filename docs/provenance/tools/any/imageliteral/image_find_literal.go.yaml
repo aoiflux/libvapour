@@ -1,0 +1,16 @@
+file: tools/any/imageliteral/image_find_literal.go
+replaces: [tools/any/imageliteral/doc.go, tools/any/imageliteral/image_find_literal.go]
+spec: S47-code-regions-and-image-strings
+spec_sha256: 8dbdf4d8e6b4b8d39341a04effffbc45513d55419666f97e7ea45c0e4c0dae41
+sources:
+  - title: "POSIX.1-2017, XBD 7.3.1 LC_CTYPE (POSIX locale), XSH tolower"
+    url: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap07.html
+    accessed: 2026-11-12
+decisions:
+  - rule: "Literals of 1 to MaxNameBytes bytes; case folding maps A-Z only"
+    justification: "S47 4.3 steps 1, 3, F5"
+  - rule: "A match belongs to the window it starts in and must end at or below max_scan_bytes; overlapping matches are kept"
+    justification: "S47 4.3 step 4"
+  - rule: "Rows by offset then literal; preview from the image with non-printable bytes as dots"
+    justification: "S47 4.3 steps 6-7"
+date: 2026-11-12

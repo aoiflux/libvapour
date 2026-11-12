@@ -1,0 +1,19 @@
+file: tools/windows/executionuserassist/countdata.go
+replaces: [the record parser and name decoding of tools/windows/executionuserassist/execution_read_userassist.go]
+spec: S44-windows-userassist
+spec_sha256: f394f221e7e2d7b39ba5b81284efa7a28a765e1d5b61ccc6f685b1049e279bd2
+sources:
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: userassistfacts (with -tool) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, cross-checked with the project's process list and file object scan"
+    path: userassistfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Launch count is the 32-bit word at +0x04, last launch the FILETIME at +0x3C; other words not emitted"
+    justification: "S44 L3, M6 to M9, O1, O2"
+  - rule: "Value names are ROT13 of the stored name, letters only"
+    justification: "S44 L2, D6, M10"
+  - rule: "A known-folder prefix expands to its path plus the rest of the name"
+    justification: "S44 4 step 4, L4"
+date: 2026-11-12

@@ -1,0 +1,23 @@
+file: tools/windowsversion.go
+replaces: [tools/windowsversion.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Microsoft Learn, Operating System Version, page dated 2020-09-15"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/operating-system-version
+    accessed: 2026-11-12
+  - title: "Project specification S03, Windows list entries and the kernel build (build reader 4.7, caller table 4.8)"
+    path: docs/specs/S03-windows-list-entry-and-build.md
+    accessed: 2026-11-12
+  - title: "Project specification S31, Windows pool and object scan (layouts, identity, O3, O4)"
+    path: docs/specs/S31-windows-pool-object-scan.md
+    accessed: 2026-11-12
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Build read through the S03 reader; NT version below 6.2 refused, else kernel build below 9200"
+    justification: "S70 4.6, F5, F7, F8, O1, M2"
+  - rule: "A zero major is no version; an unread build passes with a diagnostic"
+    justification: "S70 4.6 steps 3, 7"
+date: 2026-11-12

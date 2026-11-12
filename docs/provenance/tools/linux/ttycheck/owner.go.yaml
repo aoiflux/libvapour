@@ -1,0 +1,17 @@
+file: tools/linux/ttycheck/owner.go
+replaces: []
+spec: S62-linux-kernel-network-file-tools
+spec_sha256: b33116d5dbcb69442ab7d72c8f1b37067e6f5bdd691cea71c49a3d7c847fdb03
+sources:
+  - title: "Project specification S06 (Linux module model), owner lookup"
+    path: docs/specs/S06-linux-module-model.md
+    accessed: 2026-11-12
+  - title: "Project specification S54 (Linux kernel readers)"
+    path: docs/specs/S54-linux-kernel-readers.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Owners come from the S06 lookup over the known module views; kernel addresses are named by the table's exact symbols"
+    justification: "S62 4 (owner steps), S06 4.5"
+  - rule: "Lossy module views make the run lossy for strict mode"
+    justification: "S62 6"
+date: 2026-11-12

@@ -1,0 +1,37 @@
+file: symbols/kallsyms/kallsyms.go
+replaces: [symbols/kallsyms/kallsyms.go]
+spec: S75-symbol-loading-btf-kallsyms
+spec_sha256: 2e430484faf356292c5523605bbf12608e7bc0a06edad9cac1b91bcfebd6a433
+sources:
+  - title: "Linux kernel kernel/kallsyms.c at v4.19, v6.1, v6.4, v6.14, v6.17: kallsyms_expand_symbol, kallsyms_sym_address, get_symbol_pos"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/kernel/kallsyms.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel scripts/kallsyms.c at v4.19, v6.1, v6.4, v6.14, v6.17: write_src (count widths, two-byte lengths, markers, token table and index, offsets, relative base), read_symbol, sort_symbols"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/scripts/kallsyms.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel kernel/kallsyms_internal.h at v6.1, v6.4, v6.14, v6.17: table declarations"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/kernel/kallsyms_internal.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel include/linux/kallsyms.h at v4.19, v6.1, v6.4, v6.14, v6.17: KSYM_NAME_LEN"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/include/linux/kallsyms.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel kernel/vmcore_info.c at v6.14, v6.17; crash_core.c v4.19, v6.1, v6.4: VMCOREINFO_SYMBOL kallsyms keys and _stext (kernel/crash_core.c before v6.14)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/kernel/vmcore_info.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Project measurement: symbolloadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (-os windows) and mem3_ubuntu24, mem4_fedora40 (-os linux)"
+    path: symbolloadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Seeds are the seven SYMBOL() values; any missing refuses the note"
+    justification: "S75 4.8 step 1, L1"
+  - rule: "Count as 4 bytes, 1 to MaxTableEntries; base as 8 bytes"
+    justification: "S75 4.8 steps 2-3, L2, M2"
+  - rule: "Records: one count byte, a second when bit 7 is set; expansion within MaxNameBytes"
+    justification: "S75 4.8 step 6, L3, L4, M5"
+  - rule: "_stext decides between the two address rules; exactly one must match"
+    justification: "S75 4.8 step 7, L1, L5, M3, M4"
+  - rule: "Addresses must be in order"
+    justification: "S75 4.8 step 8, L6, M4, O6"
+  - rule: "Size to the next greater address; last group to _einittext, _end or _etext; unrepresentable sizes 0"
+    justification: "S75 4.8 step 9, L6, M8, O5"
+date: 2026-11-12

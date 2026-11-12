@@ -1,0 +1,31 @@
+file: internal/ownerfile/ownerfile_windows.go
+replaces: [internal/ownerfile/ownerfile_windows.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "Microsoft Learn, CreateFileW function (fileapi.h), updated 2025-07-01"
+    url: https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createfilew
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CreateDirectoryW function (fileapi.h), updated 2025-07-01"
+    url: https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createdirectoryw
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SetSecurityInfo function (aclapi.h), updated 2024-02-22"
+    url: https://learn.microsoft.com/windows/win32/api/aclapi/nf-aclapi-setsecurityinfo
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Security Descriptor String Format, updated 2025-07-10"
+    url: https://learn.microsoft.com/windows/win32/secauthz/security-descriptor-string-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, ACE Strings, updated 2025-03-12"
+    url: https://learn.microsoft.com/windows/win32/secauthz/ace-strings
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Well-known SIDs, updated 2025-10-01"
+    url: https://learn.microsoft.com/windows/win32/secauthz/well-known-sids
+    accessed: 2026-11-12
+decisions:
+  - rule: "Protected DACL for the token user and S-1-5-18, OICI on directories, applied at creation"
+    justification: "S74 4.11, L4, L5, L7, L8, L9"
+  - rule: "CREATE_NEW with FILE_FLAG_OPEN_REPARSE_POINT; an existing file restricted by handle then truncated; devices opened as they are"
+    justification: "S74 4.11, L4, L6, O9"
+  - rule: "IsPrivate: NULL DACL not private; allow entries only for user and system; deny entries allowed; other kinds not vouched for"
+    justification: "S74 4.11, L6"
+date: 2026-11-12

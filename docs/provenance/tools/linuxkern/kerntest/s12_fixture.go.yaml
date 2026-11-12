@@ -1,0 +1,12 @@
+file: tools/linuxkern/kerntest/s12_fixture.go
+replaces: []
+spec: S12-linux-page-cache
+spec_sha256: b02a2d907064a8ad993dc9a8eb2b7897f0053b277a65cb9ca37580ad82a91d15
+sources:
+  - title: "Specification S12-linux-page-cache: section 9 synthetic fixtures"
+    path: docs/specs/S12-linux-page-cache.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S12-linux-page-cache by the agent that wrote that specification; kept, not rewritten by S80"
+    justification: "S12-linux-page-cache section 9; S80 section 1"
+date: 2026-11-12

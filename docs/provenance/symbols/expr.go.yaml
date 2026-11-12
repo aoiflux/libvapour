@@ -1,0 +1,17 @@
+file: symbols/expr.go
+replaces: [symbols/typeexpr.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "Project measurement: tablefacts over the BuilderVersion 10 cache (42 and 50 tables) and the tables the session builds for mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24 and mem4_fedora40"
+    path: tablefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One operator per level, at most 32, bit offset only with a length"
+    justification: "S58 4.2 step 1, V4, F6"
+  - rule: "Counts decimal without leading zeros; bit offset 0-255, length 1-255; a leading backslash only before the four escaped characters"
+    justification: "S58 4.2 step 3, F6"
+date: 2026-11-12

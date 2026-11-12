@@ -1,0 +1,22 @@
+file: tools/windows/driverirp/driver_check_irp.go
+replaces: [tools/windows/driverirp/driver_check_irp.go]
+spec: S64-windows-driver-kernel-tools
+spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+sources:
+  - title: "WDK 10.0.28000.0 headers km/wdm.h and km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839): DRIVER_OBJECT, DRIVER_EXTENSION, DEVICE_OBJECT, IO_TYPE_, IRP_MJ_, FILE_DEVICE_, KeNumberProcessors, KSYSTEM_TIME, KeQueryTickCount, KUSER_SHARED_DATA, KI_USER_SHARED_DATA, DPC types"
+    url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
+    accessed: 2026-11-12
+  - title: "Project measurement: drivertoolfacts -types, -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: drivertoolfacts
+    accessed: 2026-11-12
+  - title: "Specs S03 (list walker, build), S31 (pool object scan), S55 (module list, address rules, attribution, filters), S24 (memory ranges), S53 (translation layers)"
+    path: docs/specs/S55-windows-kernel-modules-and-pe-dump.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Slots from the MajorFunction array length; IRP_MJ_ names from wdm.h"
+    justification: "S64 4.4 step 1, W2, K1"
+  - rule: "Only kernel-mapped driver objects, once per address"
+    justification: "S64 4.4 step 2"
+  - rule: "InImage within [DriverStart, DriverStart+DriverSize); S55 attribution"
+    justification: "S64 4.4 step 3, D5"
+date: 2026-11-12

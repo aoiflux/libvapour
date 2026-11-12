@@ -1,0 +1,25 @@
+file: tools/windows/timerlist/timer_list.go
+replaces: [tools/windows/timerlist/timer_list.go]
+spec: S64-windows-driver-kernel-tools
+spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+sources:
+  - title: "WDK 10.0.28000.0 headers km/wdm.h and km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839): DRIVER_OBJECT, DRIVER_EXTENSION, DEVICE_OBJECT, IO_TYPE_, IRP_MJ_, FILE_DEVICE_, KeNumberProcessors, KSYSTEM_TIME, KeQueryTickCount, KUSER_SHARED_DATA, KI_USER_SHARED_DATA, DPC types"
+    url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _DRIVER_OBJECT, _DRIVER_EXTENSION, _DEVICE_OBJECT, _OBJECT_HEADER, _KPCR, _KPRCB, _KTIMER_TABLE, _KTIMER, _KDPC, _KOBJECTS, _KAFFINITY_EX, _MI_VISIBLE_STATE, _MI_ASSIGNED_REGION_TYPES, _MI_SYSTEM_VA_TYPE, _DBGKD_GET_VERSION64, _KUSER_SHARED_DATA and the S64 globals; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: drivertoolfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: drivertoolfacts -types, -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: drivertoolfacts
+    accessed: 2026-11-12
+  - title: "Specs S03 (list walker, build), S31 (pool object scan), S55 (module list, address rules, attribution, filters), S24 (memory ranges), S53 (translation layers)"
+    path: docs/specs/S55-windows-kernel-modules-and-pe-dump.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Every bucket list walked with the S03 recovering walk; breaks counted, not refused"
+    justification: "S64 4.13 step 2, T2"
+  - rule: "Links pointer-aligned; timers by _KOBJECTS timer types"
+    justification: "S64 4.13 steps 3-4, T3, T7, O7"
+  - rule: "Dpc decoded with KiWaitNever and KiWaitAlways; only timers with a DPC object are rows"
+    justification: "S64 4.13 step 5, T5, W8, O4, O13"
+date: 2026-11-12

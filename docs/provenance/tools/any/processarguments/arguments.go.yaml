@@ -1,0 +1,23 @@
+file: tools/any/processarguments/arguments.go
+replaces: [tools/any/processarguments/process_read_arguments.go (old)]
+spec: S61-linux-process-tools
+spec_sha256: aef658bee29e97cd45cc38fbe1ce63fb86ec79ce39148f7930cbffdd3c632b31
+sources:
+  - title: "Project specification S14 (Linux task model)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project specification S25 (Windows process list)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxprocfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxprocfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxprocfacts -windows on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025 (PDB types of each capture's ntkrnlmp, builds 26100, 19045, 14393)"
+    path: linuxprocfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Rows follow the process list per OS; unread command lines are one diagnostic, an error in strict mode"
+    justification: "S61 4.8, 4.9, section 6"
+  - rule: "ProcessCmdline.Address holds the _EPROCESS or task_struct address"
+    justification: "owner decision 2026-11-12, S61 O9"
+date: 2026-11-12

@@ -1,0 +1,19 @@
+file: tools/options.go
+replaces: [tools/options.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Owner decisions: wrong-type option is an error (2026-11-03); pid 0 is PID 0, empty pid list is an error, RE2 patterns (COL-16, 2026-11-07); platform.subject.verb names (2026-11-10)"
+    path: docs/specs/S70-tool-context-options-registry.md
+    accessed: 2026-11-12
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Every present value outside the 4.2 forms wraps ErrOptionType naming key, value and forms"
+    justification: "S70 4.2, owner decision"
+  - rule: "Decimal or 0x text only; no octal, sign or underscore"
+    justification: "S70 4.2"
+  - rule: "DumpLimit is the smaller of max_dump_size and MaxArtifactBytes"
+    justification: "S70 4.5, O4"
+date: 2026-11-12

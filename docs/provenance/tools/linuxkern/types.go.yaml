@@ -1,0 +1,31 @@
+file: tools/linuxkern/types.go
+replaces: [tools/linuxkern/types.go (old)]
+spec: S54-linux-kernel-readers
+spec_sha256: f7f872ed4a8b4880bb5a0c36338d8321419965ff6e12a5a3f536d35489ceae49
+sources:
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, version 1.0, section 3.1.2 (fundamental types, bit-fields), low-level-sys-info.tex at commit e1ce0983"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "Linux kernel source, include/uapi/asm-generic/int-ll64.h, include/asm-generic/int-ll64.h, include/linux/types.h, include/uapi/asm-generic/posix_types.h, arch/x86/include/uapi/asm/posix_types_64.h, arch/x86/include/uapi/asm/bitsperlong.h, Makefile, include/linux/compiler_types.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project specifications S01 (X1), S04 (A1, A14) and S06 (F9)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: kernelreaderfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: kernelreaderfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Member paths pass only through named structure members; offsets from the table"
+    justification: "S54 4.3 step 1, T5"
+  - rule: "Integer width: pointer width, else the table's member width, else the C width of the name, else the type size"
+    justification: "S54 4.3 steps 3-4, L1, T1-T3, M1"
+  - rule: "Bitfields read from their unit at the member offset, low bits first; bits outside the unit refused"
+    justification: "S54 4.3 step 5, L3, L4, M1"
+  - rule: "Signed unless unsigned by name, plain char, pointer or aggregate; enumerations signed; plain bitfields non-negative"
+    justification: "S54 4.3 step 6, L1, L3, T4, O1-O3"
+  - rule: "Pointers: pointer members or pointer-wide unsigned integers"
+    justification: "S54 4.4 step 1, S06 F9"
+  - rule: "Pointee size 0 for void, functions and unsized types"
+    justification: "S54 4.4 step 2"
+date: 2026-11-12

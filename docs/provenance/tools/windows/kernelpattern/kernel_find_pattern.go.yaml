@@ -1,0 +1,18 @@
+file: tools/windows/kernelpattern/kernel_find_pattern.go
+replaces: [tools/windows/kernelpattern/kernel_find_pattern.go]
+spec: S64-windows-driver-kernel-tools
+spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 2 (RET, JMP) and Vol. 3A 4.5 (paging)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: drivertoolfacts -types, -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: drivertoolfacts
+    accessed: 2026-11-12
+  - title: "Specs S03 (list walker, build), S31 (pool object scan), S55 (module list, address rules, attribution, filters), S24 (memory ranges), S53 (translation layers)"
+    path: docs/specs/S55-windows-kernel-modules-and-pe-dump.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Only the upper half of the kernel page tables is searched"
+    justification: "S64 4.11 step 2"
+date: 2026-11-12

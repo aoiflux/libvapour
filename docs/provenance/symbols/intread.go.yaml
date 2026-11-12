@@ -1,0 +1,29 @@
+file: symbols/intread.go
+replaces: [symbols/fieldread.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, C Bit Fields"
+    url: https://learn.microsoft.com/cpp/c-language/c-bit-fields
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, 3.1.2 Data Representation (Bit-Fields)"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, Figure 3.1 Scalar Types (low-level-sys-info.tex at commit e1ce0983, 2025-03-12)"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Data Type Ranges"
+    url: https://learn.microsoft.com/cpp/cpp/data-type-ranges
+    accessed: 2026-11-12
+  - title: "Intel SDM Vol. 1, 1.3.1 Bit and Byte Order"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+decisions:
+  - rule: "Integer width from FieldSize or the name widths under the table's platform; 0 or past 8 refused, including arrays of no elements; ErrPlatformUnknown returned"
+    justification: "S58 4.5 step 4, 4.4 step 4, V9, V13, O2"
+  - rule: "Char arrays read exactly their length, stopping at the first NUL"
+    justification: "S58 4.5 step 5"
+date: 2026-11-12

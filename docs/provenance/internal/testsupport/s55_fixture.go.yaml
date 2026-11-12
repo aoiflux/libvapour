@@ -1,0 +1,17 @@
+file: internal/testsupport/s55_fixture.go
+replaces: []
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "Specification S55-windows-kernel-modules-and-pe-dump: T1, T4, 4.6, O11"
+    path: docs/specs/S55-windows-kernel-modules-and-pe-dump.md
+    accessed: 2026-11-12
+  - title: "Specification S79-windows-test-fixtures: the shared process fixture and its offsets"
+    path: docs/specs/S79-windows-test-fixtures.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "One world, the shared process fixture with the loaded-module list and session spaces, read by windows.pe.dump and windows.library.list"
+    justification: "owner decision 2026-11-12, S55 O11"
+  - rule: "Module list, session placement and images moved unchanged from the windows.pe.dump test"
+    justification: "S55 4.6 steps 2 and 3, M5"
+date: 2026-11-12

@@ -1,0 +1,41 @@
+file: tools/any/memoryranges/linux.go
+replaces: [tools/any/memoryranges/linux.go (old), tools/any/memoryranges/doc.go (old)]
+spec: S39-linux-paths-and-vmas
+spec_sha256: c1f7aaf1c07941ead9722b45d87484da4870f74d21f469eff49d2c49c26bf92f
+sources:
+  - title: "Linux kernel source, include/linux/mm_types.h, include/linux/mm.h, mm/mmap.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, mm/vma.c, mm/vma.h at v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, mm/madvise.c at v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/madvise.c
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/sys.c at v6.1, v6.4, v6.14"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/sys.c
+    accessed: 2026-11-12
+  - title: "Linux kernel source, lib/maple_tree.c, include/linux/maple_tree.h, include/linux/xarray.h at v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, fs/proc/task_mmu.c, arch/x86/entry/vdso/vma.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/signal.c, arch/x86/entry/vsyscall/vsyscall_64.c at v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project measurement: pathfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: pathfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Maple nodes walked depth first with their pivots, data end and metadata; dead nodes and wrong parent links dropped and counted"
+    justification: "S39 4.7 step 2, T1-T6"
+  - rule: "An area kept only when its bounds are aligned, vm_mm is the mm and the stored range is its own"
+    justification: "S39 4.7 step 4, A1, A3"
+  - rule: "The VMA list followed by vm_next in address order before 6.1"
+    justification: "S39 4.7 step 3, A1"
+  - rule: "The kept count compared with map_count and reported, not an error"
+    justification: "S39 4.7 step 5, A2, X2"
+  - rule: "Rows with inclusive ends, rwx from VM_READ/WRITE/EXEC, offset vm_pgoff << 12, the maps file's inode and device"
+    justification: "S39 7, A4, F5"
+date: 2026-11-12

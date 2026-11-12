@@ -1,0 +1,20 @@
+file: internal/testsupport/windowsversion.go
+replaces: [internal/testsupport/windowsversion.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "Microsoft Learn, KUSER_SHARED_DATA structure (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS, _KPROCESS, _LIST_ENTRY, LIST_ENTRY32, _UNICODE_STRING, _STRING32, _PEB, _PEB_LDR_DATA, _LDR_DATA_TABLE_ENTRY, _EWOW64PROCESS, _PEB32, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _POOL_HEADER, _POOL_TRACKER_BIG_PAGES, _HANDLE_TABLE, _HANDLE_TABLE_ENTRY, _SUBSECTION, _CONTROL_AREA, _EX_FAST_REF, _FILE_OBJECT, _OBJECT_HEADER, _KUSER_SHARED_DATA, _DBGKD_GET_VERSION64; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: fixturefacts
+    accessed: 2026-11-12
+  - title: "Project measurement: fixturefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (MmProtectToValue, KUSER_SHARED_DATA, NtBuildNumber, KdVersionBlock)"
+    path: fixturefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One build in KUSER_SHARED_DATA, the NtBuildNumber global with 0xF in the top bits, and KdVersionBlock.MinorVersion"
+    justification: "S79 4.5 step 1, T10, M2, M3, P4"
+  - rule: "KdVersionBlock moved clear of MmProtectToValue"
+    justification: "S79 4.6"
+date: 2026-11-12

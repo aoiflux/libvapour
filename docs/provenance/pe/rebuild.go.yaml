@@ -1,0 +1,25 @@
+file: pe/rebuild.go
+replaces: [pe/reconstruct.go]
+spec: S18-pe-reconstruction
+spec_sha256: f04f4c96a6e744045a11aecda4df809981160a286f7cc1446fe47a2f5ae93fc4
+sources:
+  - title: "Microsoft Learn, PE Format (optional header, section table, data directories, debug directory), page dated 2026-09-10"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Project measurement: pefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: pefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Memory layout: each section's raw data at its RVA, span VirtualSize (or SizeOfRawData when 0) rounded to SectionAlignment, clipped at SizeOfImage"
+    justification: "S18 4 step 5, P3, P8, P9, M1"
+  - rule: "Buffer must be SizeOfImage long; optional header must hold its declared directories; SectionAlignment a power of two"
+    justification: "S18 4 steps 2-4, P1, P3, P6, P12"
+  - rule: "FileAlignment kept when a power of two no larger than SectionAlignment; SizeOfHeaders held to the first section"
+    justification: "S18 4 steps 6-7, P2, P4"
+  - rule: "ImageBase set to the load address; PE32 above 4 GB keeps the linker value"
+    justification: "S18 4 step 8, P5, O3"
+  - rule: "Certificate entry and COFF symbol pointer cleared; debug PointerToRawData made equal to AddressOfRawData, or 0 when unmapped"
+    justification: "S18 4 steps 9-11, P7, P10, P11"
+  - rule: "CheckSum zeroed in the rebuilt file, reported as CheckSumCleared"
+    justification: "owner decision 2026-11-12, S18 O2"
+date: 2026-11-12

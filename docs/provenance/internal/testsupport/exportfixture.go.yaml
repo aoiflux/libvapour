@@ -1,0 +1,14 @@
+file: internal/testsupport/exportfixture.go
+replaces: [internal/testsupport/exportfixture.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "Microsoft Learn, PE Format (COFF file header, optional header, section table, export directory)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+decisions:
+  - rule: "Export data in one run from the directory: tables, then forwarder and name strings, all inside the data directory range"
+    justification: "S79 4.4 step 3, D4"
+  - rule: "Name pointer table in lexical order; ordinals unbiased"
+    justification: "S79 4.4 step 3, D4"
+date: 2026-11-12

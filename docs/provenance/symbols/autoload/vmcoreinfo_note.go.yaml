@@ -1,0 +1,47 @@
+file: symbols/autoload/vmcoreinfo_note.go
+replaces: [symbols/autoload/vmcoreinfo.go]
+spec: S05-vmcoreinfo
+spec_sha256: 66e45f16dda82a64578afe99efa511ff21323a639e89b213a2a845ac7476b19f
+sources:
+  - title: "Linux kernel/crash_core.c (v4.13, v5.4, v5.15, v6.1, v6.8) and kernel/vmcore_info.c (v6.14, v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/vmcore_info.c?h=v6.17
+    accessed: 2026-11-11
+  - title: "Linux include/linux/crash_core.h and include/linux/vmcore_info.h (VMCOREINFO macros, VMCOREINFO_BYTES)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/vmcore_info.h?h=v6.17
+    accessed: 2026-11-11
+  - title: "Linux arch/x86 arch_crash_save_vmcoreinfo: machine_kexec_64.c (v4.13, v5.4), crash_core_64.c and crash_core_32.c (v5.15 to v6.8), vmcore_info_64.c and vmcore_info_32.c (v6.14, v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/kernel/vmcore_info_64.c?h=v6.17
+    accessed: 2026-11-11
+  - title: "Linux arch/x86/include/asm page_64.h, page_64_types.h, page_types.h, pgtable_64.h, setup.h (v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/include/asm/page_64.h?h=v6.17
+    accessed: 2026-11-11
+  - title: "Linux arch/x86/kernel/vmlinux.lds.S, arch/x86/boot/compressed/kaslr.c, arch/x86/Kconfig PHYSICAL_ALIGN (v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/boot/compressed/kaslr.c?h=v6.17
+    accessed: 2026-11-11
+  - title: "Linux include/uapi/linux/elf.h, Elf32_Nhdr and Elf64_Nhdr (v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/elf.h?h=v6.17
+    accessed: 2026-11-11
+  - title: "System V ABI gABI, chapter 5 Note Section"
+    url: https://www.sco.com/developers/gabi/latest/ch5.pheader.html
+    accessed: 2026-11-11
+  - title: "Linux kernel arch/x86/include/asm/page_types.h at v4.19; include/vdso/page.h, arch/Kconfig, arch/<arch>/Kconfig, kernel/vmcore_info.c, include/linux/vmcore_info.h, include/uapi/linux/utsname.h at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/Kconfig?h=v6.17
+    accessed: 2026-11-12
+decisions:
+  - rule: "A header or OSRELEASE mismatch is not a note and is skipped silently; any later fault is a damaged copy"
+    justification: "S05 5"
+  - rule: "A piece of 79 bytes or more is a cut line of 79 bytes; cut lines keep text only"
+    justification: "S05 K4, 4.2"
+  - rule: "Numeric values must be the exact printf text and fit 64 bits"
+    justification: "S05 K8, K9, 4.3"
+  - rule: "Layout only for x86-64: DTB = swapper_pg_dir - __START_KERNEL_map + phys_base; KERNELOFFSET a multiple of 2 MiB below the image mapping"
+    justification: "S05 K10 to K15, 4.4"
+  - rule: "Scan step 4 MiB, descriptor bound the x86 PAGE_SIZE of 4096, capped by MaxBufferBytes, MaxTextBytes and MaxMatchesPerChunk"
+    justification: "S05 8, K3, K16; owner decision 2026-11-12, S05 O3"
+  - rule: "The release line takes any byte but NUL and escapes bytes outside 0x20 to 0x7e as \\xNN"
+    justification: "S05 K17, 4.2; owner decision 2026-11-12, S05 O2"
+  - rule: "A backslash in the release is written as two"
+    justification: "S05 4.2 step 1; owner decision 2026-11-12, follow-up D1"
+  - rule: "Without NUMBER(pgtable_l5_enabled) the depth comes from S04 on the DTB; undecided stays 4-level and is returned as the error"
+    justification: "S05 4.5; owner decision 2026-11-12, S05 O1"
+date: 2026-11-12

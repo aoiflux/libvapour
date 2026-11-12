@@ -1,0 +1,12 @@
+file: tools/doc.go
+replaces: [tools/doc.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Package clause only"
+    justification: "S70 1"
+date: 2026-11-12

@@ -1,0 +1,27 @@
+file: tools/linuxwalk/list.go
+replaces: [tools/linuxkern/lists.go ToList, tools/linuxobj/list.go WalkList and ListWalk, tools/linuxtrace/list.go, tools/linuxobj/dentry.go hlistDentries]
+spec: S01-linux-list-task-walk
+spec_sha256: bab3e1582e3f17bdf0cc847ddaa530387bafee63f70f79c80d300a8cd4289746
+sources:
+  - title: "Linux include/linux/list.h (INIT_LIST_HEAD, list_for_each_entry, list_entry_is_head, list_del, hlist_for_each_entry, hlist_add_head), v4.19, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/list.h
+    accessed: 2026-11-11
+  - title: "Linux include/linux/container_of.h, v6.14, v6.17; include/linux/kernel.h, v4.19"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/container_of.h
+    accessed: 2026-11-11
+  - title: "Linux lib/list_debug.c (__list_add_valid_or_report), v6.14"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/list_debug.c
+    accessed: 2026-11-11
+  - title: "Linux include/linux/poison.h, v6.14"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/poison.h
+    accessed: 2026-11-11
+decisions:
+  - rule: "Step order: closed, revisited, link unreadable, entry unreadable, capped, then record"
+    justification: "S01 4.1 step 3 and 4.2 step 3"
+  - rule: "The head is never an entry; a self-linked head is an empty, closed list"
+    justification: "S01 L2, L3"
+  - rule: "A back link that does not lead back is counted, not a stop"
+    justification: "S01 L5, H3, 5"
+  - rule: "Every memory failure is an end reason with the address it refers to; strict mode belongs to the caller"
+    justification: "S01 6, 7"
+date: 2026-11-11

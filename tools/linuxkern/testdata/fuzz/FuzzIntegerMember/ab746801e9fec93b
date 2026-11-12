@@ -1,0 +1,7 @@
+go test fuzz v1
+byte('\b')
+byte('O')
+byte('\x00')
+string("0")
+bool(false)
+[]byte("0")

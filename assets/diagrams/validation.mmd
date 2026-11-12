@@ -1,0 +1,12 @@
+flowchart LR
+    subgraph change["Without an image"]
+        direction TB
+        unit["Unit tests<br/>on synthetic memory"]
+        fuzz["Fuzz targets<br/>for the parsers"]
+        lint["go vet and staticcheck"]
+    end
+    subgraph real["On real captures"]
+        direction TB
+        gate["Real-image tests<br/>private, not published"]
+    end
+    change --> real

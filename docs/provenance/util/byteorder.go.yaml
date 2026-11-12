@@ -1,0 +1,12 @@
+file: util/byteorder.go
+replaces: [util/byteorder.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "Project measurement: helperfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: helperfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Short buffer gives ErrBufferTooSmall"
+    justification: "S74 4.1, 6"
+date: 2026-11-12

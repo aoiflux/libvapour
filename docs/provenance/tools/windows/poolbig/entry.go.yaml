@@ -1,0 +1,37 @@
+file: tools/windows/poolbig/entry.go
+replaces: [tools/windows/poolbig/pool_list_big.go]
+spec: S52-windows-pool-listings
+spec_sha256: 969898f64c0434ece5b3bb2a68d624e2aa85c55c654b84bf58fb8c9e03a02ce5
+sources:
+  - title: "Microsoft Learn, ExAllocatePool2 function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepool2
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, ExAllocatePoolWithTag function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepoolwithtag
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, POOL_FLAGS"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/pool_flags
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, _POOL_TYPE (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ne-wdm-_pool_type
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types, enumerations and globals through the project's symbol tables: _POOL_TRACKER_BIG_PAGES, _POOL_TYPE, PoolBigPageTable, PoolBigPageTableSize, _CMHIVE.HiveList, CmpHiveListHead; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: bigpoolfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: bigpoolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: bigpoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Key 0 is a never-used slot"
+    justification: "S52 4.2 step 2, D1, M2"
+  - rule: "Va bit 0 is the freed mark; address is Va with bit 0 cleared"
+    justification: "S52 4.2 step 3, M2, M3, M4, O1"
+  - rule: "Tag from the lowest Key byte, trailing zeros dropped, other bytes outside 0x20-0x7e escaped"
+    justification: "S52 4.2 step 4, D1, M8"
+  - rule: "PoolType: exact enum name, shortest among shared values, else decimal; parity gives paged or nonpaged"
+    justification: "S52 4.3 step 1, D4, T4, O3"
+  - rule: "PoolFlags: POOL_FLAGS names in bit order with a hex remainder; exactly one of 0x40, 0x80, 0x100 gives the kind"
+    justification: "S52 4.3 step 2, D3, M9, O2"
+  - rule: "Order by address, in use before freed, then slot"
+    justification: "S52 4.4 step 4"
+date: 2026-11-12

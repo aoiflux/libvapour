@@ -1,0 +1,12 @@
+file: tools/linuxobj/linuxobjtest/s38_fixture.go
+replaces: []
+spec: S38-linux-kallsyms
+spec_sha256: 5cc59a2088b374ad78123eb3d90f988f4a9c7ae1e64196165020a08f103d1fa0
+sources:
+  - title: "Specification S38-linux-kallsyms: section 9 synthetic fixtures"
+    path: docs/specs/S38-linux-kallsyms.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S38-linux-kallsyms by the agent that wrote that specification; kept, not rewritten by S80"
+    justification: "S38-linux-kallsyms section 9; S80 section 1"
+date: 2026-11-12

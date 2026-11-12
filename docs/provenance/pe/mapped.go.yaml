@@ -1,0 +1,20 @@
+file: pe/mapped.go
+replaces: [pe/mapped.go]
+spec: S72-pe-image-parsing
+spec_sha256: 28a0c996d6ec0cbb22ceeeaeed4161386dc40598d0024d47de3c0896fc20b4c0
+sources:
+  - title: "Microsoft Learn, PE Format (MS-DOS stub, signature, COFF file header, optional header, data directories, section table, export, import, debug and resource directories), page dated 2026-09-10"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, 4.5 4-level paging (4 KiB pages)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: peparsefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: peparsefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Reads past SizeOfImage refused; failed or short reads are ErrUnreadable"
+    justification: "S72 4.3 step 1, P4"
+  - rule: "Strings read in page-bounded pieces, halved on failure, up to MaxNameBytes"
+    justification: "S72 4.3 step 2, X1"
+date: 2026-11-12

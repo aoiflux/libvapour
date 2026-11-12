@@ -1,0 +1,29 @@
+file: tools/windows/tokenprivileges/token_list_privileges.go
+replaces: [tools/windows/tokenprivileges/token_list_privileges.go, tools/windows/tokenprivileges/privileges_data.go]
+spec: S45-windows-token-sids-privileges
+spec_sha256: c03fb5bf77a6bff9a8972ca6acdd19ffffb9c9d3738671d48a2c36ad1a6e7ad6
+sources:
+  - title: "[MS-LSAD] 3.1.1.2.1 Privilege Data Model"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-lsad/1a92af76-d45f-42c3-b67c-f1dc61bd6ee1
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Privilege Constants (Winnt.h), ms.date 2020-07-27"
+    url: https://learn.microsoft.com/windows/win32/secauthz/privilege-constants
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SE_EXPORTS (ntifs.h), ms.date 2024-04-23"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntifs/ns-ntifs-_se_exports
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, TOKEN_PRIVILEGES (winnt.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-token_privileges
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.Token, _EX_FAST_REF, _TOKEN, _SID_AND_ATTRIBUTES, _SEP_TOKEN_PRIVILEGES, _SID, _SID_IDENTIFIER_AUTHORITY; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: tokenfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: tokenfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: tokenfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One row per bit set in Present, Enabled or EnabledByDefault; bit number is the LUID low part"
+    justification: "S45 4.4 steps 1-2, T3, D9, M8, M9, O1"
+  - rule: "Token checks shared with windows.token.list_sids; a failed token or unread masks is one failure row"
+    justification: "S45 4.1, 6"
+date: 2026-11-12

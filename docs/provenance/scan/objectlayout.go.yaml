@@ -1,0 +1,36 @@
+file: scan/objectlayout.go
+replaces: [scan/object.go]
+spec: S31-windows-pool-object-scan
+spec_sha256: 78443ebe0c4dc3c1f57c1f9c313b0197f9d2ebd494e8b77938d5c2c612d6fcb7
+sources:
+  - title: "Microsoft Learn, ExAllocatePool2 function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepool2
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Life Cycle of an Object"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/life-cycle-of-an-object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_OBJECT (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Object Names"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/object-names
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, chapter 5, Paging"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types, enumerations and globals through the project's symbol tables: _POOL_HEADER, _OBJECT_HEADER, _OBJECT_HEADER_*_INFO, _OBJECT_TYPE, _OBJECT_TYPE_INITIALIZER, _DISPATCHER_HEADER, _KOBJECTS, _POOL_TYPE, ObHeaderCookie, ObTypeIndexTable, ObpInfoMaskToOffset; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: poolfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: poolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: poolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "PaddingAmount must be at least the padding info size; PreferringNamed gives the scan a kernel reader for names"
+    justification: "owner decision 2026-11-12, follow-ups P3 and P4 (S31 4.4 steps 3 and 5, O9, O10)"
+  - rule: "Distance to the object header is ObpInfoMaskToOffset[InfoMask & 0x7f] (or the type sizes) plus PaddingAmount below 64"
+    justification: "S31 4.4 step 3, M4, M5"
+  - rule: "Reach: longest optional length plus 48; one byte without InfoMask"
+    justification: "S31 4.4 steps 2-3, M5, O3"
+  - rule: "PointerCount >= 0, 0 <= HandleCount <= PointerCount"
+    justification: "S31 4.4 step 4, D2, M8"
+date: 2026-11-12

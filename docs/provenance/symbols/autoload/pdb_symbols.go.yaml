@@ -1,0 +1,27 @@
+file: symbols/autoload/pdb_symbols.go
+replaces: [the symbol and name rules of symbols/autoload/pdb.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "LLVM, CodeView Symbol Records"
+    url: https://llvm.org/docs/PDB/CodeViewSymbols.html
+    accessed: 2026-11-12
+  - title: "Microsoft microsoft-pdb repository, include/cvinfo.h (master)"
+    url: https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Decorated names"
+    url: https://learn.microsoft.com/cpp/build/reference/decorated-names
+    accessed: 2026-11-12
+  - title: "Project measurement: pdbfacts (fingerprints, streams, convert, lowstub) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 and their 29 PDBs"
+    path: pdbfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "S_PUB32, S_LDATA32 and S_LPROCREF placed; S_GDATA32 and S_PROCREF not"
+    justification: "S32 4.4 steps 2-4, M6, O3"
+  - rule: "A procedure reference must lead to a procedure record of its name"
+    justification: "S32 4.4 step 3, F13, F17"
+  - rule: "Publics before non-publics; the first record of a name kept"
+    justification: "S32 4.4 step 6"
+  - rule: "x86 C decoration removed only in the documented forms; decimal count without leading zero below 2^32"
+    justification: "S32 4.5, F18, M7"
+date: 2026-11-12

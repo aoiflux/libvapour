@@ -1,0 +1,20 @@
+file: extract/peheaders.go
+replaces: [extract/peheaders.go]
+spec: S73-minidump-writer-and-extract-regions
+spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+sources:
+  - title: "Microsoft Learn, PE Format (MS-DOS stub e_lfanew, COFF file header, NumberOfSections), page dated 2026-09-10"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 2A FXSAVE (512-byte save area) and Vol. 3A 4.5 (4-KByte pages)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: pefacts header spans"
+    path: pefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Headers decoded from the readable prefix only; a truncation at a gap is unreadable, not malformed"
+    justification: "S73 4.5 steps 1-3"
+  - rule: "Follow-up read to the span the parser needs, capped at 0x10000"
+    justification: "S73 4.5 step 4, M6, O5"
+date: 2026-11-12

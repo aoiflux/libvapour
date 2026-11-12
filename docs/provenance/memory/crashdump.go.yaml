@@ -1,0 +1,31 @@
+file: memory/crashdump.go
+replaces: [memory/acquisition.go, memory/buffered_reader.go, memory/crashdump.go, memory/doc.go, memory/elf.go, memory/fallback_reader.go, memory/file_reader.go, memory/format_detect.go, memory/layered_reader.go, memory/lime.go, memory/provider_file.go, memory/provider_live.go, memory/provider_selector.go, memory/reader.go, memory/segmented.go, memory/snapshot.go, memory/whole_image_scan.go]
+spec: S71-memory-capture-readers
+spec_sha256: 2eb774a2023484c1f77acdc0af7d7163dadfa44753a0d9617a5aa04c0d2be544
+sources:
+  - title: "Microsoft Learn, KeInitializeCrashDumpHeader function (ntddk.h), ms.date 2018-04-30"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-keinitializecrashdumpheader
+    accessed: 2026-11-12
+  - title: "ntkrnlmp PDB types through the project's symbol tables: _PHYSICAL_MEMORY_DESCRIPTOR, _PHYSICAL_MEMORY_RUN, _KUSER_SHARED_DATA, _KSYSTEM_TIME; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: "capturefacts -vsym"
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PE Format, Machine Types"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Project measurement: capturefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40, the process region captures, a minidump and a debugger-written process core"
+    path: "capturefacts"
+    accessed: 2026-11-12
+decisions:
+  - rule: "Header 0x2000 bytes, pages follow in run order"
+    justification: "S71 4.7 steps 2, 7, 8, W1, C5"
+  - rule: "Field offsets measured; descriptor layout from the PDB; 1 to 503 runs"
+    justification: "S71 4.7 step 3, W2, C2, C3, O1"
+  - rule: "Fields from DumpType on only when the run array ends at or before 0xF98; DumpType must be 1"
+    justification: "S71 4.7 step 4, W1, C3, C4"
+  - rule: "Run 240 recounted from the page total only when the counts disagree and the recount fits before run 241"
+    justification: "S71 4.7 step 5, C4, O2"
+  - rule: "32-bit dumps refused"
+    justification: "S71 4.7 step 1, O3"
+  - rule: "Recounted runs and zero tails are kept as repairs, apart from other container notes, so strict mode can refuse them"
+    justification: "owner decision 2026-11-12, S71 O7"
+date: 2026-11-12

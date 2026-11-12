@@ -1,0 +1,34 @@
+file: tools/windows/registrymounteddevices/mounted.go
+replaces: [tools/windows/registrymounteddevices/registry_list_mounted_devices.go]
+spec: S63-windows-registry-tools
+spec_sha256: b661ed3fd084a4be17e2fce393b423c15b36e5ad4ca55656780f946b49e2653d
+sources:
+  - title: "Microsoft Learn, Supporting Mount Manager Requests in a Storage Class Driver, ms.date 2024-06-05"
+    url: https://learn.microsoft.com/windows-hardware/drivers/storage/supporting-mount-manager-requests-in-a-storage-class-driver
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-DTYP] 2.3.4.2 GUID--Packet Representation, updated 2024-10-30"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/001eec5a-7f8b-4293-9e21-ca349392db40
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-DTYP] 2.3.4.3 GUID--Curly Braced String Representation, updated 2024-10-30"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/222af2d3-5c00-4899-bc87-ed4c6515e80d
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-RPRN] Registry Type Values, updated 2025-08-11"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rprn/25cce700-7fcf-4bb6-a2f3-0f6d08430a55
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry element size limits, dated 2022-07-22; Structure of the Registry, updated 2025-04-15"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-element-size-limits
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: registrytoolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: registrytoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Name kinds: drive letter, mount point, volume name, other"
+    justification: "S63 4.5 step 2, D5"
+  - rule: "Unique ID forms: DMIO:ID: and a GUID, UTF-16 device path, other as hexadecimal"
+    justification: "S63 4.5 step 3, D11, M12, O3"
+  - rule: "Names sharing a unique ID name the same volume"
+    justification: "S63 4.5 step 4, D5"
+date: 2026-11-12

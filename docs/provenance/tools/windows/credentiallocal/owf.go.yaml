@@ -1,0 +1,45 @@
+file: tools/windows/credentiallocal/owf.go
+replaces: [tools/windows/credentiallocal/credential_read_local.go]
+spec: S20-windows-sam-hashes
+spec_sha256: 72aba304173fcab5b109e45c4b1e98a3bc73e69bc58ab23934f3a01419f2198e
+sources:
+  - title: "[MS-SAMR] 2.2.11.1.1 Encrypting an NT or LM Hash Value with a Specified Key"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-samr/a5252e8c-25e7-4616-a375-55ced086b19b
+    accessed: 2026-11-12
+  - title: "[MS-SAMR] 2.2.11.1.2 Encrypting a 64-Bit Block with a 7-Byte Key"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-samr/ebdb15df-8d0d-4347-9d62-082e6eccac40
+    accessed: 2026-11-12
+  - title: "[MS-SAMR] 2.2.11.1.3 Deriving Key1 and Key2 from a Little-Endian, Unsigned Integer Key"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-samr/b1b0094f-2546-431f-b06d-582158a9f2bb
+    accessed: 2026-11-12
+  - title: "[MS-SAMR] 4.3 Encrypting an NT or LM Hash (worked example)"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-samr/8c5c1438-1807-4d19-9f4e-66290f214a63
+    accessed: 2026-11-12
+  - title: "[MS-SAMR] 2.2.1.14 Predefined RIDs"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-samr/565a6584-3061-4ede-a531-f5c53826504b
+    accessed: 2026-11-12
+  - title: "[MS-NLMP] 3.3.1 NTLM v1 Authentication (NTOWFv1, LMOWFv1)"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-nlmp/464551a8-9fc4-428e-b3d3-bc5bfb2e73a5
+    accessed: 2026-11-12
+  - title: "[MS-NLMP] Appendix A Cryptographic Operations Reference (DES, MD4, MD5, UNICODE, UpperCase)"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-nlmp/26c42637-9549-46ae-be2e-90f6f1360193
+    accessed: 2026-11-12
+  - title: "RFC 1320 MD4 Message-Digest Algorithm"
+    url: https://www.rfc-editor.org/rfc/rfc1320.txt
+    accessed: 2026-11-12
+  - title: "RFC 1321 MD5 Message-Digest Algorithm"
+    url: https://www.rfc-editor.org/rfc/rfc1321.txt
+    accessed: 2026-11-12
+  - title: "NIST FIPS 197 Advanced Encryption Standard; FIPS 46-3 / SP 800-67 Data Encryption Standard"
+    url: https://csrc.nist.gov/pubs/fips/197/final
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Network security: Do not store LAN Manager hash value on next password change"
+    url: https://learn.microsoft.com/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/network-security-do-not-store-lan-manager-hash-value-on-next-password-change
+    accessed: 2026-11-12
+  - title: "Project measurement: samfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (counts, layout and match flags only)"
+    path: samfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "NTOWFv1 = MD4(UTF-16LE password); LMOWFv1 = DES(KGS!@#$%) over the upper-cased password halves, refused above 14 characters or non-ASCII"
+    justification: "S20 D4, D5"
+date: 2026-11-12

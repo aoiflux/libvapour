@@ -1,0 +1,27 @@
+file: layers/modes.go
+replaces: [layers/paging_mode.go, layers/doc.go]
+spec: S53-address-translation-layers
+spec_sha256: bd51da949f6304e4a71b7ace847e6a477b0645f0a547cde4c17626eba675f601
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging: 5.3, 5.4, 5.5, 5.7, 5.10.3.3, Tables 5-4 to 5-20"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Linux arch/x86/include/asm/pgtable_types.h, page_types.h, page_64_types.h, pgtable_64.h, pgtable-invert.h, sparsemem.h; arch/x86/mm/mem_encrypt_identity.c and arch/x86/boot/startup/sme.c (v4.19, v6.1, v6.4, v6.14, v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/x86/include/asm/pgtable_types.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "ntoskrnl types _MMPTE_HARDWARE, _MMPTE_TRANSITION, _MMPTE_SOFTWARE, _MMPTE_PROTOTYPE, _MMPTE_SUBSECTION, _MI_HARDWARE_STATE, _EPROCESS, _KPROCESS, _LIST_ENTRY of builds 14393, 19045, 26100, read through the project's symbol tables"
+    path: symbols/autoload
+    accessed: 2026-11-12
+  - title: "Project measurement: pagetablefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: pagetablefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Four presets: x64 and la57 with 8-byte entries and frame field 51:12, PAE with a 31:5 root, 32-bit with PSE-36"
+    justification: "S53 4.1, P1, P4, P5, A5, W1, W2, M3"
+  - rule: "The zero mode is 4-level paging"
+    justification: "S53 4.1"
+  - rule: "LinuxMode reads present entries only; frame field below MAX_PHYSMEM_BITS less the SME bit"
+    justification: "S53 4.1, X2-X6"
+  - rule: "Canonical addresses repeat the top address bit"
+    justification: "S53 P8"
+date: 2026-11-12

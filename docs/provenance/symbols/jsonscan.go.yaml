@@ -1,0 +1,17 @@
+file: symbols/jsonscan.go
+replaces: [the key checks of symbols/vsym.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "RFC 8259, The JavaScript Object Notation (JSON) Data Interchange Format"
+    url: https://www.rfc-editor.org/rfc/rfc8259
+    accessed: 2026-11-12
+  - title: "RFC 3629, UTF-8, a transformation format of ISO 10646"
+    url: https://www.rfc-editor.org/rfc/rfc3629
+    accessed: 2026-11-12
+decisions:
+  - rule: "Keys once per object; UTF-8 strings with paired surrogates; integers without fraction, exponent or leading zero; no null"
+    justification: "S58 4.8 step 2, V5, F8, F9"
+  - rule: "Unknown values stepped over to depth 256"
+    justification: "S58 4.8 step 3, section 8"
+date: 2026-11-12

@@ -1,0 +1,12 @@
+file: internal/testsupport/s19_fixture.go
+replaces: []
+spec: S19-windows-file-objects
+spec_sha256: 1e26823963a78564c0398d0108a2875a02896c2f671bf40be943a6f5f483f67c
+sources:
+  - title: "Specification S19-windows-file-objects: T1 to T7 and section 9 item 1"
+    path: docs/specs/S19-windows-file-objects.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S19-windows-file-objects by the agent that wrote that specification; not rewritten by S79"
+    justification: "S19-windows-file-objects T1 to T7 and section 9 item 1; S79 section 1"
+date: 2026-11-12

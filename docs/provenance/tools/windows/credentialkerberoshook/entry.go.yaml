@@ -1,0 +1,34 @@
+file: tools/windows/credentialkerberoshook/entry.go
+replaces: [tools/windows/credentialkerberoshook/credential_check_kerberos_hook.go]
+spec: S23-windows-kerberos-crypto-check
+spec_sha256: 61aa562b650c7a4160c426ca7271f6ad8c69aa8bb56c4ccf5e985607bd587af3
+sources:
+  - title: "IANA, Kerberos Parameters, Kerberos Encryption Type Numbers, updated 2024-12-06"
+    url: https://www.iana.org/assignments/kerberos-parameters/kerberos-parameters.xml
+    accessed: 2026-11-12
+  - title: "RFC 3961, Encryption and Checksum Specifications for Kerberos 5, sections 3 and 8"
+    url: https://www.rfc-editor.org/rfc/rfc3961.txt
+    accessed: 2026-11-12
+  - title: "RFC 3962, AES Encryption for Kerberos 5, section 7"
+    url: https://www.rfc-editor.org/rfc/rfc3962.txt
+    accessed: 2026-11-12
+  - title: "RFC 4757, The RC4-HMAC Kerberos Encryption Types Used by Microsoft Windows, section 5"
+    url: https://www.rfc-editor.org/rfc/rfc4757.txt
+    accessed: 2026-11-12
+  - title: "RFC 6113, A Generalized Framework for Kerberos Pre-Authentication, section 5.1 (PRF+)"
+    url: https://www.rfc-editor.org/rfc/rfc6113.txt
+    accessed: 2026-11-12
+  - title: "cryptdll.pdb publics CSystems, cCSystems, CDLocateCSystem, CDRegisterCSystem through the project's symbol tables (BuilderVersion 10): 3EBCDA59109ED8EFB1B19A2DBA7355BD-1 (26100), 8CDC194B53A3F978BF1C6CD923C5E47E-1 (19045); kerberos.pdb import slots on 26100, 14393 and Server 2025"
+    path: kerberosfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: kerberosfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kerberosfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Entry 0x80 bytes: encryption type at 0x00, name at 0x20, eleven routine slots at 0x28 to 0x78"
+    justification: "S23 section 3, M2, M3, M4, M5"
+  - rule: "Slot names from RFC 3961 operations, RFC 6113 PRF+ and the PDB names of the slot targets"
+    justification: "S23 F2, F3, M5, O4"
+  - rule: "Encryption type names from the IANA registry; negative types unnamed"
+    justification: "S23 F1"
+date: 2026-11-12

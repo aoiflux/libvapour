@@ -1,0 +1,21 @@
+file: tools/any/memoryranges/listing.go
+replaces: [tools/any/memoryranges/memory_list_pages.go, tools/any/memoryranges/tree.go, tools/any/memoryranges/vadfile.go, tools/any/memoryranges/protection.go, tools/any/memoryranges/pages.go, tools/any/memoryranges/address.go]
+spec: S24-windows-vad-walk
+spec_sha256: 3e38a1f8c17baa6446f432c54a759d6d2f1ec952bff13eb795be1e7c936e32dc
+sources:
+  - title: "Microsoft Learn, MEMORY_BASIC_INFORMATION (winnt.h), page dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-memory_basic_information
+    accessed: 2026-11-12
+  - title: "Project measurement: vadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: vadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Windows rows per process in process-list order, each process's VADs in start order"
+    justification: "S24 4.8 step 1, 7"
+  - rule: "A process whose tree does not read is skipped with a diagnostic, or fails the run in strict mode"
+    justification: "S24 6"
+  - rule: "Kind names private, image, mapped, unknown"
+    justification: "S24 4.5, D2"
+  - rule: "Mapping.NoFile: a separate no-file state; PathUnreadable only when a file may be mapped"
+    justification: "owner decision 2026-11-12, S24 O8"
+date: 2026-11-12

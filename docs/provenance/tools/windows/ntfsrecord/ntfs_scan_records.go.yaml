@@ -1,0 +1,63 @@
+file: tools/windows/ntfsrecord/ntfs_scan_records.go
+replaces: [tools/windows/ntfsrecord/record.go, tools/windows/ntfsrecord/scan.go, tools/windows/ntfsrecord/ntfs_scan_records.go, tools/windows/ntfsrecord/timeline.go]
+spec: S42-ntfs-file-records
+spec_sha256: 826186fcf670cc8cc59bc459584b998135a4a2b5a9c9f06194d171e6be2d39bd
+sources:
+  - title: "Microsoft Learn, MULTI_SECTOR_HEADER structure, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/multi-sector-header
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_RECORD_SEGMENT_HEADER structure, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/file-record-segment-header
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, ATTRIBUTE_RECORD_HEADER structure, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/attribute-record-header
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, STANDARD_INFORMATION structure, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/standard-information
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_NAME structure, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/file-name
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MFT_SEGMENT_REFERENCE structure, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/mft-segment-reference
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Master File Table, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/devnotes/master-file-table
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, File Times, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/file-times
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_BASIC_INFORMATION (wdm.h), ms.date 2021-05-18"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_basic_information
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, File Attribute Constants (WinNT.h), ms.date 2025-09-23"
+    url: https://learn.microsoft.com/windows/win32/fileio/file-attribute-constants
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, File Streams (Local File Systems), ms.date 2025-07-08"
+    url: https://learn.microsoft.com/windows/win32/fileio/file-streams
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-FSCC] NTFS Streams, last updated 2025-11-21"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-fscc/c54dec26-1551-4d3a-a0ea-4fa40f848eb3
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-FSCC] NTFS Attribute Types, last updated 2023-09-20"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-fscc/a82e9105-2405-4e37-b2c3-28c773902d85
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, NTFS_VOLUME_DATA_BUFFER structure (winioctl.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winioctl/ns-winioctl-ntfs_volume_data_buffer
+    accessed: 2026-11-12
+  - title: "Project measurement: mftfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: mftfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One row per readable $STANDARD_INFORMATION or $FILE_NAME, in record order; record name on $STANDARD_INFORMATION rows"
+    justification: "S42 7, 4.5"
+  - rule: "Named resident $DATA as streams, unnamed resident $DATA as resident data; nonresident data gives no row"
+    justification: "S42 4.5 step 5, D11"
+  - rule: "Every copy of a record is its own row"
+    justification: "S42 7, M12, O7"
+  - rule: "RecordHeader.LinkCount, BytesInUse and BytesAllocated as read"
+    justification: "owner decision 2026-11-12, S42 O9"
+date: 2026-11-12

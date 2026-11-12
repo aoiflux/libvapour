@@ -1,0 +1,20 @@
+file: network_layout.go
+replaces: [windows_network_scan_symbols.go]
+spec: S76-root-session
+spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+sources:
+  - title: "ntkrnlmp PDB types and symbols through the project's symbol tables: _EPROCESS, _KPROCESS, _LIST_ENTRY, _MMPTE_SOFTWARE, _KUSER_SHARED_DATA, PsActiveProcessHead, NtBuildNumber; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: sessionfacts
+    accessed: 2026-11-12
+  - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: sessionfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: sessionfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Kernel NtBuildNumber first; the shared copy only when the same page reads NT 10.0"
+    justification: "S76 4.7, S03 4.7"
+  - rule: "No build range test: LayoutForBuild refuses every unmeasured build"
+    justification: "S76 4.7, S28"
+date: 2026-11-12

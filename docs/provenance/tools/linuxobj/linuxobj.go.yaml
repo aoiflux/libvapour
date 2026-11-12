@@ -1,0 +1,31 @@
+file: tools/linuxobj/linuxobj.go
+replaces: [tools/linuxobj/linuxobj.go (old)]
+spec: S46-linux-kernel-object-core
+spec_sha256: f2baf39633dd2dd953dbe0283523d9a629a0383e629fe97b186e52f1571b5c60
+sources:
+  - title: "Linux kernel source, include/uapi/asm-generic/int-ll64.h, include/asm-generic/bitsperlong.h, include/linux/types.h at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A, order 253668-093US (September 2026), sections 4.5, 5.3, 5.4, 5.5 and Tables 5-12 to 5-20"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project specification S01 (Linux list and task walk), fact X1"
+    path: docs/specs/S01-linux-list-task-walk.md
+    accessed: 2026-11-12
+  - title: "Project measurement: corefacts on mem3_ubuntu24 and mem4_fedora40"
+    path: corefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "The address width is 32 with 4-byte pointers, 57 under la57 and 48 otherwise; Canonical sign-extends from the top kept bit"
+    justification: "S46 4.1 step 1, K2, K3"
+  - rule: "Integer width is the base type's under the kernel data model, else the table's member width, else the type size"
+    justification: "S46 4.1 step 2, K5"
+  - rule: "Int sign-extends unless the member type is unsigned"
+    justification: "S46 4.1 step 2, K6"
+  - rule: "Deref is set and readable over the pointee's size"
+    justification: "S46 4.1 step 3"
+  - rule: "StringAt reads a page at a time and stops at NUL or the count"
+    justification: "S46 4.1 step 5"
+  - rule: "The module model is built once per Kernel from the shared S06 model"
+    justification: "S46 4.1 step 7"
+date: 2026-11-12

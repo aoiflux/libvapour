@@ -1,0 +1,36 @@
+file: tools/windows/tasklist/cursor.go
+replaces: [tools/windows/tasklist/task_list.go, tools/windows/tasklist/triggers.go]
+spec: S37-windows-scheduled-tasks
+spec_sha256: f89592045609dc8cbfd24d492c85aa86cf3a69a2dc88825e8b319786d3d8c144
+sources:
+  - title: "[MS-TSCH] Task Scheduler Service Remoting Protocol v20240423: 2.4.2.11.3 Day of the Week, 2.5 XML Task Definition Format (RegistrationInfo, Triggers, Settings, Principals, Actions)"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-tsch/
+    accessed: 2026-11-12
+  - title: "[MS-DTYP] 2.4.2.1 SID String Format Syntax, 2.4.2.2 SID packet representation, 2.3.4 GUID"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/c92a27b1-c772-4fa7-a432-15df5f1b66a1
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, TASK_TRIGGER_TYPE (mstask.h) and WEEKLY (mstask.h)"
+    url: https://learn.microsoft.com/windows/win32/api/mstask/ne-mstask-task_trigger_type
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, TASK_TRIGGER_TYPE2 (taskschd.h)"
+    url: https://learn.microsoft.com/windows/win32/api/taskschd/ne-taskschd-task_trigger_type2
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, TASK_SESSION_STATE_CHANGE_TYPE (taskschd.h)"
+    url: https://learn.microsoft.com/windows/win32/api/taskschd/ne-taskschd-task_session_state_change_type
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: taskcachefacts -xml -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, with task XML found in the same captures' physical memory"
+    path: taskcachefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Triggers fields sit in 8-byte slots counted from the start of their record; filler bytes carry nothing"
+    justification: "S37 M2, L1"
+  - rule: "Slotted strings (count in its own slot, NUL included) and packed strings (count then bytes)"
+    justification: "S37 M4"
+  - rule: "SID and GUID text forms"
+    justification: "S37 D11"
+  - rule: "Durations written as xs:duration; 0xFFFFFFFF is absent"
+    justification: "S37 D3, L3"
+date: 2026-11-12

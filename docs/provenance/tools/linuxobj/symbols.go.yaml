@@ -1,0 +1,21 @@
+file: tools/linuxobj/symbols.go
+replaces: [tools/linuxobj/symbols.go (old)]
+spec: S46-linux-kernel-object-core
+spec_sha256: f2baf39633dd2dd953dbe0283523d9a629a0383e629fe97b186e52f1571b5c60
+sources:
+  - title: "Linux kernel source, include/uapi/asm-generic/int-ll64.h, include/asm-generic/bitsperlong.h, include/linux/types.h at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A, order 253668-093US (September 2026), sections 4.5, 5.3, 5.4, 5.5 and Tables 5-12 to 5-20"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project specification S01 (Linux list and task walk), fact X1"
+    path: docs/specs/S01-linux-list-task-walk.md
+    accessed: 2026-11-12
+  - title: "Project measurement: corefacts on mem3_ubuntu24 and mem4_fedora40"
+    path: corefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "A nil name list from the table means it cannot list"
+    justification: "S46 4.1 step 7"
+date: 2026-11-12

@@ -1,0 +1,30 @@
+file: tools/windows/executionamcache/inventory.go
+replaces: [tools/windows/executionamcache/execution_read_amcache.go]
+spec: S63-windows-registry-tools
+spec_sha256: b661ed3fd084a4be17e2fce393b423c15b36e5ad4ca55656780f946b49e2653d
+sources:
+  - title: "Microsoft Learn, PE Format, COFF File Header TimeDateStamp"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-RPRN] Registry Type Values, updated 2025-08-11"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rprn/25cce700-7fcf-4bb6-a2f3-0f6d08430a55
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry element size limits, dated 2022-07-22; Structure of the Registry, updated 2025-04-15"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-element-size-limits
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: registrytoolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: registrytoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "First listed hive whose path contains amcache"
+    justification: "S63 4.10 step 1, M25"
+  - rule: "InventoryApplicationFile, InventoryApplication and InventoryDriverBinary keys read by value name"
+    justification: "S63 4.10 step 2, M26-M28, O8"
+  - rule: "DriverTimeStamp as Unix seconds UTC, measured equal to the PE TimeDateStamp"
+    justification: "S63 4.10 step 2, D12, M28"
+  - rule: "Root\\File and Root\\Programs reported, not decoded"
+    justification: "S63 4.10 step 4, M29, O9"
+date: 2026-11-12

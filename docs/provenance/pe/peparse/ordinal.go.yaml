@@ -1,0 +1,12 @@
+file: pe/peparse/ordinal.go
+replaces: [pe/peparse/ordinal.go]
+spec: S72-pe-image-parsing
+spec_sha256: 28a0c996d6ec0cbb22ceeeaeed4161386dc40598d0024d47de3c0896fc20b4c0
+sources:
+  - title: "Project measurement and generator: ordinalfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: ordinalfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Library names folded to ASCII lower case; one table per importer width"
+    justification: "S72 4.9 steps 1-2, M7"
+date: 2026-11-12

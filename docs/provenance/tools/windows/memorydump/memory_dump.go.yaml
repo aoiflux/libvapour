@@ -1,0 +1,22 @@
+file: tools/windows/memorydump/memory_dump.go
+replaces: [tools/windows/memorydump/memory_dump.go]
+spec: S68-windows-memory-process-dump
+spec_sha256: 6c5307587dff8b227ccc163b732403e3306af2bf401a1876c64e95abd439acae
+sources:
+  - title: "Project specifications S00, S03, S24, S25, S30, S43, S50, S56, S64"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: memdumpfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: memdumpfacts
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Memory Protection Constants"
+    url: https://learn.microsoft.com/windows/win32/memory/memory-protection-constants
+    accessed: 2026-11-12
+decisions:
+  - rule: "A range over the dump limit is listed, not written, even in strict mode"
+    justification: "S68 4.3 step 3.1, M11"
+  - rule: "Ranges are read only under the process's own root; root 0 is refused"
+    justification: "S68 4.3 step 3.2, E2"
+  - rule: "A range of which no page reads gets no file"
+    justification: "S68 4.3 step 3.5, M11, O7"
+date: 2026-11-12

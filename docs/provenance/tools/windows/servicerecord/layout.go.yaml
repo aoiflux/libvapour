@@ -1,0 +1,34 @@
+file: tools/windows/servicerecord/layout.go
+replaces: [tools/windows/servicerecord/layout.go]
+spec: S34-windows-service-records
+spec_sha256: c4253f01da1f0c1f04553e064bd05ffe8d2429526622759c64b854e24454c482
+sources:
+  - title: "Microsoft Learn, SERVICE_STATUS structure (winsvc.h), updated 2024-02-22"
+    url: https://learn.microsoft.com/windows/win32/api/winsvc/ns-winsvc-service_status
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SERVICE_STATUS_PROCESS structure (winsvc.h), updated 2024-02-22"
+    url: https://learn.microsoft.com/windows/win32/api/winsvc/ns-winsvc-service_status_process
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CreateServiceW function (winsvc.h), updated 2025-07-01"
+    url: https://learn.microsoft.com/windows/win32/api/winsvc/nf-winsvc-createservicew
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, HKLM\\SYSTEM\\CurrentControlSet\\Services Registry Tree, dated 2024-09-18"
+    url: https://learn.microsoft.com/windows-hardware/drivers/install/hklm-system-currentcontrolset-services-registry-tree
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Per-user services, dated 2024-10-01"
+    url: https://learn.microsoft.com/windows/application-management/per-user-services-in-windows
+    accessed: 2026-11-12
+  - title: "services.pdb publics through the project's symbol tables: ?ServiceDatabase@@3VCServiceDatabase@@A, ?ServiceDatabase@@3U_SERVICE_RECORD@@A, ?ScTotalNumServiceRecs@@3KA, ?ImageDatabase@@3U_IMAGE_RECORD@@A; builds 4509DF9E72555CCA35D35E7C3C7E954A-1, 121C32360C557C5DDB87D17B3D79ED1F-1, CD7AE52400CA4919B133DD7F364CA8C2-1, 41B29DC06C87FC4EE8D1C1FF85E12EDB-1"
+    path: servicefacts -pdb -anchor
+    accessed: 2026-11-12
+  - title: "Project measurement: servicefacts -discover, -census and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: servicefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Three record layouts named after the builds they were measured on, with tags, link, name, status, start type, error control and process-or-driver offsets"
+    justification: "S34 4.2, M1, M3, O1"
+  - rule: "Head forms: a CServiceDatabase global with first, last, counter and count, or a _SERVICE_RECORD sentinel whose next link is the first record"
+    justification: "S34 4.2, P1, P2, M5"
+  - rule: "Image records carry their tag at +0 and the command line at +0x18; process ID offset per layout"
+    justification: "S34 4.2, M8"
+date: 2026-11-12

@@ -1,0 +1,23 @@
+file: tools/windows/tokensids/sid.go
+replaces: [tools/windows/tokensids/token_list_sids.go, tools/windows/tokensids/sidnames.go, tools/windows/tokensids/services.go]
+spec: S45-windows-token-sids-privileges
+spec_sha256: c03fb5bf77a6bff9a8972ca6acdd19ffffb9c9d3738671d48a2c36ad1a6e7ad6
+sources:
+  - title: "[MS-DTYP] 2.4.2.2 SID--Packet Representation, last updated 2023-12-12"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/f992ad60-0fe4-4b87-9fed-beb478836861
+    accessed: 2026-11-12
+  - title: "[MS-DTYP] 2.4.1 SID_IDENTIFIER_AUTHORITY"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/c6ce4275-3d90-4890-ab3a-514745e4637e
+    accessed: 2026-11-12
+  - title: "[MS-DTYP] 2.4.2.1 SID String Format Syntax, last updated 2023-12-12"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/c92a27b1-c772-4fa7-a432-15df5f1b66a1
+    accessed: 2026-11-12
+  - title: "[MS-DTYP] 2.4.2 SID, last updated 2024-10-30"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/78eb9013-1c3a-4970-ad1f-2b1dad588a25
+    accessed: 2026-11-12
+decisions:
+  - rule: "Packet form decoded: authority most significant byte first, sub-authorities little-endian"
+    justification: "S45 4.2 step 3, D1, D2"
+  - rule: "String form: decimal authority below 2^32, else 0x and 12 hexadecimal digits"
+    justification: "S45 4.2 step 4, D3"
+date: 2026-11-12

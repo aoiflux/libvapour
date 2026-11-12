@@ -1,0 +1,33 @@
+file: symbols/width.go
+replaces: [the width parts of symbols/table.go and symbols/fieldread.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "Microsoft Learn, Data Type Ranges"
+    url: https://learn.microsoft.com/cpp/cpp/data-type-ranges
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, Figure 3.1 Scalar Types (low-level-sys-info.tex at commit e1ce0983, 2025-03-12)"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "ISO/IEC 9899:2011 (N1570 draft), 6.7.2 type specifiers, 6.7.2.2 enumeration specifiers, 7.20.1.1 exact-width integer types"
+    url: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, C Enumeration Declarations"
+    url: https://learn.microsoft.com/cpp/c-language/c-enumeration-declarations
+    accessed: 2026-11-12
+  - title: "Intel SDM Vol. 1, 1.3.1 Bit and Byte Order"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: tablefacts over the BuilderVersion 10 cache (42 and 50 tables) and the tables the session builds for mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24 and mem4_fedora40"
+    path: tablefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "C type names as specifier multisets under the Microsoft sizes; fixed-width and __intN names"
+    justification: "S58 4.4 step 2, F10-F12, O3"
+  - rule: "long, long double and wchar_t sized by the table's platform: Windows LLP64, Linux LP64 or ILP32; unknown platform an error, not a guess"
+    justification: "S58 4.4 step 4, V13, F11, F21, F22, O9"
+  - rule: "Enumeration with no width is 4 bytes, 8 past 32 bits"
+    justification: "S58 4.4 step 3, F13, F14, O5"
+  - rule: "Array width overflow is unknown; little-endian values; bits from the least significant"
+    justification: "S58 4.4 step 1, 4.5 step 2, F15-F17, F20"
+date: 2026-11-12

@@ -1,0 +1,26 @@
+file: symbols/autoload/pdb_leaf.go
+replaces: [the numeric leaf, string and primitive parts of symbols/autoload/pdb.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "LLVM, The PDB TPI and IPI Streams"
+    url: https://llvm.org/docs/PDB/TpiStream.html
+    accessed: 2026-11-12
+  - title: "LLVM, CodeView Type Records"
+    url: https://llvm.org/docs/PDB/CodeViewTypes.html
+    accessed: 2026-11-12
+  - title: "Microsoft microsoft-pdb repository, include/cvinfo.h (master)"
+    url: https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Data Type Ranges"
+    url: https://learn.microsoft.com/cpp/cpp/data-type-ranges
+    accessed: 2026-11-12
+  - title: "Project measurement: pdbfacts (fingerprints, streams, convert, lowstub) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 and their 29 PDBs"
+    path: pdbfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Numeric leaves: immediate below 0x8000, the integer forms of cvinfo.h; others unreadable"
+    justification: "S32 F10, M3"
+  - rule: "Simple types named by width and sign; fixed scalar set"
+    justification: "S32 4.3 step 3, section 7, F5, F11, O8"
+date: 2026-11-12

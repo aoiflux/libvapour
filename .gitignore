@@ -1,0 +1,37 @@
+scripts/
+# Private real-image tests: kept local, not published
+integration/
+plans/
+.claude/
+.codegraph/
+__pycache__/
+
+# Compiled binaries and build/test artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/coverage.*
+*.coverprofile
+profile.cov
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Local environment files
+.env
+
+# Example run outputs
+showcase_report*.txt
+
+# Local captures, their test outputs and symbol tables: real evidence and
+# large files, never committed.
+/testdata/
+*.raw
+*.vmem
+*.dmp
+*.lime

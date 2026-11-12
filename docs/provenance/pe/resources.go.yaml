@@ -1,0 +1,24 @@
+file: pe/resources.go
+replaces: [pe/resources.go]
+spec: S72-pe-image-parsing
+spec_sha256: 28a0c996d6ec0cbb22ceeeaeed4161386dc40598d0024d47de3c0896fc20b4c0
+sources:
+  - title: "Microsoft Learn, PE Format (MS-DOS stub, signature, COFF file header, optional header, data directories, section table, export, import, debug and resource directories), page dated 2026-09-10"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Resource Types (RT_VERSION), last updated 2026-08-28"
+    url: https://learn.microsoft.com/windows/win32/menurc/resource-types
+    accessed: 2026-11-12
+  - title: "Project measurement: peparsefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: peparsefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Three levels: type ID entry, name entries, language leaves"
+    justification: "S72 4.7 steps 2-4, P14-P16"
+  - rule: "Named entry ID is its string offset with the high bit cleared"
+    justification: "S72 4.7 step 3, P15, M6"
+  - rule: "Unread subtrees passed over; the read error only when no leaf remains"
+    justification: "S72 4.7 step 5"
+  - rule: "MaxTableEntries over the whole tree"
+    justification: "S72 4.7 step 6"
+date: 2026-11-12

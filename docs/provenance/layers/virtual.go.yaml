@@ -1,0 +1,21 @@
+file: layers/virtual.go
+replaces: [layers/translation.go]
+spec: S53-address-translation-layers
+spec_sha256: bd51da949f6304e4a71b7ace847e6a477b0645f0a547cde4c17626eba675f601
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging: 5.3, 5.4, 5.5, 5.7, 5.10.3.3, Tables 5-4 to 5-20"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl types _MMPTE_HARDWARE, _MMPTE_TRANSITION, _MMPTE_SOFTWARE, _MMPTE_PROTOTYPE, _MMPTE_SUBSECTION, _MI_HARDWARE_STATE, _EPROCESS, _KPROCESS, _LIST_ENTRY of builds 14393, 19045, 26100, read through the project's symbol tables"
+    path: symbols/autoload
+    accessed: 2026-11-12
+decisions:
+  - rule: "Reads split at pages; wrap and size errors; growth past 1 MiB page by page"
+    justification: "S53 4.4"
+  - rule: "A pagefile fault reads the supplied pagefile"
+    justification: "S53 4.4"
+  - rule: "Dirty only in a present entry"
+    justification: "S53 4.4, P2, W3"
+  - rule: "The cache only over an immutable snapshot"
+    justification: "S53 4.4"
+date: 2026-11-12

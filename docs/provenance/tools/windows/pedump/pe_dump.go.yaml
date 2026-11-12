@@ -1,0 +1,26 @@
+file: tools/windows/pedump/pe_dump.go
+replaces: [tools/windows/pedump/pe_dump.go]
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "Microsoft Learn, PE Format (SizeOfImage, AddressOfEntryPoint, ImageBase)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Specs S00 artefact names and S18 PE reconstruction"
+    path: docs/specs/S18-pe-reconstruction.md
+    accessed: 2026-11-12
+  - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kmodfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Process modules read only through their own process space"
+    justification: "S55 4.6 step 2"
+  - rule: "Header SizeOfImage capped by MaxArtifactBytes; S18 rebuild at the canonical base; partial files removed"
+    justification: "S55 4.6 step 4"
+  - rule: "Module label is the path's file name, else the base name"
+    justification: "S55 4.6 step 5, M4, O9"
+  - rule: "Kernel modules dumped whatever pid says"
+    justification: "S55 4.6 step 6, O4"
+  - rule: "A process module whose DllBase does not read is skipped with that reason"
+    justification: "owner decision 2026-11-12, S56 O8"
+date: 2026-11-12

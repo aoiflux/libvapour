@@ -1,0 +1,22 @@
+file: disasm/registers.go
+replaces: [disasm/registers.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 1, 253665-093US, 3.4.1.1"
+    url: https://cdrdv2.intel.com/v1/dl/getContent/671436
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 2 (2A-2D), 325383-093US: 2.2.1, 2.2.1.4, 2.2.1.6, 2.3.11, 2.7.1, 2.7.11, LOCK, SYSCALL, SYSRET, INT n/INT3, SALC, UDB, MUL, IMUL, DIV, IDIV, CWD/CDQ/CQO, CBW/CWDE/CDQE, CPUID, LODS, CMPXCHG, BOUND, Appendix A Tables A-2, A-3, A-6, A-10"
+    url: https://cdrdv2.intel.com/v1/dl/getContent/671110
+    accessed: 2026-11-12
+  - title: "Project differential corpus disasm/testdata/disasm_corpus.tsv (S74 M6, O7)"
+    path: disasm/testdata/disasm_corpus.tsv
+    accessed: 2026-11-12
+decisions:
+  - rule: "Only 32- and 64-bit writes count"
+    justification: "S74 4.10, I8"
+  - rule: "First operand written except where the encoding tables say read"
+    justification: "S74 4.10, I9, 9.2"
+  - rule: "Implicit accumulator writes counted only when unconditional"
+    justification: "S74 4.10, I9, O2"
+date: 2026-11-12

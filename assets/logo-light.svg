@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="280" viewBox="0 0 600 280" role="img"
+  aria-labelledby="title desc">
+  <title id="title">libvapour</title>
+  <desc id="desc">Horizontal memory bars containing hexadecimal values dissolving into volatile
+    particles on the right, with a preserved amber MZ artifact on the left, above the word
+    libvapour.</desc>
+
+  <defs>
+    <!-- Gradient to fade out the memory rows before they fragment -->
+    <linearGradient id="memFade" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0F172A" stop-opacity="1" />
+      <stop offset="65%" stop-color="#0F172A" stop-opacity="0.95" />
+      <stop offset="88%" stop-color="#64748B" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#64748B" stop-opacity="0" />
+    </linearGradient>
+
+    <style>
+      .hex {
+        font-family: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', monospace;
+        font-size: 13px;
+        fill: #94A3B8;
+        letter-spacing: 2px;
+      }
+      .hex-fade {
+        fill: #64748B;
+        opacity: 0.6;
+      }
+      .mz-text {
+        font-family: 'Inter', 'IBM Plex Sans', system-ui, sans-serif;
+        font-size: 28px;
+        font-weight: 800;
+        fill: #0F172A;
+        letter-spacing: -0.5px;
+      }
+      .wordmark {
+        font-family: 'IBM Plex Mono', 'JetBrains Mono', 'Geist Mono', monospace;
+        font-size: 54px;
+        font-weight: 600;
+        letter-spacing: -1.5px;
+      }
+    </style>
+  </defs>
+
+  <!-- ================= ICON: MEMORY STREAM & ARTIFACT ================= -->
+  <g transform="translate(95, 28)">
+
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="310" height="22" rx="3" fill="url(#memFade)" />
+    <text x="10" y="15.5" class="hex">48 89 00 48 89 00 08 89 <tspan class="hex-fade">00 89</tspan></text>
+
+    <!-- Row 2 -->
+    <rect x="0" y="28" width="325" height="22" rx="3" fill="url(#memFade)" />
+    <text x="10" y="43.5" class="hex">03 00 00 03 00 00 03 00 <tspan class="hex-fade">00 00</tspan></text>
+
+    <!-- Preserved Artifact: MZ Block (Spans Rows 3 & 4) -->
+    <rect x="0" y="56" width="54" height="50" rx="5" fill="#F59E0B" />
+    <text x="27" y="91" text-anchor="middle" class="mz-text">MZ</text>
+
+    <!-- Row 3 (Shifted right of MZ) -->
+    <rect x="60" y="56" width="255" height="22" rx="3" fill="url(#memFade)" />
+    <text x="68" y="71.5" class="hex">48 89 00 00 00 01 <tspan class="hex-fade">80 03</tspan></text>
+
+    <!-- Row 4 (Shifted right of MZ) -->
+    <rect x="60" y="84" width="240" height="22" rx="3" fill="url(#memFade)" />
+    <text x="68" y="99.5" class="hex">03 00 00 03 00 00 <tspan class="hex-fade">03 00</tspan></text>
+
+    <!-- Row 5 -->
+    <rect x="0" y="112" width="315" height="22" rx="3" fill="url(#memFade)" />
+    <text x="10" y="127.5" class="hex">4D 5A 90 00 03 00 00 00 <tspan class="hex-fade">FF 25</tspan></text>
+
+    <!-- ================= VAPOUR PARTICLES (RIGHT) ================= -->
+    <!-- Emerging byte chunks (Deep Slate) -->
+    <g fill="#0F172A">
+      <rect x="285" y="-2" width="12" height="10" rx="1.5" opacity="0.9" />
+      <rect x="302" y="10" width="9" height="9" rx="1.5" opacity="0.8" />
+      <rect x="298" y="28" width="11" height="11" rx="1.5" opacity="0.85" />
+      <rect x="315" y="40" width="8" height="8" rx="1.5" opacity="0.75" />
+      <rect x="290" y="55" width="12" height="12" rx="1.5" opacity="0.9" />
+      <rect x="308" y="66" width="9" height="9" rx="1.5" opacity="0.7" />
+      <rect x="282" y="84" width="11" height="11" rx="1.5" opacity="0.85" />
+      <rect x="300" y="94" width="8" height="8" rx="1.5" opacity="0.75" />
+      <rect x="292" y="112" width="12" height="10" rx="1.5" opacity="0.9" />
+      <rect x="310" y="122" width="9" height="9" rx="1.5" opacity="0.8" />
+    </g>
+
+    <!-- Dispersing volatile bytes (Memory Grey) -->
+    <g fill="#64748B">
+      <!-- Row 1 dispersion -->
+      <rect x="320" y="-8" width="8" height="8" rx="1" opacity="0.7" />
+      <rect x="336" y="4" width="7" height="7" rx="1" opacity="0.6" />
+      <rect x="352" y="-12" width="6" height="6" rx="1" opacity="0.5" />
+      <rect x="368" y="-2" width="5" height="5" rx="1" opacity="0.4" />
+      <rect x="385" y="-15" width="4" height="4" rx="1" opacity="0.3" />
+      <rect x="405" y="-6" width="3" height="3" rx="0.5" opacity="0.2" />
+
+      <!-- Row 2 dispersion -->
+      <rect x="330" y="24" width="9" height="9" rx="1" opacity="0.75" />
+      <rect x="346" y="18" width="7" height="7" rx="1" opacity="0.6" />
+      <rect x="362" y="30" width="6" height="6" rx="1" opacity="0.5" />
+      <rect x="378" y="16" width="5" height="5" rx="1" opacity="0.4" />
+      <rect x="396" y="25" width="4" height="4" rx="1" opacity="0.3" />
+      <rect x="415" y="14" width="3.5" height="3.5" rx="0.5" opacity="0.2" />
+
+      <!-- Row 3 dispersion -->
+      <rect x="324" y="54" width="8" height="8" rx="1" opacity="0.7" />
+      <rect x="340" y="48" width="7" height="7" rx="1" opacity="0.65" />
+      <rect x="355" y="60" width="6" height="6" rx="1" opacity="0.5" />
+      <rect x="372" y="46" width="5" height="5" rx="1" opacity="0.45" />
+      <rect x="390" y="55" width="4" height="4" rx="1" opacity="0.3" />
+      <rect x="408" y="44" width="3" height="3" rx="0.5" opacity="0.2" />
+      <rect x="424" y="52" width="2.5" height="2.5" rx="0.5" opacity="0.15" />
+
+      <!-- Row 4 dispersion -->
+      <rect x="316" y="82" width="9" height="9" rx="1" opacity="0.75" />
+      <rect x="334" y="76" width="7" height="7" rx="1" opacity="0.6" />
+      <rect x="348" y="88" width="6" height="6" rx="1" opacity="0.5" />
+      <rect x="366" y="78" width="5" height="5" rx="1" opacity="0.4" />
+      <rect x="384" y="86" width="4" height="4" rx="1" opacity="0.3" />
+      <rect x="402" y="75" width="3" height="3" rx="0.5" opacity="0.2" />
+
+      <!-- Row 5 dispersion -->
+      <rect x="328" y="110" width="8" height="8" rx="1" opacity="0.7" />
+      <rect x="344" y="120" width="7" height="7" rx="1" opacity="0.6" />
+      <rect x="360" y="106" width="6" height="6" rx="1" opacity="0.5" />
+      <rect x="376" y="116" width="5" height="5" rx="1" opacity="0.35" />
+      <rect x="394" y="104" width="4" height="4" rx="1" opacity="0.25" />
+      <rect x="412" y="112" width="3" height="3" rx="0.5" opacity="0.15" />
+    </g>
+  </g>
+
+  <!-- ================= TYPOGRAPHY: libvapour ================= -->
+  <text x="300" y="232" text-anchor="middle" class="wordmark">
+    <tspan fill="#0F172A">lib</tspan><tspan fill="#64748B">vapour</tspan>
+  </text>
+</svg>

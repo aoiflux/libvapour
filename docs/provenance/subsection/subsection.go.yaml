@@ -1,0 +1,35 @@
+file: subsection/subsection.go
+replaces: [walkSubsections and the sector-size, segment and unused-PTE predicates of subsection/subsection.go]
+spec: S19-windows-file-objects
+spec_sha256: 1e26823963a78564c0398d0108a2875a02896c2f671bf40be943a6f5f483f67c
+sources:
+  - title: "Microsoft Learn, FILE_OBJECT (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SECTION_OBJECT_POINTERS (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_section_object_pointers
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Specifying Device Types"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/specifying-device-types
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CcMapData function (ntifs.h), VACB_MAPPING_GRANULARITY"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ccmapdata
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _FILE_OBJECT, _SECTION_OBJECT_POINTERS, _CONTROL_AREA, _MMSECTION_FLAGS, _SEGMENT, _SUBSECTION, _MSUBSECTION, _MMSUBSECTION_FLAGS, _MMPTE, _MMPTE_HARDWARE, _MMPTE_TRANSITION, _MMPTE_SUBSECTION, _SHARED_CACHE_MAP, _VACB, _VACB_ARRAY_HEADER, _DEVICE_OBJECT, _EX_FAST_REF; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: filefacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: filefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: filefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Sector unit 0x200 for image control areas and 0x1000 for data ones, from _MMSECTION_FLAGS.Image"
+    justification: "S19 4.3 step 1, M4, M5"
+  - rule: "Extent from StartingSector with StartingSector4132, NumberOfFullSectors and SectorEndOffset; UnusedPtes not read"
+    justification: "S19 4.3 step 3.4, T4, M4, M5"
+  - rule: "First subsection at the control area's end; first mismatch refused, later mismatch, cycle or MaxListEntries cuts the list"
+    justification: "S19 4.3 steps 3.1-3.2, M2"
+  - rule: "Extent must fit PtesInSubsection and the segment's TotalNumberOfPtes budget"
+    justification: "S19 4.3 steps 3.5-3.6, T3, M5"
+  - rule: "Prototype PTEs decoded from _MMPTE_HARDWARE and _MMPTE_TRANSITION bit fields in the table"
+    justification: "S19 4.3 step 3.7, T5"
+date: 2026-11-12

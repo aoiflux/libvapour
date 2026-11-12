@@ -1,0 +1,22 @@
+file: tools/any/memoryranges/pagelisting.go
+replaces: [tools/any/memoryranges/memory_list_pages.go, tools/any/memoryranges/tree.go, tools/any/memoryranges/vadfile.go, tools/any/memoryranges/protection.go, tools/any/memoryranges/pages.go, tools/any/memoryranges/address.go]
+spec: S24-windows-vad-walk
+spec_sha256: 3e38a1f8c17baa6446f432c54a759d6d2f1ec952bff13eb795be1e7c936e32dc
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, Paging chapter (4-KByte pages)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "S04 paging mode detection"
+    path: docs/specs/S04-paging-mode-detection.md
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.VadRoot, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _MMVAD_FLAGS1, _MM_PRIVATE_VAD_FLAGS, _MM_SHARED_VAD_FLAGS, _POOL_HEADER, _SUBSECTION, _CONTROL_AREA, _MMSECTION_FLAGS, _EX_FAST_REF, _FILE_OBJECT, globals MmProtectToValue and MmHighestUserAddress; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: vadfacts -types
+    accessed: 2026-11-12
+decisions:
+  - rule: "Root is _EPROCESS.Pcb + _KPROCESS.DirectoryTableBase, which maps both halves"
+    justification: "S24 4.9 step 1"
+  - rule: "FileOffset is the sum of the sizes of the earlier runs of the process"
+    justification: "S24 4.9 step 3"
+  - rule: "Unreadable and repeated tables and uncaptured pages counted and reported once"
+    justification: "S24 4.9 step 4"
+date: 2026-11-12

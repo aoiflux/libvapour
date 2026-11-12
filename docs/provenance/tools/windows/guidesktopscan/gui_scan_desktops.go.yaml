@@ -1,0 +1,57 @@
+file: tools/windows/guidesktopscan/gui_scan_desktops.go
+replaces: [tools/windows/guidesktopscan/gui_scan_desktops.go]
+spec: S57-windows-gui-objects
+spec_sha256: 2021f18ea7c0b4dfe4c8d3309e74107c6845213b69a0fcae3bbea36805d4f042
+sources:
+  - title: "Microsoft Learn, Window Stations"
+    url: https://learn.microsoft.com/windows/win32/winstation/window-stations
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Desktops"
+    url: https://learn.microsoft.com/windows/win32/winstation/desktops
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Window Station and Desktop Creation"
+    url: https://learn.microsoft.com/windows/win32/winstation/window-station-and-desktop-creation
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Thread Connection to a Desktop"
+    url: https://learn.microsoft.com/windows/win32/winstation/thread-connection-to-a-desktop
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CreateWindowStationW function (winuser.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-createwindowstationw
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CreateDesktopW function (winuser.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-createdesktopw
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, About Windows"
+    url: https://learn.microsoft.com/windows/win32/winmsg/about-windows
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Window Styles"
+    url: https://learn.microsoft.com/windows/win32/winmsg/window-styles
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SetWindowLongPtrW function (winuser.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowlongptrw
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Kernel object namespaces"
+    url: https://learn.microsoft.com/windows/win32/termserv/kernel-object-namespaces
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces (Windows drivers)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "win32k.pdb, win32kbase.pdb and win32kfull.pdb tables of the captures through the project's symbol cache (win32k 262CBFD48711460080B568455294290E and B8F07CAE17F1BB88B46F05F30DE80BCA carry _W32PROCESS, _W32THREAD, _W32THREADNONPAGED; no table carries a tag* record)"
+    path: guifacts -tables
+    accessed: 2026-11-12
+  - title: "ntkrnlmp.pdb tables of the captures: _OBJECT_HEADER, _OBJECT_TYPE, _ETHREAD.Cid, _CLIENT_ID, _EPROCESS, _KTHREAD.Win32Thread, _EPROCESS.Win32Process, ObTypeIndexTable, ObHeaderCookie"
+    path: symbols/autoload
+    accessed: 2026-11-12
+  - title: "Disassembly of the captured win32kfull.sys routines _GetDesktopWindow, _GetParent, _GetThreadDesktop, NtUserInternalGetWindowText, DesktopVerifyHeapLargeUnicodeString, DesktopVerifyHeapPointer, xxxSetWindowLongPtr through the project's disasm package"
+    path: guifacts -routines
+    accessed: 2026-11-12
+  - title: "S31 pool and object scanning (TypeIndex decoding M1, M2)"
+    path: docs/specs/S31-windows-pool-object-scan.md
+    accessed: 2026-11-12
+  - title: "Project measurement: guifacts -discover and -tools on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: guifacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Tool name kept; scanned desktops with the list tool's rows"
+    justification: "S57 4.5, 7"
+date: 2026-11-12

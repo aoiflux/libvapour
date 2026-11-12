@@ -1,0 +1,31 @@
+file: tools/linuxwalk/tree.go
+replaces: [tools/linuxobj/idstorage.go, tools/linuxtrace/idr.go]
+spec: S02-linux-idr-xarray-walk
+spec_sha256: 36fd84c17d5e1eab6b0327af9b996cefad3528f312fd58ada2f6299a6debad86
+sources:
+  - title: "Linux include/linux/xarray.h (xarray, xa_node, entry encoding), v4.20, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/xarray.h
+    accessed: 2026-11-11
+  - title: "Linux lib/xarray.c (xas_start, xas_descend, xas_alloc), v6.14"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/xarray.c
+    accessed: 2026-11-11
+  - title: "Linux include/linux/radix-tree.h and lib/radix-tree.c, v4.11, v4.19, v4.20, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/radix-tree.h
+    accessed: 2026-11-11
+  - title: "Linux include/linux/idr.h and lib/idr.c (idr_for_each), v4.10, v4.11, v4.19, v4.20, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/idr.h
+    accessed: 2026-11-11
+decisions:
+  - rule: "The layout is chosen from the root type's members (xa_head or rnode), never from a version"
+    justification: "S02 R5, 4.1"
+  - rule: "Fan-out is the slots array length and must be 16 or 64"
+    justification: "S02 X3, R2, 4.1 step 5"
+  - rule: "Tag bits are read from the raw slot value; the address form applies to the resulting address"
+    justification: "S02 4.2"
+  - rule: "A child's shift must be its parent's minus the chunk shift, else it is counted and not walked; a wrong parent, offset or owner is counted and walked"
+    justification: "S02 X6, X7, R4, 4.3 step 3"
+  - rule: "Entries and nodes are both capped at MaxTableEntries, depth at MaxRecursionDepth"
+    justification: "S02 8"
+  - rule: "An IDR needs idr_rt; idr_base is added when present"
+    justification: "S02 I1, I2, 4.4"
+date: 2026-11-11

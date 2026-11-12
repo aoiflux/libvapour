@@ -1,0 +1,37 @@
+file: tools/windows/network/tcpiplayouts.go
+replaces: [tools/windows/network/tcpiplayouts.go]
+spec: S67-measured-layouts-tcpip-conhost
+spec_sha256: eabf2a36f3c0800f20f0911e35a74cf3aff82007ce230e6310a8bec1389c3b55
+sources:
+  - title: "Microsoft Learn, TCPSTATE (mstcpip.h) and MIB_TCPROW2 (tcpmib.h): state numbering, port byte order"
+    url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, socket function (winsock2.h): AF_INET 2, AF_INET6 23"
+    url: https://learn.microsoft.com/windows/win32/api/winsock2/nf-winsock2-socket
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _POOL_HEADER, _RTL_DYNAMIC_HASH_TABLE, _RTL_BITMAP, _LIST_ENTRY, _EPROCESS (builds 14393, 19045, 26100)"
+    path: symbols/autoload
+    accessed: 2026-11-12
+  - title: "Specifications S03, S17, S28, S33"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "tcpip.pdb publics (A577CBBD21BE43D3BA44C7CC864143BA-1, F4CA288A1108EF44D23437E1E133B4A2-1, DAC097D9D8F30AC6467DB71184A8C2E5-1, 11B241ADFEA742938BFD75329CFFE121-1) and the captured tcpip.sys code of mem1, mem2, mem5, mem6, mem7"
+    path: tcpiplayoutfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: tcpiplayoutfacts over mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, with the mem7 host's tcp_before.csv and udp_before.csv"
+    path: tcpiplayoutfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One record per measured build range: 14393, 19041-19045, 26100; other builds refused"
+    justification: "S67 4.1 step 1, 5"
+  - rule: "Every offset tied to an instruction of the capture's tcpip.sys and admitted by the capture's data"
+    justification: "S67 3 C1-C17, M1-M3"
+  - rule: "Object starts from the pool header in front of the table link"
+    justification: "S67 3 D3, M2"
+  - rule: "26100 owner offsets 0x348 then 0x350; creation time 0x360"
+    justification: "S67 M5, M6, O1"
+  - rule: "14393 walk members measured but not merged"
+    justification: "S67 M9, O3"
+  - rule: "Struct sizes end at the last measured member; partition and entry sizes are strides"
+    justification: "S67 4.1 step 3, C1, C16"
+date: 2026-11-12

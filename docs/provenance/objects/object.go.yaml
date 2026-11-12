@@ -1,0 +1,21 @@
+file: objects/object.go
+replaces: [objects/object.go]
+spec: S77-objects-profiles-examples
+spec_sha256: 0a0e6c51ac117181be6e801924da5312a5473ac7aeffb3ef19387c33df6d8ad7
+sources:
+  - title: "libvapour symbol-table format 1 (S58): members, type expressions, pointer_width"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "Project measurement: objectfacts on mem1_win11, mem2_win10, mem3_ubuntu24, mem4_fedora40"
+    path: objectfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Integers read at the member's own width, bitfields cut out; arrays, records and wider members refused"
+    justification: "S77 4.1 step 1, F1, F3, M2, M3"
+  - rule: "Pointer only to a named type, at the table's pointer width; zero is ErrNullPointer wrapped with member and address"
+    justification: "S77 4.1 step 2, F2, F4"
+  - rule: "Struct only for a record held in place"
+    justification: "S77 4.1 step 3, F4"
+  - rule: "Bytes bounded by a member width above 0; short reads refused"
+    justification: "S77 4.1 step 4, F1, M2, M3"
+date: 2026-11-12

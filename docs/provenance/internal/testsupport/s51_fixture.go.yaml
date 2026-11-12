@@ -1,0 +1,12 @@
+file: internal/testsupport/s51_fixture.go
+replaces: []
+spec: S51-windows-thread-checks
+spec_sha256: edcbae9664cc303d92cd0a29235a49328968f8130b9a2f1d858bd1262a792621
+sources:
+  - title: "Specification S51-windows-thread-checks: T1 to T4"
+    path: docs/specs/S51-windows-thread-checks.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S51-windows-thread-checks by the agent that wrote that specification; not rewritten by S79"
+    justification: "S51-windows-thread-checks T1 to T4; S79 section 1"
+date: 2026-11-12

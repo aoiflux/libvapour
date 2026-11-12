@@ -1,0 +1,14 @@
+file: internal/testsupport/s45_fixture.go
+replaces: []
+spec: S45-windows-token-sids-privileges
+spec_sha256: c03fb5bf77a6bff9a8972ca6acdd19ffffb9c9d3738671d48a2c36ad1a6e7ad6
+sources:
+  - title: "Specification S45-windows-token-sids-privileges: T1 to T4 and section 9 item 1"
+    path: docs/specs/S45-windows-token-sids-privileges.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S45-windows-token-sids-privileges by the agent that wrote that specification; not rewritten by S79"
+    justification: "S45-windows-token-sids-privileges T1 to T4 and section 9 item 1; S79 section 1"
+  - rule: "_EPROCESS.Token at its 19045 offset 0x4b8, the build the process fixture lays out"
+    justification: "owner decision 2026-11-12, S79 P1"
+date: 2026-11-12

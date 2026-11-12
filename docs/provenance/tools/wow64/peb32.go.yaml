@@ -1,0 +1,37 @@
+file: tools/wow64/peb32.go
+replaces: [tools/wow64/wow64.go]
+spec: S65-process-scan-environment-wow64
+spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+sources:
+  - title: "Microsoft Learn, WOW64 Implementation Details"
+    url: https://learn.microsoft.com/windows/win32/winprog64/wow64-implementation-details
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Running 32-bit Applications"
+    url: https://learn.microsoft.com/windows/win32/winprog64/running-32-bit-applications
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, NtQueryInformationProcess function (winternl.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winternl/nf-winternl-ntqueryinformationprocess
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, LIST_ENTRY structure (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-list_entry
+    accessed: 2026-11-12
+  - title: "ntkrnlmp PDB types of the captures (builds 26100 GUIDs 0D960CE1 and 953A8DE8, 19045 F57E740B, 14393 3DFC5F72) read through the project's symbol tables: _EPROCESS, _PEB, _RTL_USER_PROCESS_PARAMETERS, _EWOW64PROCESS, _PEB32, LIST_ENTRY32, _HANDLE_TABLE, _KPROCESS, _DISPATCHER_HEADER"
+    path: procscanfacts
+    accessed: 2026-11-12
+  - title: "S03 Windows list entries and the kernel build"
+    path: docs/specs/S03-windows-list-entry-and-build.md
+    accessed: 2026-11-12
+  - title: "S56 Windows loaded libraries (32-bit loader layout L1)"
+    path: docs/specs/S56-windows-libraries-autostart-process-tree.md
+    accessed: 2026-11-12
+  - title: "Project measurement: procscanfacts -rows -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (with its host snapshot), and -linux on mem3_ubuntu24, mem4_fedora40"
+    path: procscanfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "WoW64 member from the table; PEB32 through _EWOW64PROCESS.Peb only"
+    justification: "S65 T2, 4.8 steps 1 and 2, O9"
+  - rule: "A PEB32 above 4 GiB is refused"
+    justification: "S65 D4, M6"
+  - rule: "Without LIST_ENTRY32 the walk checks no Blink"
+    justification: "S65 4.8 step 1, D6, S03"
+date: 2026-11-12

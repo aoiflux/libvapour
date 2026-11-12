@@ -1,0 +1,45 @@
+file: tools/windows/credentialcached/slot.go
+replaces: [tools/windows/credentialcached/credential_read_cached.go]
+spec: S22-windows-cached-logons
+spec_sha256: 2bd9b55fa5887ae51d4af6f0a4a58e79daf5df62a8b52adcec13c2648645581c
+sources:
+  - title: "[MS-NRPC] 2.2.1.4.13 NETLOGON_VALIDATION_SAM_INFO4"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-nrpc/bccfdba9-0c38-485e-b751-d4de1935781d
+    accessed: 2026-11-12
+  - title: "[MS-PAC] 2.5 KERB_VALIDATION_INFO"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-pac/69e86ccc-85e3-41b9-b514-7d969cd0ed73
+    accessed: 2026-11-12
+  - title: "[MS-LSAD] Secret Object Data Model"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-lsad/483f1b6e-7b14-4341-9ab2-9b99c01f896e
+    accessed: 2026-11-12
+  - title: "[MS-DTYP] 2.3.10 RPC_UNICODE_STRING"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/94a16bb6-c610-4cb9-8db6-26f15f560061
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Interactive logon: Number of previous logons to cache (in case domain controller is not available)"
+    url: https://learn.microsoft.com/previous-versions/windows/it-pro/windows-10/security/threat-protection/security-policy-settings/interactive-logon-number-of-previous-logons-to-cache-in-case-domain-controller-is-not-available
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Cached user logon fails with LSASRV event 45058 (CachedLogonsCount)"
+    url: https://learn.microsoft.com/troubleshoot/windows-client/user-profiles-and-logon/cached-user-logon-fails-lsasrv-event-45058
+    accessed: 2026-11-12
+  - title: "NIST FIPS 197 Advanced Encryption Standard"
+    url: https://csrc.nist.gov/pubs/fips/197/final
+    accessed: 2026-11-12
+  - title: "NIST SP 800-38A Recommendation for Block Cipher Modes of Operation (CBC)"
+    url: https://csrc.nist.gov/pubs/sp/800/38/a/final
+    accessed: 2026-11-12
+  - title: "S21 policy key list and secret objects through credentiallsasecrets"
+    path: docs/specs/S21-windows-lsa-secrets.md
+    accessed: 2026-11-12
+  - title: "Project measurement: lsafacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (names of secrets, counts, lengths, layout positions and match flags only)"
+    path: lsafacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Empty slot: zero apart from the revision word at +0x28"
+    justification: "S22 4.1 step 5, M3"
+  - rule: "Revision 0x00010004 required"
+    justification: "S22 4.3 step 2, M2, M3, O4"
+  - rule: "Working layout W (unmeasured): name lengths at +0, +2, +0x3C, UserId at +0x10, IV at +0x40, AES-128-CBC part from +0x60 under NL$KM[16:32]"
+    justification: "S22 4.2 step 2, 4.3, O1"
+  - rule: "Verifier at plaintext 0..16; names from +72 at 4-byte alignment, must fit and decode as UTF-16 without NUL or unpaired surrogate"
+    justification: "S22 4.3 steps 4-5, D6, O2"
+date: 2026-11-12

@@ -1,0 +1,31 @@
+file: symbols/linuxkernel/linuxkernel.go
+replaces: [symbols/linuxkernel/linuxkernel.go]
+spec: S75-symbol-loading-btf-kallsyms
+spec_sha256: 2e430484faf356292c5523605bbf12608e7bc0a06edad9cac1b91bcfebd6a433
+sources:
+  - title: "Linux kernel kernel/vmcore_info.c at v4.19, v6.1, v6.4, v6.14, v6.17: OSRELEASE and SYMBOL() exports (kernel/crash_core.c before v6.14)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/kernel/vmcore_info.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel arch/x86/include/asm/page_64_types.h at v4.19, v6.1, v6.4, v6.14, v6.17: __START_KERNEL_map, KERNEL_IMAGE_SIZE"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/x86/include/asm/page_64_types.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel Documentation/arch/x86/x86_64/mm.rst at v4.19, v6.1, v6.4, v6.14, v6.17: kernel text mapping (Documentation/x86/x86_64/mm.txt at v4.19)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/arch/x86/x86_64/mm.rst?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel include/asm-generic/vmlinux.lds.h at v4.19, v6.1, v6.4, v6.14, v6.17: __start_BTF and __stop_BTF"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/include/asm-generic/vmlinux.lds.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel init/version-timestamp.c at v6.1, v6.4, v6.14, v6.17: linux_banner"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/init/version-timestamp.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Project measurement: symbolloadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (-os windows) and mem3_ubuntu24, mem4_fedora40 (-os linux)"
+    path: symbolloadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "The first VMCOREINFO note with a layout and kallsyms seeds is the kernel; damaged notes become diagnostics"
+    justification: "S75 4.10 step 1, M1"
+  - rule: "Kernel space through the layout's tables, levels, width and encryption bit"
+    justification: "S75 4.10 step 2"
+  - rule: "The layout's depth is confirmed on the DTB when VMCOREINFO lacks NUMBER(pgtable_l5_enabled); an undecided detection is a diagnostic"
+    justification: "S75 4.10 step 2, S05 4.5; owner decision 2026-11-12, S05 O1"
+date: 2026-11-12

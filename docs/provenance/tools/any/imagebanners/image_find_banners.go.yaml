@@ -1,0 +1,58 @@
+file: tools/any/imagebanners/image_find_banners.go
+replaces: [tools/any/imagebanners/image_find_banners.go]
+spec: S47-code-regions-and-image-strings
+spec_sha256: 8dbdf4d8e6b4b8d39341a04effffbc45513d55419666f97e7ea45c0e4c0dae41
+sources:
+  - title: "Linux kernel init/version.c"
+    version: "v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/init/version.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel init/version-timestamp.c"
+    version: "v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/init/version-timestamp.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel init/Makefile"
+    version: "v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/init/Makefile?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel scripts/mkcompile_h"
+    version: "v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/scripts/mkcompile_h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel Makefile"
+    version: "v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Makefile?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel include/uapi/linux/utsname.h"
+    version: "v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/include/uapi/linux/utsname.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel fs/proc/version.c"
+    version: "v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/fs/proc/version.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel init/main.c"
+    version: "v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/init/main.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PE Format (Debug Directory, Debug Type)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces (Maximum Path Length Limitation)"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-12
+  - title: "Project measurement: bannerfacts on mem1_win11, mem2_win10, mem3_ubuntu24, mem4_fedora40, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: bannerfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "A Linux banner is the prefix, a release token of 1 to 64 bytes in 0x21-0x7E, then a space and an opening parenthesis; the text runs to newline, NUL or a non-printable byte, at most MaxNameBytes"
+    justification: "S47 4.2 step 4, B1, B2"
+  - rule: "Version is the text from the # after the last closing parenthesis followed by a space and #"
+    justification: "S47 4.2 step 4, B3, B4, M8"
+  - rule: "A Windows record is RSDS, GUID, age and a NUL-terminated path under 260 bytes naming a kernel PDB"
+    justification: "S47 4.2 step 5, B6, B7, B8"
+  - rule: "The running copy is the physical address of linux_banner, or of KernelBase plus the CodeView AddressOfRawData"
+    justification: "S47 4.2 step 2, B6, M6, M7"
+  - rule: "Scan windows of MaxBufferBytes overlapping by MaxNameBytes; at most MaxMatchesPerChunk hits per window"
+    justification: "S47 4.2 step 3, 8"
+date: 2026-11-12

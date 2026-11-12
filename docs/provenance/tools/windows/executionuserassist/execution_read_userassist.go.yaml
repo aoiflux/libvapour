@@ -1,0 +1,32 @@
+file: tools/windows/executionuserassist/execution_read_userassist.go
+replaces: [tools/windows/executionuserassist/execution_read_userassist.go]
+spec: S44-windows-userassist
+spec_sha256: f394f221e7e2d7b39ba5b81284efa7a28a765e1d5b61ccc6f685b1049e279bd2
+sources:
+  - title: "Microsoft Learn, Registry Hives, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-hives
+    accessed: 2026-11-12
+  - title: "Microsoft Learn Q&A 2629999, FIX: Start Screen items erroneously highlighted as NEW (UserAssist key path)"
+    url: https://learn.microsoft.com/answers/questions/2629999/fix-start-screen-items-erroneously-highlighted-as
+    accessed: 2026-11-12
+  - title: "Microsoft Learn Q&A 889897, Windows 10 Top Apps, how do I get them with code? (UserAssist data undocumented)"
+    url: https://learn.microsoft.com/answers/questions/889897/windows-10-top-apps-how-do-i-get-them-with-code
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: userassistfacts (with -tool) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, cross-checked with the project's process list and file object scan"
+    path: userassistfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "User hives are the hives whose file name is NTUSER.DAT; every hive OpenEveryHive opens is considered"
+    justification: "S44 2, D2, M1, O5"
+  - rule: "Key path Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist, GUID subkeys with Version and Count"
+    justification: "S44 L1, D3, M2"
+  - rule: "One row per Count value; no key or subkey rows; sort by hive path, address, subkey, name"
+    justification: "S44 4 steps 3 and 5, 7, O8"
+  - rule: "Values decoded only when 72 bytes long under Version 5 or an unread Version; others unmeasured with data"
+    justification: "S44 5, M3, M5"
+  - rule: "Unreadable key, incomplete lists, cut data, unmeasured version and out-of-range time are diagnostics; strict mode returns all rows and the first error"
+    justification: "S44 6"
+date: 2026-11-12

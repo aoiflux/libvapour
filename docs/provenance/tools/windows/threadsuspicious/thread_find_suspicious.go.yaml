@@ -1,0 +1,28 @@
+file: tools/windows/threadsuspicious/thread_find_suspicious.go
+replaces: [tools/windows/threadsuspicious/thread_find_suspicious.go]
+spec: S51-windows-thread-checks
+spec_sha256: edcbae9664cc303d92cd0a29235a49328968f8130b9a2f1d858bd1262a792621
+sources:
+  - title: "Microsoft Learn, CreateRemoteThread function (processthreadsapi.h), page dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-createremotethread
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MEMORY_BASIC_INFORMATION (winnt.h), page dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-memory_basic_information
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PsCreateSystemThread function (wdm.h), page dated 2023-01-12"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-pscreatesystemthread
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _KTHREAD, _ETHREAD, _DISPATCHER_HEADER, _KTRAP_FRAME, _EPROCESS, _KPROCESS, _KTHREAD_STATE; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: threadcheckfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: threadcheckfacts -rows and -tools on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: threadcheckfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "System threads, unlisted owners and owners with no ranges not examined, each counted"
+    justification: "S51 4.4 steps 1-2, M6"
+  - rule: "StartAddress then Win32StartAddress; unread, zero and non-user addresses skipped"
+    justification: "S51 4.4 step 3, M5"
+  - rule: "start_unmapped unless the walk is short; start_in_private_memory; start_in_mapped_file; image no finding"
+    justification: "S51 4.4 step 4, F3, F4, M5, M6"
+date: 2026-11-12

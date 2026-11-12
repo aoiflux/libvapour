@@ -1,0 +1,43 @@
+file: tools/windows/registryhive/open.go
+replaces: [tools/windows/registryhive/open.go]
+spec: S49-windows-registry-hives-in-memory
+spec_sha256: f26f7df9d184f6e543112de86ffa91b3c210c03e8c6b7bf6db2af1940f527d41
+sources:
+  - title: "Microsoft Learn, [MS-RRP] 2.2.5 RVALENT, updated 2024-04-23"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rrp/1a1489d7-e61a-48cd-9b61-bfb56a957f22
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-RPRN] Registry Type Values, updated 2025-08-11"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rprn/25cce700-7fcf-4bb6-a2f3-0f6d08430a55
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry value types, dated 2023-02-08"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-value-types
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry element size limits, dated 2022-07-22"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-element-size-limits
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Structure of the Registry, dated 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/structure-of-the-registry
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, RegSetValueExW function (winreg.h), updated 2025-07-01"
+    url: https://learn.microsoft.com/windows/win32/api/winreg/nf-winreg-regsetvalueexw
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry Hives, dated 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-hives
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces, dated 2024-06-28"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "ntkrnlmp.pdb types through the project's symbol tables: _CMHIVE, _HHIVE, _DUAL, _HMAP_DIRECTORY, _HMAP_TABLE, _HMAP_ENTRY, _HBASE_BLOCK, _HBIN, _CM_KEY_NODE, _CHILD_LIST, _CM_KEY_VALUE, _CM_KEY_INDEX, _CM_INDEX, _CM_BIG_DATA, _CM_KEY_CONTROL_BLOCK; symbols CmpHiveListHead, CmpRegistryProcess; builds 0D960CE103763A6097E839406D8B369F-1, F57E740B088E5056E8AF0772F1CC5BEB-1, 3DFC5F7228304C26859E55E481700385-1, 953A8DE880B0818C32DA2DEC1D79C2D9-1"
+    path: hivefacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: hivefacts -hives and -tool -bins -dumpdir on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: hivefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Registry process found by name and parent PID 4 only on builds with CmpRegistryProcess; user addresses read through it"
+    justification: "S49 4.2, D8, M3, M4"
+  - rule: "Gathering puts listed hives first and pool-scan-only hives after; opening prefers listed hives"
+    justification: "S49 4.7 step 7"
+  - rule: "Selection: exact name, last path component or mount point first, then substring"
+    justification: "S49 4.7 step 6"
+date: 2026-11-12

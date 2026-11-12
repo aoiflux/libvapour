@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="268" viewBox="0 0 760 268" role="img"
+  aria-labelledby="title desc">
+  <title id="title">libvapour</title>
+  <desc id="desc">The word libvapour above the line: extract signal from volatile memory.</desc>
+
+  <defs>
+    <style>
+      .name {
+        font-family: 'IBM Plex Sans', 'Inter', system-ui, 'Segoe UI', Helvetica, Arial, sans-serif;
+        font-size: 128px;
+        font-weight: 500;
+        letter-spacing: -2px;
+        fill: #F8FAFC;
+      }
+      .line {
+        font-family: 'IBM Plex Mono', 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+        font-size: 24px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        fill: #94A3B8;
+      }
+    </style>
+  </defs>
+
+  <rect width="760" height="268" rx="16" fill="#0F172A" />
+
+  <text x="380" y="148" text-anchor="middle" class="name">libvapour</text>
+  <text x="380" y="196" text-anchor="middle" class="line">extract signal from volatile memory</text>
+</svg>

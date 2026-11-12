@@ -1,0 +1,41 @@
+file: tools/linuxobj/netns.go
+replaces: [tools/linuxobj/netns.go (old), tools/linuxobj/netsock.go (old), tools/linuxobj/netfd.go (old), tools/linuxobj/netconst.go (old), tools/linuxobj/netaddr.go (old)]
+spec: S40-linux-network-objects
+spec_sha256: 0045fd34a393ff4bee4d795fa63b14d605dab8570de2adff6fc764bbfa3790f3
+sources:
+  - title: "Linux kernel source, include/net/net_namespace.h, net/core/net_namespace.c, include/linux/ns_common.h, include/linux/nsproxy.h, kernel/nsproxy.c, include/linux/proc_ns.h, fs/proc/generic.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, include/uapi/linux/nsfs.h at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project specification S13 (Linux sockets), facts F6 and T1"
+    path: docs/specs/S13-linux-sockets.md
+    accessed: 2026-11-12
+  - title: "Linux kernel source, include/linux/netdevice.h, include/uapi/linux/netdevice.h, include/uapi/linux/if.h, net/core/dev.c, net/core/dev_addr_lists.c, net/core/rtnetlink.c, net/core/net-sysfs.c, include/net/sch_generic.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, net/ethernet/eth.c, lib/vsprintf.c, lib/hexdump.c at v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project measurement: netnsfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: netnsfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Namespaces are the net_namespace_list walk over net.list; the number is net.ns.inum"
+    justification: "S40 4.1, N1-N3, N6"
+  - rule: "A task with a null nsproxy holds no namespace and is not an error"
+    justification: "S40 4.1 step 3, N4"
+  - rule: "Devices are the dev_base_head walk over net_device.dev_list"
+    justification: "S40 4.2 step 1, D1"
+  - rule: "A device record is read identity, namespace, state words, sizes, addresses, qdisc, protocol pointers"
+    justification: "S40 4.2 step 2"
+  - rule: "The device namespace is nd_net.net, or init_net when possible_net_t is empty"
+    justification: "S40 4.2 step 3, N5"
+  - rule: "The hardware address is addr_len bytes at dev_addr; addr_len over 32 makes it absent"
+    justification: "S40 4.2 step 4, D2, D3, D9"
+  - rule: "Reported flags recompute the running, carrier and dormant bits as dev_get_flags"
+    justification: "S40 4.2 step 6, D4-D6"
+  - rule: "Promiscuous is IFF_PROMISC in the stored flags"
+    justification: "S40 4.2 step 7"
+date: 2026-11-12

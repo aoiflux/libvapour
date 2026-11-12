@@ -1,0 +1,44 @@
+file: tools/linux/logkernel/layout.go
+replaces: [tools/linux/logkernel/log_read_kernel.go, tools/linux/logkernel/log.go, tools/linux/logkernel/ring.go, tools/linux/logkernel/pre35.go]
+spec: S09-linux-kernel-log
+spec_sha256: 7fde408573b82b85740668ef0a98fde715b769013286a07cd5b4689c0d83ba26
+sources:
+  - title: "Linux kernel source, kernel/printk/printk_ringbuffer.h, kernel/printk/printk_ringbuffer.c at v5.10, v5.11, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/printk/printk.c at v3.11, v4.19, v5.0, v5.1, v5.9, v5.10, v5.11, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/printk/printk.c
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/printk.c at v3.4, v3.5, v3.10"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/printk.c
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/printk/internal.h, include/linux/dev_printk.h, include/linux/kern_levels.h at v4.19, v5.10, v5.11, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, include/linux/types.h, include/linux/atomic/atomic-long.h at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, init/version.c, init/version-timestamp.c, init/main.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, Documentation/ABI/testing/dev-kmsg at v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/testing/dev-kmsg
+    accessed: 2026-11-12
+  - title: "RFC 5424, The Syslog Protocol, section 6.2.1"
+    url: https://www.rfc-editor.org/rfc/rfc5424
+    accessed: 2026-11-12
+  - title: "POSIX.1-2024, <syslog.h>"
+    url: https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/syslog.h.html
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, Bit-Fields"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "Project measurement: kernellogfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: kernellogfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Offsets and sizes from the symbol table, else from the first VMCOREINFO table holding the key"
+    justification: "S09 4.2, C11, O4"
+  - rule: "facility, flags and level from the table with bit positions, else after the u16 they follow"
+    justification: "S09 4.2, C12, M1, M3"
+date: 2026-11-12

@@ -1,0 +1,36 @@
+file: tools/windows/handlelist/names.go
+replaces: [tools/windows/handlelist/names.go]
+spec: S30-windows-handle-names
+spec_sha256: 70179e09d6238e3a0806720b46c5470d0e1bb326dd5b076b44eb3ea987479259
+sources:
+  - title: "Microsoft Learn, Object Names"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/object-names
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Object Directories"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/object-directories
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_OBJECT (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry Key Object Routines"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/registry-key-object-routines
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Life Cycle of an Object"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/life-cycle-of-an-object
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _OBJECT_HEADER_NAME_INFO, _FILE_OBJECT, _EPROCESS, _ETHREAD, _CLIENT_ID, _CM_KEY_BODY, _CM_KEY_CONTROL_BLOCK, _CM_NAME_CONTROL_BLOCK, ObpRootDirectoryObject; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: poolfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: poolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: poolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Namespace path from the name info Directory chain; rooted at ObpRootDirectoryObject, relative otherwise"
+    justification: "S30 4.1, D1, D2, M1, M2"
+  - rule: "File: device namespace path plus FileName; a relative FileName alone"
+    justification: "S30 4.2, D3, M3"
+  - rule: "Key: control block chain without inner hive roots (Flags 0x4 with a parent), count equal to TotalLevels"
+    justification: "S30 4.3, D4, M4, M5, O3"
+  - rule: "Process and thread forms from ImageFileName, UniqueProcessId and Cid"
+    justification: "S30 4.4, 4.5, M6, O1"
+date: 2026-11-12

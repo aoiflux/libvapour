@@ -1,0 +1,29 @@
+file: tools/windows/modulelist/addressspace.go
+replaces: [tools/windows/modulelist/kernelspace.go]
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 3A, order number 253668-093US, sections 2.5, 4.5, 5.3, 5.4"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "WDK 10.0.28000.0 header km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839): MmSystemRangeStart, MM_SYSTEM_RANGE_START, MmHighestUserAddress, MmUserProbeAddress"
+    url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces (Windows drivers), dated 2024-06-28"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kmodfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Address mask 32, 48 or 57 bits by pointer width and paging mode"
+    justification: "S55 4.3 step 1, D3, D4"
+  - rule: "Canonical form sign-extends the top translated bit on 64-bit tables"
+    justification: "S55 4.3 step 2, D3"
+  - rule: "Upper half 0x80000000 or the lowest canonical address with the top bit set"
+    justification: "S55 4.3 step 3, D2, D3"
+  - rule: "MmSystemRangeStart preferred; unread or out-of-range values replaced by the upper half"
+    justification: "S55 4.3 step 4, D1, M2"
+  - rule: "Base below system space or SizeOfImage 0 reported, row kept"
+    justification: "S55 4.1 step 5, M2, M3"
+date: 2026-11-12

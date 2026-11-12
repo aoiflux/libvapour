@@ -1,0 +1,33 @@
+file: windows_session.go
+replaces: [session.go (OpenWindowsMemory), kernel_identity.go (kernelBaseMethods)]
+spec: S76-root-session
+spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), paging chapter: CR0/CR4/EFER paging-mode controls, CR3 format, 4-level entry formats"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntkrnlmp PDB types and symbols through the project's symbol tables: _EPROCESS, _KPROCESS, _LIST_ENTRY, _MMPTE_SOFTWARE, _KUSER_SHARED_DATA, PsActiveProcessHead, NtBuildNumber; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: sessionfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: sessionfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: sessionfacts
+    accessed: 2026-11-12
+  - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
+    path: docs/specs
+    accessed: 2026-11-12
+decisions:
+  - rule: "Kernel root from the identification's DTB (crash dump header or processor start page), else the System process scan"
+    justification: "S76 4.2 step 3, M3"
+  - rule: "System process scan runs only when the root or a confirmed base needs it"
+    justification: "S76 4.2, M3"
+  - rule: "Paging mode from S04 on the root, 4-level when undecided; every process walked in the kernel's mode"
+    justification: "S76 4.2 step 4, F1, M4"
+  - rule: "Pagefiles opened only when CheckPagefilePTELayout accepts the table"
+    justification: "S76 4.2 step 5, S53 4.3"
+  - rule: "Base candidates cheapest first: identification base, list Blink, process list, image scan, debugger data block scan"
+    justification: "S76 4.3, S53 9.2"
+  - rule: "tcpip layout merged as extra types when one is measured for the build"
+    justification: "S76 4.7"
+  - rule: "Strict mode refuses an unconfirmed base, no base, or a table needing a base with no build to check it against"
+    justification: "owner decision 2026-11-12, S76 O4"
+date: 2026-11-12

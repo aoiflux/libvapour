@@ -1,0 +1,12 @@
+file: module_pdbs.go
+replaces: [session_pdb.go]
+spec: S76-root-session
+spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+sources:
+  - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
+    path: docs/specs
+    accessed: 2026-11-12
+decisions:
+  - rule: "Each module fingerprint loaded once per session, its failure kept"
+    justification: "S76 4.6"
+date: 2026-11-12

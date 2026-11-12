@@ -1,0 +1,34 @@
+file: symbols/autoload/pdb_types.go
+replaces: [the type record parts of symbols/autoload/pdb.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "LLVM, The PDB TPI and IPI Streams"
+    url: https://llvm.org/docs/PDB/TpiStream.html
+    accessed: 2026-11-12
+  - title: "LLVM, CodeView Type Records"
+    url: https://llvm.org/docs/PDB/CodeViewTypes.html
+    accessed: 2026-11-12
+  - title: "Microsoft microsoft-pdb repository, include/cvinfo.h (master)"
+    url: https://github.com/microsoft/microsoft-pdb/blob/master/include/cvinfo.h
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Data Type Ranges"
+    url: https://learn.microsoft.com/cpp/cpp/data-type-ranges
+    accessed: 2026-11-12
+  - title: "Project measurement: pdbfacts (fingerprints, streams, convert, lowstub) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 and their 29 PDBs"
+    path: pdbfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Records fill TypeRecordBytes and number the index range"
+    justification: "S32 4.3 step 1, F4, M2"
+  - rule: "Forward references resolved by unique name, else name"
+    justification: "S32 4.3 step 2, F8"
+  - rule: "Function pointer written *, enum as its definition's underlying type, array count size over element size"
+    justification: "S32 4.3 steps 3-4, F7, section 9 table"
+  - rule: "Placeholder names left out; fullest definition kept (members, size, earliest)"
+    justification: "S32 4.3 step 5, M4, O2"
+  - rule: "Enumerations only with whole enumerator lists"
+    justification: "S32 4.3 step 6, F9"
+  - rule: "Depth beyond MaxRecursionDepth fails the conversion"
+    justification: "S32 4.3 step 7, F4"
+date: 2026-11-12

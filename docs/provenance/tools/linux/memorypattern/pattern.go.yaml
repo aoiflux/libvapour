@@ -1,0 +1,23 @@
+file: tools/linux/memorypattern/pattern.go
+replaces: [tools/linux/memorypattern/memory_find_pattern.go (old)]
+spec: S61-linux-process-tools
+spec_sha256: aef658bee29e97cd45cc38fbe1ce63fb86ec79ce39148f7930cbffdd3c632b31
+sources:
+  - title: "Project specification S39 (paths and memory areas)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project specification S46 (capability and ptrace readers)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project specification S14 (Linux task model)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxprocfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxprocfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Search each process's VMAs through its own page tables with the shared scanner"
+    justification: "S61 4.12, R1, R2, M25"
+  - rule: "The scanner takes MaxMatchesPerChunk and the chunks that reach it are one diagnostic, as S64 4.11 step 6"
+    justification: "owner decision 2026-11-12, S61 O7; S64 4.11 step 7"
+date: 2026-11-12

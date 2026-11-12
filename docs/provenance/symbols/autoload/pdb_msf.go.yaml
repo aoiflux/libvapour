@@ -1,0 +1,19 @@
+file: symbols/autoload/pdb_msf.go
+replaces: [symbols/autoload/msf.go, the stream bounds of symbols/autoload/pdb.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "LLVM, The MSF File Format"
+    url: https://llvm.org/docs/PDB/MsfFile.html
+    accessed: 2026-11-12
+  - title: "Project measurement: pdbfacts (fingerprints, streams, convert, lowstub) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 and their 29 PDBs"
+    path: pdbfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Magic, block size 512/1024/2048/4096, NumBlocks within the file"
+    justification: "S32 4.1 step 1, F1, M1"
+  - rule: "Directory block list in one block; every block below NumBlocks"
+    justification: "S32 4.1 step 2, F2, M1"
+  - rule: "0xFFFFFFFF is an absent stream; stream blocks together at most NumBlocks"
+    justification: "S32 4.1 step 3, F1, F2, M1"
+date: 2026-11-12

@@ -1,0 +1,25 @@
+file: tools/linuxobj/linuxobjtest/modules.go
+replaces: [tools/linuxobj/linuxobjtest/modules.go (old)]
+spec: S80-linux-test-fixtures
+spec_sha256: c953530aa6dc9bb0fb95b8dab334df253cb938520e7f28b35e554ca496a6b123
+sources:
+  - title: "Linux kernel source, include/linux/module.h, include/linux/kobject.h, include/linux/moduleparam.h, include/linux/sysfs.h, include/linux/panic.h, include/linux/rbtree_latch.h, kernel/module/internal.h, kernel/module/sysfs.c, kernel/module.c, kernel/panic.c, kernel/params.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "System V ABI generic ELF specification (gABI): symbol table entries"
+    url: https://www.sco.com/developers/gabi/latest/ch4.symtab.html
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxfixturefacts on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxfixturefacts
+    accessed: 2026-11-12
+  - title: "Specification S80-linux-test-fixtures: O21"
+    path: docs/specs/S80-linux-test-fixtures.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Module prefix fixed; mem placed so the 72-byte S38 form fits before kallsyms"
+    justification: "S80 O21, D9"
+  - rule: "Base types model a kernel without CONFIG_MODULES_TREE_LOOKUP"
+    justification: "S80 O5 (open point)"
+  - rule: "Module symbols carry the type letter in st_info"
+    justification: "S80 A-F7"
+date: 2026-11-12

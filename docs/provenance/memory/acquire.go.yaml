@@ -1,0 +1,12 @@
+file: memory/acquire.go
+replaces: [memory/acquisition.go, memory/buffered_reader.go, memory/crashdump.go, memory/doc.go, memory/elf.go, memory/fallback_reader.go, memory/file_reader.go, memory/format_detect.go, memory/layered_reader.go, memory/lime.go, memory/provider_file.go, memory/provider_live.go, memory/provider_selector.go, memory/reader.go, memory/segmented.go, memory/snapshot.go, memory/whole_image_scan.go]
+spec: S71-memory-capture-readers
+spec_sha256: 2eb774a2023484c1f77acdc0af7d7163dadfa44753a0d9617a5aa04c0d2be544
+sources:
+  - title: "Project measurement: capturefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40, the process region captures, a minidump and a debugger-written process core"
+    path: "capturefacts"
+    accessed: 2026-11-12
+decisions:
+  - rule: "Contract check opens one session and checks name, reader, diagnostic categories and close"
+    justification: "S71 4.10 step 1"
+date: 2026-11-12

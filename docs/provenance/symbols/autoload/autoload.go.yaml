@@ -1,0 +1,27 @@
+file: symbols/autoload/autoload.go
+replaces: [symbols/autoload/autoload.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "Microsoft Learn, Symbol Store Folder Tree"
+    url: https://learn.microsoft.com/windows-hardware/drivers/debugger/symbol-store-folder-tree
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Symbol Storage Format"
+    url: https://learn.microsoft.com/windows-hardware/drivers/debugger/symbol-storage-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PE Format (CodeView RSDS GUID)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Project measurement: the Microsoft symbol server answers c2.pdb, mfc100.amd64.pdb and mfc110.amd64.pdb of ages 20 and 23 under the hex age and not the decimal one (S32 M8)"
+    path: docs/specs/S32-pdb-and-symbol-identity.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Symbol-server path <pdb>/<GUID><age in hex>/<pdb>"
+    justification: "S32 4.6 step 3, F19, M8"
+  - rule: "Fingerprint notation <pdb>/<GUID>-<age decimal>, kept as the project's layout key"
+    justification: "S32 4.6 step 2"
+  - rule: "Cache path under BuilderVersion 10; fingerprint name and GUID checked before use"
+    justification: "S32 4.6 steps 4-5, section 9"
+  - rule: "Kernel PDB names after the four kernel images"
+    justification: "S32 4.6 step 6"
+date: 2026-11-12

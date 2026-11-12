@@ -1,0 +1,35 @@
+file: tools/linux/tracingftrace/check_ftrace.go
+replaces: [tools/linux/tracingftrace/tracing_check_ftrace.go]
+spec: S15b-linux-ftrace-hooks
+spec_sha256: 49ec3b926d656608e74b62fe9e43d9c879db094e88f45badc6b2aa43f203535f
+sources:
+  - title: "Linux kernel source, include/linux/ftrace.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/ftrace.h
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/trace/ftrace.c, kernel/trace/trace.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/trace/ftrace_internal.h at v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/trace/ftrace_internal.h
+    accessed: 2026-11-12
+  - title: "Project measurement: tracinghistoryfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: tracinghistoryfacts
+    accessed: 2026-11-12
+  - title: "Linux kernel source, arch/x86/kernel/ftrace.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/kernel/ftrace.c
+    accessed: 2026-11-12
+  - title: "Linux kernel source, linux_banner and the release in init/version.c, read through autoload.ReadLinuxBanner"
+    path: docs/specs/S15b-linux-ftrace-hooks.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "One row per filter entry; an empty filter is scope all; MOD-only filter is scope none; an unread hash is scope unread"
+    justification: "S15b 4.3, F5, F6"
+  - rule: "Owners through linuxmodule Lookup over the known modules; ModuleAddress is the struct module address"
+    justification: "S15b 4.3, S07 4.4"
+  - rule: "Strict mode fails on any walk, hash or module-view loss"
+    justification: "S15b 6"
+  - rule: "The release for the flag names is read from linux_banner only with show_ftrace_flags; an unread release is one diagnostic"
+    justification: "owner decision 2026-11-12, S15b O1; S15b 4.5"
+  - rule: "A trampoline is looked up like the callback: its owner module or kernel, else allocated code outside modules; empty without a module model"
+    justification: "owner decision 2026-11-12, S15b O4; S15b 4.3 step 3, F11, F12"
+date: 2026-11-12

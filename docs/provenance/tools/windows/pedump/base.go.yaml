@@ -1,0 +1,19 @@
+file: tools/windows/pedump/base.go
+replaces: [tools/windows/pedump/base.go]
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 3A, order number 253668-093US, sections 2.5, 4.5, 5.3, 5.4"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kmodfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "kernel_module needs base and excludes pid; base needs pid or kernel_module"
+    justification: "S55 4.7 step 1"
+  - rule: "Given base taken in canonical form"
+    justification: "S55 4.7 step 2"
+  - rule: "Kernel image filed under PID 4 System"
+    justification: "S55 4.7 step 3, M7, O3"
+date: 2026-11-12

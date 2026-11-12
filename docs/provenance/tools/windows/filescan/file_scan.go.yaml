@@ -1,0 +1,30 @@
+file: tools/windows/filescan/file_scan.go
+replaces: [tools/windows/filescan/file_scan.go]
+spec: S69-windows-object-scans-jobs-sessions
+spec_sha256: 9d9aaef3d2fc2c6241bea2e82fab3deeec2f337a39f631821fcb4a4d188826ff
+sources:
+  - title: "Microsoft Learn, FILE_OBJECT (wdm.h), dated 2023-08-17"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, UNICODE_STRING (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _KMUTANT, _DISPATCHER_HEADER, _ETHREAD, _CLIENT_ID, _OBJECT_SYMBOLIC_LINK, _FILE_OBJECT, _DEVICE_OBJECT, _EJOB, _EPROCESS, _SE_AUDIT_PROCESS_CREATION_INFO, _OBJECT_NAME_INFORMATION, _MM_SESSION_SPACE, _KOBJECTS; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: objectscanfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: objectscanfacts -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: objectscanfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Type 5 tag, Size equal to the type's, DeviceObject in system space"
+    justification: "S69 4.3 steps 1-2, D4, M7"
+  - rule: "Access and DeletePending BOOLEANs reported"
+    justification: "S69 4.3 step 3, D4"
+  - rule: "FileName shown as found; only lengths and an unreadable buffer flag it"
+    justification: "S69 4.3 step 4, D4, D8, M7, O5"
+  - rule: "Device name from the device object's header"
+    justification: "S69 4.3 step 5"
+date: 2026-11-12

@@ -1,0 +1,12 @@
+file: objects/doc.go
+replaces: [objects/doc.go]
+spec: S77-objects-profiles-examples
+spec_sha256: 0a0e6c51ac117181be6e801924da5312a5473ac7aeffb3ef19387c33df6d8ad7
+sources:
+  - title: "libvapour symbol-table format 1 (S58): members, type expressions, pointer_width"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Package clause only"
+    justification: "S77 1"
+date: 2026-11-12

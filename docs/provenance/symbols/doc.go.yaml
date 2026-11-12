@@ -1,0 +1,12 @@
+file: symbols/doc.go
+replaces: [symbols/doc.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Package clause only"
+    justification: "S58 section 1"
+date: 2026-11-12

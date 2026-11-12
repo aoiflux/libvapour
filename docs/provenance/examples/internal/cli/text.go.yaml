@@ -1,0 +1,22 @@
+file: examples/internal/cli/text.go
+replaces: [examples/internal/cli/text.go]
+spec: S77-objects-profiles-examples
+spec_sha256: 0a0e6c51ac117181be6e801924da5312a5473ac7aeffb3ef19387c33df6d8ad7
+sources:
+  - title: "RFC 20, ASCII format for Network Interchange, sections 2, 4.1, 5.2"
+    url: https://www.rfc-editor.org/rfc/rfc20.txt
+    accessed: 2026-11-12
+  - title: "The Go Programming Language Specification, Rune literals (go1.27, 2026-05-26)"
+    url: https://go.dev/ref/spec#Rune_literals
+    accessed: 2026-11-12
+  - title: "RFC 3339 section 5.6"
+    url: https://www.rfc-editor.org/rfc/rfc3339.txt
+    accessed: 2026-11-12
+decisions:
+  - rule: "Printable ASCII kept; controls, invalid bytes and non-ASCII as Go-style escapes; edge spaces and trailing markers escaped"
+    justification: "S77 4.3 steps 1-6, T1, T2"
+  - rule: "Backslash doubled only before text that reads as an escape"
+    justification: "S77 4.3, T2, O7"
+  - rule: "Cell, Decimal, Hex and Time markers; RFC 3339 UTC times"
+    justification: "S77 4.3, 7.4, T3"
+date: 2026-11-12

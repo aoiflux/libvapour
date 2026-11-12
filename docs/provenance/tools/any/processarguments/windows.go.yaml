@@ -1,0 +1,20 @@
+file: tools/any/processarguments/windows.go
+replaces: [tools/any/processarguments/process_read_arguments.go (old)]
+spec: S61-linux-process-tools
+spec_sha256: aef658bee29e97cd45cc38fbe1ce63fb86ec79ce39148f7930cbffdd3c632b31
+sources:
+  - title: "Microsoft Learn: PEB structure (winternl.h); RTL_USER_PROCESS_PARAMETERS structure (winternl.h); UNICODE_STRING structure (ntdef.h)"
+    url: https://learn.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxprocfacts -windows on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025 (PDB types of each capture's ntkrnlmp, builds 26100, 19045, 14393)"
+    path: linuxprocfacts
+    accessed: 2026-11-12
+  - title: "Project specification S25 (Windows process list)"
+    path: docs/specs/
+    accessed: 2026-11-12
+decisions:
+  - rule: "Peb from kernel memory; ProcessParameters and CommandLine only through the process space"
+    justification: "S61 4.9, N1, N2"
+  - rule: "A null Peb or null parameters is an empty command line"
+    justification: "S61 4.9 steps 2-3, N3"
+date: 2026-11-12

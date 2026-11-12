@@ -1,0 +1,18 @@
+file: tools/pagesize.go
+replaces: [tools/pagesize.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, order 253668-093US, chapter 5 Paging (4-KByte pages, CR3)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Linux arch/x86/include/asm/page_types.h, include/vdso/page.h, arch/Kconfig, arch/x86/Kconfig (PAGE_SHIFT 12) at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/x86/include/asm/page_types.h?h=v6.4
+    accessed: 2026-11-12
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "PageSize 0x1000"
+    justification: "S70 4.10, F1, F2, M2"
+date: 2026-11-12

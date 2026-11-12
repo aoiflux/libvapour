@@ -1,0 +1,25 @@
+file: tools/linuxkern/kerntest/kerntest.go
+replaces: [tools/linuxkern/kerntest/kerntest.go (old)]
+spec: S80-linux-test-fixtures
+spec_sha256: c953530aa6dc9bb0fb95b8dab334df253cb938520e7f28b35e554ca496a6b123
+sources:
+  - title: "Linux kernel source, arch/x86/include/asm/page_64_types.h, arch/x86/include/asm/pgtable_64_types.h at v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement: Figure 3.1 Scalar Types and aggregate alignment"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual Vol. 3A 4.5 (4-level paging, 4-KByte pages)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Specification S80-linux-test-fixtures: sections 4 and 6"
+    path: docs/specs/S80-linux-test-fixtures.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Sparse page memory; an unmapped or wrapping read wraps memory.ErrOutOfBounds"
+    justification: "S80 6"
+  - rule: "Tables declare the LP64 scalars under their DWARF names"
+    justification: "S80 A5; psABI Figure 3.1"
+  - rule: "A symbol moves by the KASLR shift only inside the 1 GiB image mapping"
+    justification: "S80 A-F1"
+date: 2026-11-12

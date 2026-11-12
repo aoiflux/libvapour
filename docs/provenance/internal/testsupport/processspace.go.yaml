@@ -1,0 +1,15 @@
+file: internal/testsupport/processspace.go
+replaces: [internal/testsupport/processspace.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, sections 4.5 (4-level paging) and 4.10.1 (CR3 and PCIDs)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual address spaces"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+decisions:
+  - rule: "Refused root compared without CR3 bits 11:0; user reads are those at or below 0x7FFFFFFFFFFF"
+    justification: "S79 4.5 step 4, D7, D10"
+date: 2026-11-12

@@ -1,0 +1,17 @@
+file: tools/windows/threaddebugregisters/debugcontrol.go
+replaces: [tools/windows/threaddebugregisters/thread_check_debug_registers.go]
+spec: S51-windows-thread-checks
+spec_sha256: edcbae9664cc303d92cd0a29235a49328968f8130b9a2f1d858bd1262a792621
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3B, chapter 18, Debug Registers and Debug Control Register (DR7), order number 253669"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: threadcheckfacts -rows and -tools on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: threadcheckfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Dr7 with bits 12, 14, 15 or (8-byte member) 63:32 set is not a saved register"
+    justification: "S51 4.5 step 3, F6, M8"
+  - rule: "L and G enable bits select breakpoints; R/W and LEN decode condition and length"
+    justification: "S51 4.5 steps 4-5, F6"
+date: 2026-11-12

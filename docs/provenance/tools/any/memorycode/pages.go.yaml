@@ -1,0 +1,45 @@
+file: tools/any/memorycode/pages.go
+replaces: [tools/any/memorycode/memory_find_code.go]
+spec: S35-windows-unbacked-code
+spec_sha256: c59091c4c54749a17fbc4e0995e05cafabb8041522f1e75aa281fdff0bf3052f
+sources:
+  - title: "Microsoft Learn, MEMORY_BASIC_INFORMATION (winnt.h), page dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-memory_basic_information
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, VirtualProtect function (memoryapi.h), page dated 2024-02-05"
+    url: https://learn.microsoft.com/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, VirtualAlloc function (memoryapi.h), page dated 2024-02-05"
+    url: https://learn.microsoft.com/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Data Execution Prevention, page dated 2022-01-25"
+    url: https://learn.microsoft.com/windows/win32/memory/data-execution-prevention
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Memory Protection Constants (WinNT.h)"
+    url: https://learn.microsoft.com/windows/win32/memory/memory-protection-constants
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PE Format, page dated 2026-09-10"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A Paging (entry formats, access rights) and Vol. 2 (JMP, CALL, MOV, ModR/M and RIP-relative addressing)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "AMD64 Architecture Programmer's Manual Vol. 2, Page Translation and Protection (NX bit)"
+    url: https://www.amd.com/en/search/documentation/hub.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _MMPTE_HARDWARE, _MMPTE_SOFTWARE, _MMPTE_TRANSITION, _MMPTE_PROTOTYPE, _MMPTE_SUBSECTION, global MmProtectToValue; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: codefacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: codefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: codefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Present entry: resident, executable when bit 63 is clear, written when bit 6 is set"
+    justification: "S35 4.3 step 3, D7, T1"
+  - rule: "Not-present entry: prototype and zero have no protection of their own; transition and software forms give MmProtectToValue[Protection]"
+    justification: "S35 4.3 step 4, T2, T4, M2"
+  - rule: "A page without its own protection takes the VAD's"
+    justification: "S35 4.3 step 5, O2"
+  - rule: "A miss above the leaf skips that entry's span; at most MaxRegionScanBytes / 4096 leaf entries per region"
+    justification: "S35 4.3 steps 1-2, 8"
+date: 2026-11-12

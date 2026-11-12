@@ -1,0 +1,12 @@
+file: internal/testsupport/s64_fixture.go
+replaces: []
+spec: S64-windows-driver-kernel-tools
+spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+sources:
+  - title: "Specification S64-windows-driver-kernel-tools: K1 to K4 and section 9 item 1"
+    path: docs/specs/S64-windows-driver-kernel-tools.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S64-windows-driver-kernel-tools by the agent that wrote that specification; not rewritten by S79"
+    justification: "S64-windows-driver-kernel-tools K1 to K4 and section 9 item 1; S79 section 1"
+date: 2026-11-12

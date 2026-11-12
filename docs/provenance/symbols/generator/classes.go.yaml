@@ -1,0 +1,24 @@
+file: symbols/generator/classes.go
+replaces: [symbols/generator/adapter.go, symbols/generator/doc.go, symbols/generator/generator.go, symbols/generator/linux.go, symbols/generator/linux_duplicates.go, symbols/generator/linux_names.go, symbols/generator/linux_table.go]
+spec: S59-linux-symbol-table-generator
+spec_sha256: cfe2fd85e9e9bee4cf3a287ae6b1183ebbb39f2b5407ffa6873f89520d895b7e
+sources:
+  - title: "Linux kernel source, Documentation/bpf/btf.rst at v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/bpf/btf.rst
+    accessed: 2026-11-12
+  - title: "Project table format: symbols/FORMAT.md (type expressions, embedded members, 32-operator bound)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "Project measurement: btffacts on mem3_ubuntu24 and mem4_fedora40"
+    path: btffacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Identical definitions found by splitting groups until member references agree"
+    justification: "S59 4.7"
+  - rule: "A name with several definitions gets name~N on each and none keeps the bare name"
+    justification: "S59 4.8 step 2, O2"
+  - rule: "Anonymous types named by their members; equal names suffixed after the first"
+    justification: "S59 4.8 steps 3-4, O6"
+  - rule: "An anonymous structure or union with no members is named struct{} or union{}, not by a typedef"
+    justification: "S59 4.4, B8, M15; owner decision 2026-11-12, follow-up L2"
+date: 2026-11-12

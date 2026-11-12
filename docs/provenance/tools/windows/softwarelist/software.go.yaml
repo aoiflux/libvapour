@@ -1,0 +1,29 @@
+file: tools/windows/softwarelist/software.go
+replaces: [tools/windows/softwarelist/software_list.go]
+spec: S63-windows-registry-tools
+spec_sha256: b661ed3fd084a4be17e2fce393b423c15b36e5ad4ca55656780f946b49e2653d
+sources:
+  - title: "Microsoft Learn, Windows Installer Properties for the Uninstall Registry Key, ms.date 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/msi/uninstall-registry-key
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry Keys Affected by WOW64, ms.date 2021-01-23"
+    url: https://learn.microsoft.com/windows/win32/winprog64/shared-registry-keys
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-RPRN] Registry Type Values, updated 2025-08-11"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rprn/25cce700-7fcf-4bb6-a2f3-0f6d08430a55
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry element size limits, dated 2022-07-22; Structure of the Registry, updated 2025-04-15"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-element-size-limits
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: registrytoolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: registrytoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Uninstall keys of the first SOFTWARE hive (native and Wow6432Node) and of each NTUSER.DAT"
+    justification: "S63 4.8 steps 1-2, D9, D10, M18, M19, O6"
+  - rule: "Values as stored; unread values named; sorted by DisplayName"
+    justification: "S63 4.8 steps 3-5"
+date: 2026-11-12

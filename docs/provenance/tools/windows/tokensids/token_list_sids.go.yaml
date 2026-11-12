@@ -1,0 +1,17 @@
+file: tools/windows/tokensids/token_list_sids.go
+replaces: [tools/windows/tokensids/token_list_sids.go, tools/windows/tokensids/sidnames.go, tools/windows/tokensids/services.go]
+spec: S45-windows-token-sids-privileges
+spec_sha256: c03fb5bf77a6bff9a8972ca6acdd19ffffb9c9d3738671d48a2c36ad1a6e7ad6
+sources:
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.Token, _EX_FAST_REF, _TOKEN, _SID_AND_ATTRIBUTES, _SEP_TOKEN_PRIVILEGES, _SID, _SID_IDENTIFIER_AUTHORITY; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: tokenfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: tokenfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: tokenfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Rows in process-list order, then UserAndGroups, RestrictedSids, Capabilities, then index; a failed token is one row"
+    justification: "S45 4.2, 6, 7"
+  - rule: "Diagnostics name the token or SID address; strict mode returns the rows so far and the error"
+    justification: "S45 6"
+date: 2026-11-12

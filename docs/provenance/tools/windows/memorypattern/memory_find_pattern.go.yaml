@@ -1,0 +1,20 @@
+file: tools/windows/memorypattern/memory_find_pattern.go
+replaces: [tools/windows/memorypattern/memory_find_pattern.go]
+spec: S68-windows-memory-process-dump
+spec_sha256: 6c5307587dff8b227ccc163b732403e3306af2bf401a1876c64e95abd439acae
+sources:
+  - title: "Project specifications S00, S03, S24, S25, S30, S43, S50, S56, S64"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: memdumpfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: memdumpfacts
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Memory Protection Constants"
+    url: https://learn.microsoft.com/windows/win32/memory/memory-protection-constants
+    accessed: 2026-11-12
+decisions:
+  - rule: "Each process's VAD ranges are the sections, searched under its own page-table root through physical memory"
+    justification: "S68 4.2, E2, E7"
+  - rule: "Root 0, an unread VAD tree and unwalkable page tables are counted; MaxMatchesPerChunk applies"
+    justification: "S68 4.2 steps 2-3, 6"
+date: 2026-11-12

@@ -1,0 +1,27 @@
+file: layers/pagingmode_evidence.go
+replaces: [layers/paging_mode_detect.go]
+spec: S04-paging-mode-detection
+spec_sha256: a71b285e2e6b0bbab07729717335511c0caa1791aeb1ef2b4cd47ca93ec55587
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-11
+  - title: "Linux Documentation/arch/x86/x86_64/mm.rst (v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/arch/x86/x86_64/mm.rst?h=v6.17
+    accessed: 2026-11-11
+  - title: "Linux arch/x86/Kconfig, PAGE_OFFSET defaults (v6.17)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/Kconfig?h=v6.17
+    accessed: 2026-11-11
+  - title: "AMD64 Architecture Programmer's Manual, Volume 2: System Programming, publication 24593, revision 3.46 (October 2026), chapter 5"
+    url: https://docs.amd.com/api/khub/documents/LNBl5evreogi0r25VIFF2g/content
+    accessed: 2026-11-12
+decisions:
+  - rule: "A reading is refuted only by bits reserved for every MAXPHYADDR up to 52; XD is never tested"
+    justification: "S04 A6, A7; NXE is not in the image"
+  - rule: "A 4-level table read as 5-level is refuted by its large pages"
+    justification: "S04 4 step 4, A11, A12"
+  - rule: "At most 256 tables per reading, breadth first, each (table, level) once"
+    justification: "S04 8"
+  - rule: "A PAE reading checks only PDPTEs 2 and 3, since AMD loads a PDPTE only when a walk uses it"
+    justification: "S04 A15, A16; owner decision 2026-11-12, S04 O1"
+date: 2026-11-12

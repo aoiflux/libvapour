@@ -1,0 +1,26 @@
+file: tools/windows/registrycellroutine/routine.go
+replaces: [tools/windows/registrycellroutine/registry_check_cell_routine.go]
+spec: S63-windows-registry-tools
+spec_sha256: b661ed3fd084a4be17e2fce393b423c15b36e5ad4ca55656780f946b49e2653d
+sources:
+  - title: "ntkrnlmp.pdb types through the project's symbol tables: _CMHIVE, _HHIVE (Signature, GetCellRoutine, ReleaseCellRoutine), _UNICODE_STRING, _LIST_ENTRY; symbols CmpHiveListHead, HvpGetCellPaged, HvpReleaseCellPaged; builds 0D960CE103763A6097E839406D8B369F-1, F57E740B088E5056E8AF0772F1CC5BEB-1, 3DFC5F7228304C26859E55E481700385-1, 953A8DE880B0818C32DA2DEC1D79C2D9-1"
+    path: registrytoolfacts -scan -routine
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-RPRN] Registry Type Values, updated 2025-08-11"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rprn/25cce700-7fcf-4bb6-a2f3-0f6d08430a55
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry element size limits, dated 2022-07-22; Structure of the Registry, updated 2025-04-15"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-element-size-limits
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME (minwinbase.h), ms.date 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: registrytoolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: registrytoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One row per hive and cell routine member, placed in the kernel image, another module, no module, null or unreadable"
+    justification: "S63 4.2, P2, P3, M3"
+  - rule: "Kernel image is the loaded module that holds CmpHiveListHead, else the session's kernel base"
+    justification: "S63 4.2 step 2"
+date: 2026-11-12

@@ -1,0 +1,44 @@
+file: tools/windows/network/decode.go
+replaces: [tools/windows/network/network_scan.go, tools/windows/network/network_list.go]
+spec: S28-windows-network
+spec_sha256: 5d5b02e26b0f5b523fd0e3ec8bb73a7519ef542fb93665d8aab0a00bd5ae7cdf
+sources:
+  - title: "Microsoft Learn, TCPSTATE (mstcpip.h), dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, socket function (winsock2.h): AF_INET, AF_INET6, IPPROTO_TCP, IPPROTO_UDP, dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winsock2/nf-winsock2-socket
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MIB_TCPROW2 (tcpmib.h): port byte order, zero local address, owning PID, MIB_TCP_STATE, dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/tcpmib/ns-tcpmib-mib_tcprow2
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, IN_ADDR structure (inaddr.h) and IN6_ADDR structure (in6addr.h)"
+    url: https://learn.microsoft.com/windows/win32/api/inaddr/ns-inaddr-in_addr
+    accessed: 2026-11-12
+  - title: "RFC 4291 (IPv6 addressing, 2.5.2 unspecified address), RFC 768 (UDP), RFC 9293 (TCP, 3.1 ports)"
+    url: https://www.rfc-editor.org/rfc/rfc9293
+    accessed: 2026-11-12
+  - title: "Specifications S03 (LIST_ENTRY walk) and S17 (process check, capture window)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _RTL_DYNAMIC_HASH_TABLE, _RTL_DYNAMIC_HASH_TABLE_ENTRY, _RTL_BITMAP, _LIST_ENTRY; tcpip.pdb publics PartitionTable, PartitionCount, TcpCompartmentSet, UdpCompartmentSet (DAC097D9D8F30AC6467DB71184A8C2E5-1, F4CA288A1108EF44D23437E1E133B4A2-1, A577CBBD21BE43D3BA44C7CC864143BA-1, 11B241ADFEA742938BFD75329CFFE121-1)"
+    path: netfacts -raw
+    accessed: 2026-11-12
+  - title: "Measured tcpip.sys layouts (kept): tools/windows/network/tcpiplayouts.go"
+    path: tools/windows/network/tcpiplayouts.go
+    accessed: 2026-11-12
+  - title: "Project measurement: netfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, with the mem7 host's own endpoint tables"
+    path: netfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Members from the merged measured layout; a missing member stops the run"
+    justification: "S28 4.1, O6"
+  - rule: "Owner offsets: the table's, then the layout record's others"
+    justification: "S28 4.1 step 3, M10"
+  - rule: "Family pointer in system space and family 2 or 23; state below TCPSTATE_MAX; ports nonzero"
+    justification: "S28 4.2, 5, D1, D2, D5, M7, M8"
+  - rule: "Ports big-endian; local address through a pointer to a pointer; null bound address is the unspecified address"
+    justification: "S28 4.2, D3, D4, M7, M12"
+  - rule: "Owner by the S17 process check; creation time in the S17 capture window"
+    justification: "S28 4.2 steps 6-7, S17, M13"
+date: 2026-11-12

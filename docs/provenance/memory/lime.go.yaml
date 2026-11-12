@@ -1,0 +1,21 @@
+file: memory/lime.go
+replaces: [memory/acquisition.go, memory/buffered_reader.go, memory/crashdump.go, memory/doc.go, memory/elf.go, memory/fallback_reader.go, memory/file_reader.go, memory/format_detect.go, memory/layered_reader.go, memory/lime.go, memory/provider_file.go, memory/provider_live.go, memory/provider_selector.go, memory/reader.go, memory/segmented.go, memory/snapshot.go, memory/whole_image_scan.go]
+spec: S71-memory-capture-readers
+spec_sha256: 2eb774a2023484c1f77acdc0af7d7163dadfa44753a0d9617a5aa04c0d2be544
+sources:
+  - title: "The lime format's published description: docs/README.md of its distribution, section Memory Range Header Version 1 Specification, and the distribution's README.md output formats (program not named by owner rule)"
+    path: "published format document (format description only)"
+    accessed: 2026-11-12
+  - title: "Project measurement: capturefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40, the process region captures, a minidump and a debugger-written process core"
+    path: "capturefacts"
+    accessed: 2026-11-12
+decisions:
+  - rule: "32-byte header with magic and version 1; inclusive e_addr; data follows the header"
+    justification: "S71 4.8, L1, C6"
+  - rule: "Zero tail accepted and noted, any other tail refused, checked a page at a time"
+    justification: "S71 4.8 step 5"
+  - rule: "Range count capped by MaxTableEntries; reserved bytes not checked"
+    justification: "S71 4.8 steps 4, 6, O8"
+  - rule: "Recounted runs and zero tails are kept as repairs, apart from other container notes, so strict mode can refuse them"
+    justification: "owner decision 2026-11-12, S71 O7"
+date: 2026-11-12

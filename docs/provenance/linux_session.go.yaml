@@ -1,0 +1,20 @@
+file: linux_session.go
+replaces: [session.go (OpenLinuxMemory)]
+spec: S76-root-session
+spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+sources:
+  - title: "Linux kernel arch/x86/include/asm/page_64_types.h, kernel/vmcore_info.c (kernel/crash_core.c before v6.14), arch/x86/include/asm/pgtable_64.h at v4.19, v6.1, v6.4, v6.14, v6.17 (through S05 and S75)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/arch/x86/include/asm/page_64_types.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Project measurement: sessionfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: sessionfacts
+    accessed: 2026-11-12
+  - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
+    path: docs/specs
+    accessed: 2026-11-12
+decisions:
+  - rule: "Kernel from FindKernel; a given root must match VMCOREINFO's, flag bits aside; strict mode refuses damaged copies"
+    justification: "S76 4.5"
+  - rule: "Explicit or assembled table moved by the KASLR shift for the kernel image window only, then checked against the banner and SYMBOL() values"
+    justification: "S76 4.5, S75 4.10"
+date: 2026-11-12

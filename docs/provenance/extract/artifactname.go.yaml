@@ -1,0 +1,27 @@
+file: extract/artifactname.go
+replaces: [extract/naming.go]
+spec: S00-artifact-names
+spec_sha256: c757a280bdc1c0eb65584576bea8e52c5569dc6719cecde50eef80da20f4b829
+sources:
+  - title: "IEEE Std 1003.1-2017, Base Definitions 3.282 Portable Filename Character Set"
+    url: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html
+    accessed: 2026-11-11
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-11
+  - title: "Linux include/uapi/linux/limits.h (NAME_MAX)"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/uapi/linux/limits.h
+    accessed: 2026-11-11
+  - title: "WDK wdm.h, SECTION_OBJECT_POINTERS"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_section_object_pointers
+    accessed: 2026-11-11
+decisions:
+  - rule: "Fixed-width lowercase hex addresses"
+    justification: "S00 4 step 3: sorts by address; avoids case-only collisions (S00 C7)"
+  - rule: "Labels cut to the last path component, mapped to the portable set, at most 64 bytes"
+    justification: "S00 C1, C2, C6"
+  - rule: "Name starts with a lowercase kind word and ends with an extension"
+    justification: "S00 C3, C4, C5, C8"
+  - rule: "Kinds pagecache (extension tar.gz) and framebuffer (extension png or bin) are listed"
+    justification: "owner decision 2026-11-12, S12 O5 and S62 FB-O2; S00 4.1"
+date: 2026-11-12

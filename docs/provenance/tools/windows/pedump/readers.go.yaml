@@ -1,0 +1,14 @@
+file: tools/windows/pedump/readers.go
+replaces: [KernelReaders and ReaderForModule of tools/windows/pedump/pe_dump.go, processReader of base.go]
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kmodfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One reader per session after the kernel's; first whose headers parse wins, else the kernel reader"
+    justification: "S55 4.6 step 3, M5"
+  - rule: "Base dumps read through the kernel page-table root"
+    justification: "S55 4.7 step 4"
+date: 2026-11-12

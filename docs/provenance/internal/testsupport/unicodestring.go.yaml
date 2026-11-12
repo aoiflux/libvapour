@@ -1,0 +1,15 @@
+file: internal/testsupport/unicodestring.go
+replaces: [internal/testsupport/unicodestring.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "Microsoft Learn, UNICODE_STRING structure (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS, _KPROCESS, _LIST_ENTRY, LIST_ENTRY32, _UNICODE_STRING, _STRING32, _PEB, _PEB_LDR_DATA, _LDR_DATA_TABLE_ENTRY, _EWOW64PROCESS, _PEB32, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _POOL_HEADER, _POOL_TRACKER_BIG_PAGES, _HANDLE_TABLE, _HANDLE_TABLE_ENTRY, _SUBSECTION, _CONTROL_AREA, _EX_FAST_REF, _FILE_OBJECT, _OBJECT_HEADER, _KUSER_SHARED_DATA, _DBGKD_GET_VERSION64; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: fixturefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "UNICODE_STRING at 0x1000 with Buffer at 8, or 4 for the 32-bit form, text at 0x2000; counts wrap past 65,535 bytes"
+    justification: "S79 4.5 step 2, T2, D8"
+date: 2026-11-12

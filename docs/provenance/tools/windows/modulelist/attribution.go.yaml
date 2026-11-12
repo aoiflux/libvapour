@@ -1,0 +1,24 @@
+file: tools/windows/modulelist/attribution.go
+replaces: [tools/windows/modulelist/attribution.go]
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "Microsoft Learn, PE Format (SizeOfImage, AddressOfEntryPoint, ImageBase)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _KLDR_DATA_TABLE_ENTRY, _LDR_DATA_TABLE_ENTRY, _UNICODE_STRING, _LIST_ENTRY, PsLoadedModuleList, MmSystemRangeStart; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: kmodfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kmodfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Range [Base, Base+Size) only with both read; overflow-safe test"
+    justification: "S55 4.4 step 1, D5"
+  - rule: "Kernel image from the anchor, then the kernel base, then the module holding PsLoadedModuleList"
+    justification: "S55 4.4 step 4, M1, M6"
+  - rule: "Symbols only inside the kernel image"
+    justification: "S55 4.4 steps 4-5"
+  - rule: "A module with separate regions holds an address only through its regions"
+    justification: "owner decision 2026-11-12, S55 O5; S55 4.4 step 1"
+date: 2026-11-12

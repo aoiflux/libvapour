@@ -1,0 +1,30 @@
+file: tools/linuxwalk/task.go
+replaces: [tools/linuxkern/tasks.go, tools/linuxtrace/tasks.go, tools/linuxobj/task.go ListTasks, Threads, IsValid and TaskList]
+spec: S01-linux-list-task-walk
+spec_sha256: bab3e1582e3f17bdf0cc847ddaa530387bafee63f70f79c80d300a8cd4289746
+sources:
+  - title: "Linux include/linux/sched.h (task_struct tasks, thread_node, thread_group, comm), v4.19, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/sched.h
+    accessed: 2026-11-11
+  - title: "Linux include/linux/sched/signal.h (for_each_process, next_task, __for_each_thread), v4.19, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/sched/signal.h
+    accessed: 2026-11-11
+  - title: "Linux kernel/fork.c (copy_process, copy_signal), v4.19, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/fork.c
+    accessed: 2026-11-11
+  - title: "Linux init/init_task.c, v4.19, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/init/init_task.c
+    accessed: 2026-11-11
+  - title: "Linux include/linux/threads.h and kernel/pid.c (PID_MAX_LIMIT, pid_max), v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/threads.h
+    accessed: 2026-11-11
+decisions:
+  - rule: "Processes are the forward walk, then backward entries not yet seen; init_task is never a candidate"
+    justification: "S01 T2, 4.4"
+  - rule: "A task is kept only when its task_struct reads whole, pid and tgid lie in (0, PID_MAX_LIMIT), and signal reads; a thread also needs its leader's tgid"
+    justification: "S01 T3, T6, T7, T8, 4.3"
+  - rule: "Threads come from signal->thread_head where the table has it, else the thread_group ring; otherwise ErrUnsupported"
+    justification: "S01 T4, T5, 4.5, open point Q7"
+  - rule: "Left-out tasks are counted by reason; a thread list that does not close is counted"
+    justification: "S01 5, 7"
+date: 2026-11-11

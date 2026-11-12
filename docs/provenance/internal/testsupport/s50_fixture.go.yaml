@@ -1,0 +1,14 @@
+file: internal/testsupport/s50_fixture.go
+replaces: []
+spec: S50-windows-threads
+spec_sha256: 6e00b270533e2376ae2851cb766004e981b1b23a65e8cd8a4b4ed3abc8bbece5
+sources:
+  - title: "Specification S50-windows-threads: T3, T5 and section 9 item 1"
+    path: docs/specs/S50-windows-threads.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S50-windows-threads by the agent that wrote that specification; not rewritten by S79"
+    justification: "S50-windows-threads T3, T5 and section 9 item 1; S79 section 1"
+  - rule: "_EPROCESS.ThreadListHead at its 19045 offset 0x5e0, the build the process fixture lays out"
+    justification: "owner decision 2026-11-12, S79 P1"
+date: 2026-11-12

@@ -1,0 +1,27 @@
+file: tools/windows/poolscan/allocations.go
+replaces: [tools/windows/poolscan/pool_scan.go, tools/windows/poolscan/file.go]
+spec: S52-windows-pool-listings
+spec_sha256: 969898f64c0434ece5b3bb2a68d624e2aa85c55c654b84bf58fb8c9e03a02ce5
+sources:
+  - title: "Microsoft Learn, ExAllocatePool2 function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepool2
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Object Names"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/object-names
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS, _ETHREAD, _FILE_OBJECT.FileName, _KMUTANT, _DRIVER_OBJECT, _OBJECT_SYMBOLIC_LINK, _KLDR_DATA_TABLE_ENTRY.BaseDllName, _RTL_ATOM_TABLE, _UNICODE_STRING; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: bigpoolfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: bigpoolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: bigpoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "One frame map, one sweep of all tags, object layout resolved once"
+    justification: "S52 4.5 steps 2-4"
+  - rule: "Rows carry physical pool header, kernel address, first other mapped copy, mapping count, TypeIndexFailed"
+    justification: "S52 4.5 step 8, S31 4.7, 4.8"
+  - rule: "Structure hits crossing their page refused"
+    justification: "S52 4.5 step 5, D2"
+  - rule: "Rows in S31 virtual-address order"
+    justification: "S52 4.5 step 9, S31 4.9"
+date: 2026-11-12

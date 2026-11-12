@@ -1,0 +1,29 @@
+file: tools/windows/modulelist/module_list.go
+replaces: [tools/windows/modulelist/module_list.go, tools/windows/modulelist/doc.go]
+spec: S55-windows-kernel-modules-and-pe-dump
+spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+sources:
+  - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _KLDR_DATA_TABLE_ENTRY, _LDR_DATA_TABLE_ENTRY, _UNICODE_STRING, _LIST_ENTRY, PsLoadedModuleList, MmSystemRangeStart; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: kmodfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kmodfacts
+    accessed: 2026-11-12
+  - title: "Spec S03: Windows list entries and the kernel build (shared walker)"
+    path: docs/specs/S03-windows-list-entry-and-build.md
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, UNICODE_STRING structure (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+decisions:
+  - rule: "_KLDR_DATA_TABLE_ENTRY first, _LDR_DATA_TABLE_ENTRY when the table lacks it; four required members, FullDllName optional"
+    justification: "S55 4.1 steps 1-2, T1, T2"
+  - rule: "SizeOfImage read at the table's width, 4 bytes when it gives none"
+    justification: "S55 4.1 step 2, T1"
+  - rule: "PsLoadedModuleList walked with the S03 recovering walk; Blink-found entries counted in a diagnostic"
+    justification: "S55 4.1 step 3, M1, O6"
+  - rule: "Unread members flagged, row kept; walk order, no sort"
+    justification: "S55 4.1 steps 4 and 6"
+  - rule: "Module carries Regions and SeparateRegions for Linux rows"
+    justification: "owner decision 2026-11-12, S55 O5; S55 7"
+date: 2026-11-12

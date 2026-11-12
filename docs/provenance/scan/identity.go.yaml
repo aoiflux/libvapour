@@ -1,0 +1,36 @@
+file: scan/identity.go
+replaces: [scan/objecttype.go]
+spec: S31-windows-pool-object-scan
+spec_sha256: 78443ebe0c4dc3c1f57c1f9c313b0197f9d2ebd494e8b77938d5c2c612d6fcb7
+sources:
+  - title: "Microsoft Learn, ExAllocatePool2 function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepool2
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Life Cycle of an Object"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/life-cycle-of-an-object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_OBJECT (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Object Names"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/object-names
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, chapter 5, Paging"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types, enumerations and globals through the project's symbol tables: _POOL_HEADER, _OBJECT_HEADER, _OBJECT_HEADER_*_INFO, _OBJECT_TYPE, _OBJECT_TYPE_INITIALIZER, _DISPATCHER_HEADER, _KOBJECTS, _POOL_TYPE, ObHeaderCookie, ObTypeIndexTable, ObpInfoMaskToOffset; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: poolfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: poolfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: poolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Type slot found by _OBJECT_TYPE.Name with Index equal to the slot"
+    justification: "S31 4.5 step 1, M1"
+  - rule: "Stored TypeIndex XOR ObHeaderCookie low byte XOR virtual address bits 15:8, per page key the frame is mapped under"
+    justification: "S31 4.5 step 2, M2"
+  - rule: "Unmapped frame leaves TypeIndex untested; a kept mismatch needs a resolved and passing body type tag"
+    justification: "S31 4.5 steps 3-4, M2"
+  - rule: "ObpInfoMaskToOffset read into the identity when entry 0 is 0"
+    justification: "S31 4.6, M4"
+date: 2026-11-12

@@ -1,0 +1,16 @@
+file: examples/internal/cli/cli.go
+replaces: [examples/internal/cli/cli.go]
+spec: S77-objects-profiles-examples
+spec_sha256: 0a0e6c51ac117181be6e801924da5312a5473ac7aeffb3ef19387c33df6d8ad7
+sources:
+  - title: "Tool specifications S07, S13, S24, S25, S26, S28, S35, S39, S50, S55, S56, S60, S61, S63, S68, S73: registered names, option keys, row fields"
+    path: docs/specs
+    accessed: 2026-11-12
+decisions:
+  - rule: "Common flags mapped to OpenConfig; diagnostics always collected"
+    justification: "S77 4.4"
+  - rule: "One image path; bad command line exits 2 with usage"
+    justification: "S77 4.4, 6"
+  - rule: "WithOptions copies the session's option map"
+    justification: "S77 4.4"
+date: 2026-11-12

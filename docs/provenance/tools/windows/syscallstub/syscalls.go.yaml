@@ -1,0 +1,35 @@
+file: tools/windows/syscallstub/syscalls.go
+replaces: [tools/windows/syscallstub/syscalls.go]
+spec: S29-windows-syscall-stubs
+spec_sha256: 186d5cfab9159ede9de9c42112e08906ac7ca25e4abb17201df83a94a87d68bf
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 2 (instruction reference) and Vol. 3A 6.8.8, order number 253668-093US"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, KUSER_SHARED_DATA structure (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data
+    accessed: 2026-11-12
+  - title: "WDK 10.0.28000.0 headers km/wdm.h and km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839)"
+    url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PE Format, The .edata Section"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Microsoft Defender Antivirus security intelligence and product updates and support"
+    url: https://learn.microsoft.com/defender-endpoint/microsoft-defender-antivirus-updates
+    accessed: 2026-11-12
+  - title: "Project measurement: stubfacts -blocks on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025 (captured ntdll and win32u exports and bytes)"
+    path: stubfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Stub modules are image ranges named ntdll.dll or win32u.dll; each path compared separately"
+    justification: "S29 4.1, M7"
+  - rule: "Export tables of every instance merged by name"
+    justification: "S29 4.3 step 2"
+  - rule: "Stub window to the next stub RVA, at most 0x20"
+    justification: "S29 4.3 step 4, M2"
+  - rule: "Forms syscall, x86_call, jump, other from the measured byte forms and the SystemCall member"
+    justification: "S29 4.2, F3, F4, M3, M4"
+  - rule: "Largest group agrees; a tie names no process"
+    justification: "S29 4.3 step 6"
+date: 2026-11-12

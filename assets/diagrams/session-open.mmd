@@ -1,0 +1,24 @@
+flowchart TB
+    subgraph win["OpenWindowsMemory"]
+        direction TB
+        w1["Open the image"] --> w2["Identify the running kernel:<br/>PDB name, GUID and age"]
+        w2 --> w3{"SymbolsPath set?"}
+        w3 -- yes --> w4["Load that table and check<br/>it against the image"]
+        w3 -- no --> w5{"In the local cache?"}
+        w5 -- no --> w6["Download the PDB, convert<br/>it to .vsym, and cache it"]
+        w5 -- yes --> w7["Kernel symbol table"]
+        w6 --> w7
+        w4 --> w7
+        w7 --> w8["Find the kernel's page<br/>tables and paging mode"]
+        w8 --> w9["Verify the kernel base<br/>and rebase its symbols"]
+    end
+    subgraph lin["OpenLinuxMemory"]
+        direction TB
+        l1["Open the image"] --> l2["Read VMCOREINFO: the kernel<br/>page table and KASLR shift"]
+        l2 --> l3{"SymbolsPath set?"}
+        l3 -- yes --> l4["Check the table's banner and<br/>symbols against the kernel"]
+        l3 -- no --> l5["Assemble the table from<br/>kallsyms, BTF and the banner"]
+    end
+    w9 --> ready(["Session ready"])
+    l4 --> ready
+    l5 --> ready

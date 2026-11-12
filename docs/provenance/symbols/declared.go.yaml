@@ -1,0 +1,17 @@
+file: symbols/declared.go
+replaces: [symbols/declaration.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "RFC 3629, UTF-8, a transformation format of ISO 10646"
+    url: https://www.rfc-editor.org/rfc/rfc3629
+    accessed: 2026-11-12
+decisions:
+  - rule: "Declaration checks: pointer width, GUID, banner, distinct names, member rules"
+    justification: "S58 4.1, V1-V3"
+  - rule: "Every written string is UTF-8"
+    justification: "S58 4.1 step 4, F1, F9"
+date: 2026-11-12

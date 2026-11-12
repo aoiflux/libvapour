@@ -1,0 +1,14 @@
+file: internal/testsupport/s69_fixture.go
+replaces: []
+spec: S69-windows-object-scans-jobs-sessions
+spec_sha256: 9d9aaef3d2fc2c6241bea2e82fab3deeec2f337a39f631821fcb4a4d188826ff
+sources:
+  - title: "Specification S69-windows-object-scans-jobs-sessions: T1 to T6 and section 9 item 1"
+    path: docs/specs/S69-windows-object-scans-jobs-sessions.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S69-windows-object-scans-jobs-sessions by the agent that wrote that specification; not rewritten by S79"
+    justification: "S69-windows-object-scans-jobs-sessions T1 to T6 and section 9 item 1; S79 section 1"
+  - rule: "_EPROCESS Job 0x510, JobLinks 0x5c8, SeAuditProcessCreationInfo 0x5c0, Session 0x558, CreateTime 0x468: the 19045 offsets, the build the process fixture lays out"
+    justification: "owner decision 2026-11-12, S79 P1"
+date: 2026-11-12

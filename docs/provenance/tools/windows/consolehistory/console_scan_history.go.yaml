@@ -1,0 +1,50 @@
+file: tools/windows/consolehistory/console_scan_history.go
+replaces: [tools/windows/consolehistory/console_scan_history.go]
+spec: S33-windows-console
+spec_sha256: 4b02cb487a8b71468b07ad3256c1b4d2bc131446494489614099d66db7f144e0
+sources:
+  - title: "Microsoft Learn, Windows Console and Terminal Definitions (Console Host)"
+    url: https://learn.microsoft.com/windows/console/definitions
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Console Screen Buffers"
+    url: https://learn.microsoft.com/windows/console/console-screen-buffers
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, COORD structure; SetConsoleScreenBufferSize function"
+    url: https://learn.microsoft.com/windows/console/coord-str
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Console Aliases"
+    url: https://learn.microsoft.com/windows/console/console-aliases
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CONSOLE_HISTORY_INFO structure"
+    url: https://learn.microsoft.com/windows/console/console-history-info
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, GetConsoleTitle function; GetConsoleProcessList function"
+    url: https://learn.microsoft.com/windows/console/getconsoletitle
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, doskey"
+    url: https://learn.microsoft.com/windows-server/administration/windows-commands/doskey
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, WMI Tasks: Registry (the HKEY_CURRENT_USER Console key, HistoryBufferSize)"
+    url: https://learn.microsoft.com/windows/win32/wmisdk/wmi-tasks--registry
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, [MS-SHLLINK] 2.5.1 ConsoleDataBlock"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-shllink/e6b432b4-5a49-4826-9c25-e28695e8dd0c
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, C++ Standard Library list Class, basic_string Class, vector class"
+    url: https://learn.microsoft.com/cpp/standard-library/list-class
+    accessed: 2026-11-12
+  - title: "conhost.exe public PDB tables through the project's symbol cache: F020B0E20C73744FE70E0949123FEFE1, 7DA5C6F1E8F64D1F944CA7A0670556B0, 26487ED4FCB73E5FCCDA37EF4829DC75 (no type records)"
+    path: consolefacts -tables
+    accessed: 2026-11-12
+  - title: "Kept measured layout: tools/windows/consolelist/layouts.go and layout.go"
+    path: tools/windows/consolelist/layouts.go
+    accessed: 2026-11-12
+  - title: "Project measurement: consolefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: consolefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Histories found by the buffer-size search on every measured layout, sorted by host PID then address"
+    justification: "S33 4.3, 7"
+  - rule: "Strict mode fails on a history whose commands do not all read"
+    justification: "S33 6"
+date: 2026-11-12

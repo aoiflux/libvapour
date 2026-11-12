@@ -1,0 +1,26 @@
+file: tools/any/memoryranges/sectionfile.go
+replaces: [tools/any/memoryranges/memory_list_pages.go, tools/any/memoryranges/tree.go, tools/any/memoryranges/vadfile.go, tools/any/memoryranges/protection.go, tools/any/memoryranges/pages.go, tools/any/memoryranges/address.go]
+spec: S24-windows-vad-walk
+spec_sha256: 3e38a1f8c17baa6446f432c54a759d6d2f1ec952bff13eb795be1e7c936e32dc
+sources:
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.VadRoot, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _MMVAD_FLAGS1, _MM_PRIVATE_VAD_FLAGS, _MM_SHARED_VAD_FLAGS, _POOL_HEADER, _SUBSECTION, _CONTROL_AREA, _MMSECTION_FLAGS, _EX_FAST_REF, _FILE_OBJECT, globals MmProtectToValue and MmHighestUserAddress; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: vadfacts -types
+    accessed: 2026-11-12
+  - title: "S19 Windows file objects (control area and fast-reference facts T1, T2, T4)"
+    path: docs/specs/S19-windows-file-objects.md
+    accessed: 2026-11-12
+  - title: "Project measurement: vadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: vadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Subsection read only for a section view"
+    justification: "S24 4.6 step 2, T3, T4"
+  - rule: "Control area File must be set when the table places it"
+    justification: "S24 4.6 step 3, T10"
+  - rule: "FilePointer with the _EX_FAST_REF.RefCnt bits cleared; 4 or 3 bits without the type"
+    justification: "S24 4.6 step 4, S19 T2, O4"
+  - rule: "FileName read as a UNICODE_STRING of up to 65,535 bytes"
+    justification: "S24 4.6 step 5"
+  - rule: "MappedFile.NoFile set only where the VAD is shown to map no file"
+    justification: "owner decision 2026-11-12, S24 O8"
+date: 2026-11-12

@@ -1,0 +1,23 @@
+file: tools/linux/memoryelffiles/rebuild.go
+replaces: [tools/linux/memoryelffiles/memory_list_elf_files.go (old)]
+spec: S61-linux-process-tools
+spec_sha256: aef658bee29e97cd45cc38fbe1ce63fb86ec79ce39148f7930cbffdd3c632b31
+sources:
+  - title: "System V ABI, ELF gABI chapters 4 and 5 (sco.com edition)"
+    url: https://www.sco.com/developers/gabi/latest/contents.html
+    accessed: 2026-11-12
+  - title: "Project specification S38 (kallsyms and in-memory ELF)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project specification S00 (artefact names)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxprocfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxprocfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Each PT_LOAD's p_filesz bytes from base + p_vaddr are placed at p_offset"
+    justification: "S61 4.11 step 4, E3, E4"
+  - rule: "No loadable segment, a wrapping segment or a file over the dump limit is not written"
+    justification: "S61 4.11 step 4"
+date: 2026-11-12

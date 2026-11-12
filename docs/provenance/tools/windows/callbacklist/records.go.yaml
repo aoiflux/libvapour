@@ -1,0 +1,57 @@
+file: tools/windows/callbacklist/records.go
+replaces: [record decoders of tools/windows/callbacklist/callback_list.go and poolscan.go]
+spec: S27-windows-callbacks
+spec_sha256: 4bbf4cd848770b17d3866cac9e624a15202899c75724afc91fc3b9f56bf0d9ba
+sources:
+  - title: "Microsoft Learn, PsSetCreateProcessNotifyRoutineEx function (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-pssetcreateprocessnotifyroutineex
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PsSetCreateThreadNotifyRoutine function (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-pssetcreatethreadnotifyroutine
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PsSetLoadImageNotifyRoutine function (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-pssetloadimagenotifyroutine
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CmRegisterCallbackEx function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-cmregistercallbackex
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, KeRegisterBugCheckCallback function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-keregisterbugcheckcallback
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, IoRegisterShutdownNotification function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-ioregistershutdownnotification
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, IoRegisterFsRegistrationChange function (ntifs.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ioregisterfsregistrationchange
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PoRegisterPowerSettingCallback function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-poregisterpowersettingcallback
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, ObRegisterCallbacks function (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-obregistercallbacks
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, x64 ABI conventions, Types and storage"
+    url: https://learn.microsoft.com/cpp/build/x64-software-conventions
+    accessed: 2026-11-12
+  - title: "WDK 10.0.28000.0 headers km/wdm.h and km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839)"
+    url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 2 (instruction reference) and Vol. 3A 6.8.8, order number 253668-093US"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _EX_FAST_REF, _OBJECT_TYPE, _DEVICE_OBJECT, _DRIVER_OBJECT, _UNICODE_STRING, _LIST_ENTRY, the notify arrays and callback list heads; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: callbackfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: callbackfacts -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: callbackfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Notify arrays: 64 _EX_FAST_REF slots, RefCnt bits from the table, routine at +8"
+    justification: "S27 F2, F12, M1"
+  - rule: "Shutdown routine is the device's driver MajorFunction[IRP_MJ_SHUTDOWN]; device Type 3, driver Type 4"
+    justification: "S27 F7, F8, M4"
+  - rule: "Object callback entries must name their own object type; pre and post routines each a row"
+    justification: "S27 F11, M7"
+  - rule: "A null routine is damage"
+    justification: "S27 5"
+date: 2026-11-12

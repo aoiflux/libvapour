@@ -1,0 +1,12 @@
+file: tools/windows/devicetree/device_types.go
+replaces: [DeviceCodes of tools/windows/devicetree/device_tree.go]
+spec: S64-windows-driver-kernel-tools
+spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+sources:
+  - title: "WDK 10.0.28000.0 headers km/wdm.h and km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839): DRIVER_OBJECT, DRIVER_EXTENSION, DEVICE_OBJECT, IO_TYPE_, IRP_MJ_, FILE_DEVICE_, KeNumberProcessors, KSYSTEM_TIME, KeQueryTickCount, KUSER_SHARED_DATA, KI_USER_SHARED_DATA, DPC types"
+    url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
+    accessed: 2026-11-12
+decisions:
+  - rule: "DEVICE_TYPE names 0x01-0x67 from wdm.h; characteristics excluded"
+    justification: "S64 W3"
+date: 2026-11-12

@@ -1,0 +1,33 @@
+file: tools/linux/syscalllist/syscall_list.go
+replaces: [tools/linux/syscalllist/syscall_list.go (old)]
+spec: S11-linux-syscall-table
+spec_sha256: 92f51d03fe755f636d0ba7576bf698e315526a45173d3eeba0c948fb5afaa452
+sources:
+  - title: "Linux kernel source, arch/x86/entry/syscall_64.c, arch/x86/entry/syscall_32.c, arch/x86/entry/syscall_x32.c, arch/x86/entry/common.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, arch/x86/entry/syscalls/syscall_64.tbl, arch/x86/entry/syscalls/syscall_32.tbl, arch/x86/entry/syscalls/Makefile at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, scripts/syscalltbl.sh, arch/x86/entry/syscalls/syscalltbl.sh at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, arch/x86/include/asm/syscall.h, arch/x86/include/asm/syscall_wrapper.h, arch/x86/include/asm/unistd.h, include/linux/syscalls.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, kernel/trace/trace_syscalls.c at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/trace/trace_syscalls.c
+    accessed: 2026-11-12
+  - title: "Project measurement: syscallfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: syscallfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Tables by symbol: sys_call_table, ia32_sys_call_table, x32_sys_call_table with 8-byte pointers; sys_call_table alone with 4-byte pointers"
+    justification: "S11 4.1, T5, T7"
+  - rule: "Length from a declared array type, else up to the next symbol with trailing read nulls dropped"
+    justification: "S11 4.2, T2, M2"
+  - rule: "Handler names prefer the table's stub prefix among names at one address"
+    justification: "S11 4.4, T9, M1"
+  - rule: "Dispatches is false when the table's switch dispatch function exists"
+    justification: "S11 4.5, T5, T6"
+date: 2026-11-12

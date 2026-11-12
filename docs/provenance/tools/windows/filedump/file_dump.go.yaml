@@ -1,0 +1,39 @@
+file: tools/windows/filedump/file_dump.go
+replaces: [tools/windows/filedump/file_dump.go]
+spec: S19-windows-file-objects
+spec_sha256: 1e26823963a78564c0398d0108a2875a02896c2f671bf40be943a6f5f483f67c
+sources:
+  - title: "Microsoft Learn, FILE_OBJECT (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_object
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SECTION_OBJECT_POINTERS (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_section_object_pointers
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Specifying Device Types"
+    url: https://learn.microsoft.com/windows-hardware/drivers/kernel/specifying-device-types
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CcMapData function (ntifs.h), VACB_MAPPING_GRANULARITY"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ccmapdata
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _FILE_OBJECT, _SECTION_OBJECT_POINTERS, _CONTROL_AREA, _MMSECTION_FLAGS, _SEGMENT, _SUBSECTION, _MSUBSECTION, _MMSUBSECTION_FLAGS, _MMPTE, _MMPTE_HARDWARE, _MMPTE_TRANSITION, _MMPTE_SUBSECTION, _SHARED_CACHE_MAP, _VACB, _VACB_ARRAY_HEADER, _DEVICE_OBJECT, _EX_FAST_REF; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: filefacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: filefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: filefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "File object: Type 5, Size the size of _FILE_OBJECT, device readable"
+    justification: "S19 4.1 step 2, D1, T1, M1"
+  - rule: "Device filter by documented device types that hold files"
+    justification: "S19 4.1 step 3, D3, M1, O1"
+  - rule: "One carve per SectionObjectPointer"
+    justification: "S19 4.1 step 4, D2"
+  - rule: "Control area: segment points back, File set, Image matches the pointer, FilePointer names a file object of the stream"
+    justification: "S19 4.2, T2, T3, M3, O2"
+  - rule: "File size from the cache map, else the FsContext header; pieces past it left out"
+    justification: "S19 4.1 step 6, 4.5, M6"
+  - rule: "A FsContext header FileSize of 0 is an unknown size"
+    justification: "owner decision 2026-11-12, follow-up Mem-M9; S19 4.1 step 6, O9"
+  - rule: "Control areas with BeingDeleted set are carved and flagged; a null FilePointer is accepted only for them"
+    justification: "owner decision 2026-11-12, S19 O2"
+date: 2026-11-12

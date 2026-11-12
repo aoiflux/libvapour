@@ -1,0 +1,27 @@
+file: tools/linux/fileopen/descriptors.go
+replaces: [tools/linux/fileopen/file_list_open.go (old)]
+spec: S62-linux-kernel-network-file-tools
+spec_sha256: b33116d5dbcb69442ab7d72c8f1b37067e6f5bdd691cea71c49a3d7c847fdb03
+sources:
+  - title: "Linux kernel source, fs/proc/fd.c, fs/file.c, kernel/fork.c, include/linux/fdtable.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project specification S39 (Linux paths, mounts and memory areas)"
+    path: docs/specs/S39-linux-paths-and-vmas.md
+    accessed: 2026-11-12
+  - title: "Project specification S01 (Linux list and task walk)"
+    path: docs/specs/S01-linux-list-task-walk.md
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxkernfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxkernfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Every thread lists its own table in slot order; null slots and null tables give no rows"
+    justification: "S62 FO1-FO3, 4 steps 2-4"
+  - rule: "Slots that do not read keep the rows before them and are counted"
+    justification: "S62 4 step 4, 6"
+  - rule: "A path that is not built is empty, flagged PathUnresolved and counted"
+    justification: "S62 4 step 6, S39 O8"
+  - rule: "A missing type or member ends the tool; other read failures are counted"
+    justification: "S62 6"
+date: 2026-11-12

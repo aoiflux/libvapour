@@ -1,0 +1,12 @@
+file: tools/windows/executionuserassist/knownfolders.go
+replaces: [tools/windows/executionuserassist/knownfolders.go]
+spec: S44-windows-userassist
+spec_sha256: f394f221e7e2d7b39ba5b81284efa7a28a765e1d5b61ccc6f685b1049e279bd2
+sources:
+  - title: "Microsoft Learn, KNOWNFOLDERID (constants and Remarks), ms.date 2020-07-27"
+    url: https://learn.microsoft.com/windows/win32/shell/knownfolderid
+    accessed: 2026-11-12
+decisions:
+  - rule: "Table generated from the KNOWNFOLDERID constants: the 124 that list a GUID, with the Default Path up to its parenthesised note, empty for virtual folders"
+    justification: "S44 D4"
+date: 2026-11-12

@@ -1,0 +1,30 @@
+file: internal/ownerfile/ownerfile.go
+replaces: [internal/ownerfile/ownerfile.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "The Open Group Base Specifications Issue 8, IEEE Std 1003.1-2024, open()"
+    url: https://pubs.opengroup.org/onlinepubs/9799919799/functions/open.html
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CreateFileW function (fileapi.h), updated 2025-07-01"
+    url: https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createfilew
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CreateDirectoryW function (fileapi.h), updated 2025-07-01"
+    url: https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createdirectoryw
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, SetSecurityInfo function (aclapi.h), updated 2024-02-22"
+    url: https://learn.microsoft.com/windows/win32/api/aclapi/nf-aclapi-setsecurityinfo
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Security Descriptor String Format, updated 2025-07-10"
+    url: https://learn.microsoft.com/windows/win32/secauthz/security-descriptor-string-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, ACE Strings, updated 2025-03-12"
+    url: https://learn.microsoft.com/windows/win32/secauthz/ace-strings
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Well-known SIDs, updated 2025-10-01"
+    url: https://learn.microsoft.com/windows/win32/secauthz/well-known-sids
+    accessed: 2026-11-12
+decisions:
+  - rule: "Four entry points over per-OS files"
+    justification: "S74 4.11"
+date: 2026-11-12

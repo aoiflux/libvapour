@@ -1,0 +1,30 @@
+file: tools/windows/sessionlist/session_list.go
+replaces: [tools/windows/sessionlist/session_list.go]
+spec: S69-windows-object-scans-jobs-sessions
+spec_sha256: 9d9aaef3d2fc2c6241bea2e82fab3deeec2f337a39f631821fcb4a4d188826ff
+sources:
+  - title: "Microsoft Learn, Environment Variables, dated 2025-07-14"
+    url: https://learn.microsoft.com/windows/win32/procthread/environment-variables
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, User Name Formats, dated 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/secauthn/user-name-formats
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Kernel object namespaces, dated 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/termserv/kernel-object-namespaces
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _KMUTANT, _DISPATCHER_HEADER, _ETHREAD, _CLIENT_ID, _OBJECT_SYMBOLIC_LINK, _FILE_OBJECT, _DEVICE_OBJECT, _EJOB, _EPROCESS, _SE_AUDIT_PROCESS_CREATION_INFO, _OBJECT_NAME_INFORMATION, _MM_SESSION_SPACE, _KOBJECTS; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: objectscanfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: objectscanfacts -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: objectscanfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Session id from the S25 session resolver"
+    justification: "S69 4.5 step 1, T7, M10, O8"
+  - rule: "First USERNAME, USERDOMAIN and SESSIONNAME of each environment block, names without regard to case"
+    justification: "S69 4.5 step 2, D6, M11, O7"
+  - rule: "User as the down-level logon name (domain, backslash, user) when both are set"
+    justification: "S69 4.5 step 3, D7"
+  - rule: "Order by session id, absent markers first, otherwise list order"
+    justification: "S69 4.5 step 5"
+date: 2026-11-12

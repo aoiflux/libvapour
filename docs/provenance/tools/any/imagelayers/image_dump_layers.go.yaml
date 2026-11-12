@@ -1,0 +1,28 @@
+file: tools/any/imagelayers/image_dump_layers.go
+replaces: [tools/any/imagelayers/image_dump_layers.go]
+spec: S47-code-regions-and-image-strings
+spec_sha256: 8dbdf4d8e6b4b8d39341a04effffbc45513d55419666f97e7ea45c0e4c0dae41
+sources:
+  - title: "ELF gABI, ELF Header"
+    url: https://www.sco.com/developers/gabi/latest/ch4.eheader.html
+    accessed: 2026-11-12
+  - title: "ELF gABI, Program Header"
+    url: https://www.sco.com/developers/gabi/latest/ch5.pheader.html
+    accessed: 2026-11-12
+  - title: "ELF gABI, Sections (section header 0, sh_info for PN_XNUM)"
+    url: https://www.sco.com/developers/gabi/latest/ch4.sheader.html
+    accessed: 2026-11-12
+  - title: "POSIX.1-2017, XSH lseek and ftruncate"
+    url: https://pubs.opengroup.org/onlinepubs/9699919799/functions/lseek.html
+    accessed: 2026-11-12
+  - title: "Project measurement: layerfacts on all seven captures, writes on mem4_fedora40 and mem7_server2025"
+    path: layerfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Layers: physical (flat or segmented, size to the end of the highest held range) and kernel (the paging walk's mapped runs)"
+    justification: "S47 4.4 step 1"
+  - rule: "The physical file holds physical address n at byte n; gaps and unread pieces are left unwritten and read as zeros"
+    justification: "S47 4.4 step 4, F4"
+  - rule: "Every layer is checked against max_dump_size or MaxImageBytes before any file is written"
+    justification: "S47 4.4 step 3"
+date: 2026-11-12

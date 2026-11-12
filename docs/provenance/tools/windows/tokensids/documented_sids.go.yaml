@@ -1,0 +1,15 @@
+file: tools/windows/tokensids/documented_sids.go
+replaces: [tools/windows/tokensids/token_list_sids.go, tools/windows/tokensids/sidnames.go, tools/windows/tokensids/services.go]
+spec: S45-windows-token-sids-privileges
+spec_sha256: c03fb5bf77a6bff9a8972ca6acdd19ffffb9c9d3738671d48a2c36ad1a6e7ad6
+sources:
+  - title: "[MS-DTYP] 2.4.2.4 Well-Known SID Structures, last updated 2023-08-28"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/81d92bba-d22b-4a8c-908a-554ab29148ab
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Well-known SIDs, ms.date 2024-11-25"
+    url: https://learn.microsoft.com/windows/win32/secauthz/well-known-sids
+    accessed: 2026-11-12
+decisions:
+  - rule: "SIDs and constants as [MS-DTYP] 2.4.2.4 writes them; nine more from the Win32 well-known SID page; domain-relative RID constants"
+    justification: "S45 4.3 steps 1 and 5, D5, D6"
+date: 2026-11-12

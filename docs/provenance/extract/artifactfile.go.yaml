@@ -1,0 +1,22 @@
+file: extract/artifactfile.go
+replaces: [extract/naming.go]
+spec: S00-artifact-names
+spec_sha256: c757a280bdc1c0eb65584576bea8e52c5569dc6719cecde50eef80da20f4b829
+sources:
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces (reserved device names, trailing period and space)"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-11
+  - title: "Microsoft Learn, CreateFileW, Consoles (CONIN$, CONOUT$)"
+    url: https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createfilew
+    accessed: 2026-11-11
+  - title: "IEEE Std 1003.1-2017, XBD 12.2 Utility Syntax Guidelines"
+    url: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap12.html
+    accessed: 2026-11-11
+decisions:
+  - rule: "safeName prefixes _ to a leading . or -, or a device stem; replaces trailing periods"
+    justification: "S00 C3, C4, C5, C8"
+  - rule: "Names over 255 bytes are refused, not cut"
+    justification: "S00 C6; a cut could drop the extension"
+  - rule: "CreateNew, CreateUnique, RemoveArtifact and the owner-only access path are kept from the project's own design"
+    justification: "internal/ownerfile is project substrate (plan 2.1)"
+date: 2026-11-11

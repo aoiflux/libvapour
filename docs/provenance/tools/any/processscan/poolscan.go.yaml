@@ -1,0 +1,28 @@
+file: tools/any/processscan/poolscan.go
+replaces: [tools/any/processscan/process_scan.go, tools/any/processscan/offset.go, tools/any/processscan/linux.go]
+spec: S65-process-scan-environment-wow64
+spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+sources:
+  - title: "S31 Windows pool and object scanning"
+    path: docs/specs/S31-windows-pool-object-scan.md
+    accessed: 2026-11-12
+  - title: "S17 Windows process and thread checks"
+    path: docs/specs/S17-windows-process-thread-checks.md
+    accessed: 2026-11-12
+  - title: "S25 Windows process list and active filter"
+    path: docs/specs/S25-windows-process-list.md
+    accessed: 2026-11-12
+  - title: "ntkrnlmp PDB types of the captures (builds 26100 GUIDs 0D960CE1 and 953A8DE8, 19045 F57E740B, 14393 3DFC5F72) read through the project's symbol tables: _EPROCESS, _PEB, _RTL_USER_PROCESS_PARAMETERS, _EWOW64PROCESS, _PEB32, LIST_ENTRY32, _HANDLE_TABLE, _KPROCESS, _DISPATCHER_HEADER"
+    path: procscanfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: procscanfacts -rows -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (with its host snapshot), and -linux on mem3_ubuntu24, mem4_fedora40"
+    path: procscanfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "S31 process filter with the body type tag; TypeIndex mismatches kept and flagged"
+    justification: "S65 4.1 steps 2 and 3, S31 4.5"
+  - rule: "Body check is the S17 process check on physical memory; refusals counted per sentinel"
+    justification: "S65 4.1 step 4, M5"
+  - rule: "No control-byte rule on the image name"
+    justification: "S65 O4, S17 O4"
+date: 2026-11-12

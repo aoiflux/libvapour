@@ -1,0 +1,17 @@
+file: tools/windows/executionuserassist/folders.go
+replaces: [tools/windows/executionuserassist/execution_read_userassist.go, tools/windows/executionuserassist/knownfolders.go]
+spec: S44-windows-userassist
+spec_sha256: f394f221e7e2d7b39ba5b81284efa7a28a765e1d5b61ccc6f685b1049e279bd2
+sources:
+  - title: "Microsoft Learn, KNOWNFOLDERID (constants and Remarks), ms.date 2020-07-27"
+    url: https://learn.microsoft.com/windows/win32/shell/knownfolderid
+    accessed: 2026-11-12
+  - title: "Project measurement: userassistfacts (with -tool) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, cross-checked with the project's process list and file object scan"
+    path: userassistfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "A name prefix is a braced GUID followed by a backslash or the end"
+    justification: "S44 L4, M10"
+  - rule: "On a 64-bit kernel the Remarks paths replace the Default Path of FOLDERID_ProgramFilesX86, FOLDERID_ProgramFilesCommonX86 and FOLDERID_SystemX86"
+    justification: "S44 D5"
+date: 2026-11-12

@@ -1,0 +1,24 @@
+file: examples/showcase/doc.go
+replaces: [examples/showcase/doc.go]
+spec: S78-showcase-example
+spec_sha256: 4a9cd8c1c2a29bf1d5fb51c95a5fcf7d11707b4391b812ecd59efa38b793f206
+sources:
+  - title: "Go 1.26 standard library documentation, packages flag, text/tabwriter, reflect, net/netip"
+    url: https://pkg.go.dev/std
+    accessed: 2026-11-12
+  - title: "The Go Programming Language Specification, Package initialization"
+    url: https://go.dev/ref/spec#Package_initialization
+    accessed: 2026-11-12
+  - title: "Project specifications S70 (tool registry), S76 (root session API), S77 (examples/internal/cli), S20, S21, S22, S66 (credential row types)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project README.md and examples/README.md, showcase and credentials sections"
+    path: README.md
+    accessed: 2026-11-12
+  - title: "Project measurement: examples/showcase run on mem2_win10 and mem4_fedora40"
+    path: examples/showcase
+    accessed: 2026-11-12
+decisions:
+  - rule: "Package clause only; the program is described in examples/README.md"
+    justification: "S78 1"
+date: 2026-11-12

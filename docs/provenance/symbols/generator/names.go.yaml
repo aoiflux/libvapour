@@ -1,0 +1,22 @@
+file: symbols/generator/names.go
+replaces: [symbols/generator/adapter.go, symbols/generator/doc.go, symbols/generator/generator.go, symbols/generator/linux.go, symbols/generator/linux_duplicates.go, symbols/generator/linux_names.go, symbols/generator/linux_table.go]
+spec: S59-linux-symbol-table-generator
+spec_sha256: cfe2fd85e9e9bee4cf3a287ae6b1183ebbb39f2b5407ffa6873f89520d895b7e
+sources:
+  - title: "Linux kernel source, kernel/bpf/btf.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/bpf/btf.c
+    accessed: 2026-11-12
+  - title: "Project table format: symbols/FORMAT.md (type expressions, embedded members, 32-operator bound)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "Project measurement: btffacts on mem3_ubuntu24 and mem4_fedora40"
+    path: btffacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Identifier rule: letter, '_' or '.', then digits too, within MaxNameBytes"
+    justification: "S59 B5, 8"
+  - rule: "INT and FLOAT names are any non-empty printable UTF-8 text"
+    justification: "S59 T3, 4.3 step 3"
+  - rule: "Anonymous names list reachable member names in braces, cut with ...} under MaxNameBytes less suffix room"
+    justification: "S59 4.8 step 3"
+date: 2026-11-12

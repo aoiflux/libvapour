@@ -1,0 +1,24 @@
+file: tools/linux/memoryelffiles/elffiles.go
+replaces: [tools/linux/memoryelffiles/memory_list_elf_files.go (old)]
+spec: S61-linux-process-tools
+spec_sha256: aef658bee29e97cd45cc38fbe1ce63fb86ec79ce39148f7930cbffdd3c632b31
+sources:
+  - title: "System V ABI, ELF gABI chapters 4 and 5 (sco.com edition)"
+    url: https://www.sco.com/developers/gabi/latest/contents.html
+    accessed: 2026-11-12
+  - title: "Linux kernel source, fs/binfmt_elf.c at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project specification S38 (kallsyms and in-memory ELF)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project specification S39 (paths and memory areas)"
+    path: docs/specs/
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxprocfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxprocfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "An area whose first four bytes are the ELF magic is a row"
+    justification: "S61 4.11 step 3, E1, E2"
+date: 2026-11-12

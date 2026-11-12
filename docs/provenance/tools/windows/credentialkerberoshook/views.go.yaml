@@ -1,0 +1,12 @@
+file: tools/windows/credentialkerberoshook/views.go
+replaces: [tools/windows/credentialkerberoshook/credential_check_kerberos_hook.go]
+spec: S23-windows-kerberos-crypto-check
+spec_sha256: 61aa562b650c7a4160c426ca7271f6ad8c69aa8bb56c4ccf5e985607bd587af3
+sources:
+  - title: "Project measurement: kerberosfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: kerberosfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Views sorted by start; an address belongs to the last view starting at or below it, if it is not past its end"
+    justification: "S23 4.5 step 3"
+date: 2026-11-12

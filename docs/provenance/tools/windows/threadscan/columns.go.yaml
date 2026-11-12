@@ -1,0 +1,27 @@
+file: tools/windows/threadscan/columns.go
+replaces: [tools/windows/threadscan/columns.go]
+spec: S50-windows-threads
+spec_sha256: 6e00b270533e2376ae2851cb766004e981b1b23a65e8cd8a4b4ed3abc8bbece5
+sources:
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _ETHREAD, _KTHREAD, _KTRAP_FRAME, _CLIENT_ID, _EPROCESS, _KPROCESS, _KTHREAD_STATE, _KWAIT_REASON; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: threadfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: threadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: threadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Members read at the table's width, else the width S50 T1/T3/T5 measured"
+    justification: "S50 4.1 step 3"
+  - rule: "A FILETIME of 0 or with bit 63 set is no time; ExitTime shares storage with KeyedWaitChain"
+    justification: "S50 4.3 step 3, T2, M4, D4"
+  - rule: "StartAddressInvalid set: StartAddress reported 0 and flagged"
+    justification: "S50 4.3 step 4, T2, M5, O3"
+  - rule: "Unread columns named in fixed order; kept or skipped with a diagnostic, refused in strict mode"
+    justification: "S50 4.8"
+date: 2026-11-12

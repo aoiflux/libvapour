@@ -1,0 +1,22 @@
+file: tools/any/memoryranges/pageprotection.go
+replaces: [tools/any/memoryranges/memory_list_pages.go, tools/any/memoryranges/tree.go, tools/any/memoryranges/vadfile.go, tools/any/memoryranges/protection.go, tools/any/memoryranges/pages.go, tools/any/memoryranges/address.go]
+spec: S24-windows-vad-walk
+spec_sha256: 3e38a1f8c17baa6446f432c54a759d6d2f1ec952bff13eb795be1e7c936e32dc
+sources:
+  - title: "Microsoft Learn, Memory Protection Constants (WinNT.h), page dated 2022-05-18"
+    url: https://learn.microsoft.com/windows/win32/memory/memory-protection-constants
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.VadRoot, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _MMVAD_FLAGS1, _MM_PRIVATE_VAD_FLAGS, _MM_SHARED_VAD_FLAGS, _POOL_HEADER, _SUBSECTION, _CONTROL_AREA, _MMSECTION_FLAGS, _EX_FAST_REF, _FILE_OBJECT, globals MmProtectToValue and MmHighestUserAddress; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: vadfacts -types
+    accessed: 2026-11-12
+  - title: "Project measurement: vadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: vadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Protection value = MmProtectToValue[index], 2^(Protection width) entries"
+    justification: "S24 4.4 steps 1-2, M2"
+  - rule: "Name from the documented PAGE_* constants in ascending value order, unnamed bits as one hex part"
+    justification: "S24 4.4 step 3, D1"
+  - rule: "Win32Protection parses the names back; unknown parts make the name unknown"
+    justification: "S24 4.4 step 5, D1"
+date: 2026-11-12

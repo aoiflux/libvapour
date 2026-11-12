@@ -1,0 +1,21 @@
+file: tools/windows/peimports/ordinals.go
+replaces: [tools/windows/peimports/pe_list_imports.go]
+spec: S66-windows-pe-and-misc-tools
+spec_sha256: ae0c42905861aafef8b7e822c34d107120a8e29625043cf37180f9c697a7fb6c
+sources:
+  - title: "Microsoft Learn, PE Format (import, export, resource and debug directories; Import Lookup Table; Export Ordinal Table)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces; Maximum Path Length Limitation"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-12
+  - title: "Spec S56: Windows libraries (loader lists)"
+    path: docs/specs/S56-windows-libraries-autostart-process-tree.md
+    accessed: 2026-11-12
+  - title: "Project measurement: petoolfacts -tool pesymbols,peimports,peversion on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: petoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Ordinal named from a same-width, same-process mapping of the library, then the ordinal table"
+    justification: "S66 windows.pe.list_imports 4 step 6, ID3, ID4, IM4, IO1, IO2"
+date: 2026-11-12

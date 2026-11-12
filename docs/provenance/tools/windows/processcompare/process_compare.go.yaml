@@ -1,0 +1,32 @@
+file: tools/windows/processcompare/process_compare.go
+replaces: [tools/windows/processcompare/process_compare.go]
+spec: S26-windows-process-compare
+spec_sha256: 1cc0c0fc247e7ddfdd17b3be497644f6ff2b174cab4d58d9fac04e225b5abdd0
+sources:
+  - title: "Microsoft Learn, Terminating a Process, dated 2025-07-14"
+    url: https://learn.microsoft.com/windows/win32/procthread/terminating-a-process
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, 253668-093US, chapter 5 (CR3 format)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Specifications S03 (LIST_ENTRY walk), S17 (process check) and S25 (process list)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS, _KPROCESS, _LIST_ENTRY, _MM_SESSION_SPACE, _TOKEN, _EX_FAST_REF, _HANDLE_TABLE and the globals PsActiveProcessHead, PsInitialSystemProcess, PsIdleProcess, KiProcessListHead, PspCidTable; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: processlistfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: processlistfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: processlistfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Six views: active list, kernel process list, session rings, pool scan, thread owners, csrss.exe handles"
+    justification: "S26 4.1, T1-T3, M1-M6"
+  - rule: "Every candidate passes the S17 check; rows keyed by physical address, untranslated ones by virtual address"
+    justification: "S26 4.2, D4"
+  - rule: "Verdict order listed, exited, copy, unlisted, hidden"
+    justification: "S26 4.3, D1, D2, M3, M4, O2"
+  - rule: "Copy: same PID, name, kernel root and creation time as a listed process"
+    justification: "S26 4.3, D2, M3"
+  - rule: "A failed view is left out with a diagnostic, an error in strict mode unless the table lacks its member"
+    justification: "S26 4.1, 6"
+date: 2026-11-12

@@ -1,0 +1,20 @@
+file: tools/windows/memorytree/memory_tree.go
+replaces: [tools/windows/memorytree/memory_tree.go]
+spec: S68-windows-memory-process-dump
+spec_sha256: 6c5307587dff8b227ccc163b732403e3306af2bf401a1876c64e95abd439acae
+sources:
+  - title: "Project specifications S00, S03, S24, S25, S30, S43, S50, S56, S64"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: memdumpfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: memdumpfacts
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Memory Protection Constants"
+    url: https://learn.microsoft.com/windows/win32/memory/memory-protection-constants
+    accessed: 2026-11-12
+decisions:
+  - rule: "One row per node the S24 walk keeps, with its raw links and parent, in start order"
+    justification: "S68 4.1, E1"
+  - rule: "A walk that fails leaves the process without rows; strict mode fails the run"
+    justification: "S68 4.1 step 3, 6"
+date: 2026-11-12

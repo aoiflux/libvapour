@@ -1,0 +1,30 @@
+file: symbols/autoload/crashdump_kernel.go
+replaces: [symbols/autoload/crashdump_kernel.go]
+spec: S75-symbol-loading-btf-kallsyms
+spec_sha256: 2e430484faf356292c5523605bbf12608e7bc0a06edad9cac1b91bcfebd6a433
+sources:
+  - title: "Microsoft Learn, PE Format (signature offset, optional header data directories, Debug Directory (Image Only), Debug Type), page dated 2026-09-10"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Maximum Path Length Limitation (MAX_PATH 260 including the NUL)"
+    url: https://learn.microsoft.com/windows/win32/fileio/maximum-file-path-limitation
+    accessed: 2026-11-12
+  - title: "ntkrnlmp PDB types through the project's symbol tables: _LIST_ENTRY.Flink, _KLDR_DATA_TABLE_ENTRY.InLoadOrderLinks and DllBase, _LDR_DATA_TABLE_ENTRY.DllBase; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: symbolloadfacts -os windows
+    accessed: 2026-11-12
+  - title: "Intel SDM Vol. 3A, 4-level paging (CR3 bits 51:12, PS in PDPTE and PDE)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: symbolloadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (-os windows) and mem3_ubuntu24, mem4_fedora40 (-os linux)"
+    path: symbolloadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "DirectoryTableBase and PsLoadedModuleList from the header; zero refused"
+    justification: "S75 4.2 step 1, M17"
+  - rule: "Flink at 0, DllBase at 0x30 of the first entry, read through 4-level tables"
+    justification: "S75 4.2 steps 2-4, W6, W7, M24, M25"
+  - rule: "First CodeView record naming a PDB, which must be a kernel PDB"
+    justification: "S75 4.2 step 5, W1-W3, W5"
+  - rule: "PDB base name cut after the last backslash or slash"
+    justification: "S75 4.3 step 2, O4"
+date: 2026-11-12

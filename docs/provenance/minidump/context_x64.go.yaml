@@ -1,0 +1,23 @@
+file: minidump/context_x64.go
+replaces: [minidump/context_x64.go]
+spec: S73-minidump-writer-and-extract-regions
+spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+sources:
+  - title: "Microsoft Learn, CONTEXT structure (x86 64-bit) (winnt.h), page dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-context
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB type _CONTEXT, _XSAVE_FORMAT and _M128A through the project's symbol tables, builds 26100, 19045, 14393 (mem1, mem2, mem5, mem6, mem7)"
+    path: minidumpfacts -types
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 2A FXSAVE (512-byte save area) and Vol. 3A 4.5 (4-KByte pages)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: minidumpfacts on msedge_server2016.dmp (written by Windows) and on process dumps of mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: minidumpfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "CONTEXT is 1232 bytes; ContextFlags at 0x30, MxCsr 0x34, segments 0x38-0x42, EFlags 0x44, Rax..Rip 0x78-0xF8"
+    justification: "S73 C1-C3, M2"
+  - rule: "ContextFlags group bits as the exported constants; CONTEXT_AMD64 bit set in every Windows-written context"
+    justification: "S73 C4, M1, O2"
+date: 2026-11-12

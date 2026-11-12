@@ -1,0 +1,21 @@
+file: tools/linuxwalk/reader.go
+replaces: [tools/linuxkern/lists.go reader helpers, tools/linuxobj/list.go reader helpers, tools/linuxtrace/list.go reader helpers]
+spec: S01-linux-list-task-walk
+spec_sha256: bab3e1582e3f17bdf0cc847ddaa530387bafee63f70f79c80d300a8cd4289746
+sources:
+  - title: "Linux include/linux/types.h (list_head, hlist_head, hlist_node), v4.19, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/linux/types.h
+    accessed: 2026-11-11
+  - title: "Linux arch/x86/include/uapi/asm/byteorder.h, v6.14"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/include/uapi/asm/byteorder.h
+    accessed: 2026-11-11
+decisions:
+  - rule: "Every offset and size comes from the symbol table; a missing member wraps ErrUnsupported before any read"
+    justification: "S01 2, 4.1 step 1, 6"
+  - rule: "The address form is applied to every pointer read and every address computed"
+    justification: "S01 2 (address form)"
+  - rule: "Words decode little-endian at the table's pointer width, 4 or 8 bytes"
+    justification: "S01 X1"
+  - rule: "A read counts only when it returns every byte asked for"
+    justification: "S01 2 (memory)"
+date: 2026-11-11

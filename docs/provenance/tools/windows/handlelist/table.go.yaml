@@ -1,0 +1,28 @@
+file: tools/windows/handlelist/table.go
+replaces: [tools/windows/handlelist/handle_list.go]
+spec: S66-windows-pe-and-misc-tools
+spec_sha256: ae0c42905861aafef8b7e822c34d107120a8e29625043cf37180f9c697a7fb6c
+sources:
+  - title: "Microsoft Learn, Kernel Objects (handles are process specific; per-process limit 2^24), dated 2018-05-31"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/kernel-objects
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _EPROCESS.ObjectTable, _HANDLE_TABLE, _HANDLE_TABLE_ENTRY, _OBJECT_HEADER, _OBJECT_TYPE, ObTypeIndexTable, ObHeaderCookie; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: petoolfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: petoolfacts -tool handlelist on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: petoolfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Null ObjectTable: no handles, no diagnostic"
+    justification: "S66 H4.2 step 1, HM1"
+  - rule: "TableCode low two bits are the level, at most 2; the rest a 4 KB-aligned top page"
+    justification: "S66 H4.2 step 2, HD1, HM2"
+  - rule: "Pointer i covers values from i x 1024 per level; four values per entry"
+    justification: "S66 H4.2 step 3, HM3"
+  - rule: "Ceiling NextHandleNeedingPool when a nonzero page multiple below the limit, else MaxTableEntries x 4 capped at 2^24 x 4"
+    justification: "S66 H4.3, HD1, HM3, HM6"
+  - rule: "Pointers past the ceiling not followed and counted; pages unread or misplaced counted per table"
+    justification: "S66 H4.3 step 2, H4.4, HM4, HM6, HM8"
+  - rule: "First entry of each page skipped"
+    justification: "S66 H4.4 step 3, HM4"
+date: 2026-11-12

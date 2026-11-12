@@ -1,0 +1,23 @@
+file: pe/version.go
+replaces: [pe/version.go]
+spec: S72-pe-image-parsing
+spec_sha256: 28a0c996d6ec0cbb22ceeeaeed4161386dc40598d0024d47de3c0896fc20b4c0
+sources:
+  - title: "Microsoft Learn, VS_VERSIONINFO structure, last updated 2020-12-11"
+    url: https://learn.microsoft.com/windows/win32/menurc/vs-versioninfo
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, VS_FIXEDFILEINFO structure (verrsrc.h), last updated 2021-04-02"
+    url: https://learn.microsoft.com/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Resource Types (RT_VERSION), last updated 2026-08-28"
+    url: https://learn.microsoft.com/windows/win32/menurc/resource-types
+    accessed: 2026-11-12
+  - title: "Project measurement: peparsefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: peparsefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "szKey VS_VERSION_INFO; Value aligned to 32 bits of the load address; 52-byte VS_FIXEDFILEINFO with 0xFEEF04BD"
+    justification: "S72 4.8 steps 1-4, V2, V3, M6"
+  - rule: "ReadVersion reads only up to the end of Value; first leaf that decodes wins"
+    justification: "S72 4.8 step 5, V1"
+date: 2026-11-12

@@ -1,0 +1,12 @@
+file: internal/testsupport/s43_fixture.go
+replaces: []
+spec: S43-windows-image-consistency
+spec_sha256: c22c808387a0283457cc6731a30b0eaaa256036d6c5cdd57964b0e5514b22c32
+sources:
+  - title: "Specification S43-windows-image-consistency: T1 to T7 and section 9 item 1"
+    path: docs/specs/S43-windows-image-consistency.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Fixture written from S43-windows-image-consistency by the agent that wrote that specification; not rewritten by S79"
+    justification: "S43-windows-image-consistency T1 to T7 and section 9 item 1; S79 section 1"
+date: 2026-11-12

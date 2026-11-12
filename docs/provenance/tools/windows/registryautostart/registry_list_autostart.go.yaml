@@ -1,0 +1,52 @@
+file: tools/windows/registryautostart/registry_list_autostart.go
+replaces: [tools/windows/registryautostart/registry_list_autostart.go]
+spec: S56-windows-libraries-autostart-process-tree
+spec_sha256: e7d217932a3f445b39b0386fd2fdd43ebb432bb9fe9866283ff696456b3a328c
+sources:
+  - title: "Microsoft Learn, Run and RunOnce Registry Keys"
+    url: https://learn.microsoft.com/windows/win32/setupapi/run-and-runonce-registry-keys
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry Keys Affected by WOW64"
+    url: https://learn.microsoft.com/windows/win32/winprog64/shared-registry-keys
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Overview of file integrity monitoring in Microsoft Defender for Cloud (recommended registry items)"
+    url: https://learn.microsoft.com/azure/defender-for-cloud/file-integrity-monitoring-overview
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, ADMX_Logon Policy CSP (Run_1, Run_2, DisableExplorerRunLegacy, DisableExplorerRunOnceLegacy)"
+    url: https://learn.microsoft.com/windows/client-management/mdm/policy-csp-admx-logon
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MSGina.dll Features (Winlogon key, Shell)"
+    url: https://learn.microsoft.com/windows/win32/secauthn/msgina-dll-features
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Cannot log on to Windows (KB 555648; Winlogon Shell and Userinit)"
+    url: https://learn.microsoft.com/troubleshoot/windows-server/user-profiles-and-logon/cannot-log-on-windows
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Debugging a Service (Image File Execution Options Debugger)"
+    url: https://learn.microsoft.com/windows/win32/services/debugging-a-service
+    accessed: 2026-11-12
+  - title: "Microsoft Learn (Sysinternals), Inside Native Applications (Session Manager BootExecute)"
+    url: https://learn.microsoft.com/sysinternals/resources/inside-native-applications
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Registry Hives"
+    url: https://learn.microsoft.com/windows/win32/sysinfo/registry-hives
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Project measurement: libraryfacts -v -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, with the mem7 host process snapshot"
+    path: libraryfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Hives picked by registry path, then by file name; _Classes hives skipped; first SOFTWARE and SYSTEM hive used"
+    justification: "S56 4.2 step 1, D9, D15, M13"
+  - rule: "Locations only from Microsoft Learn pages: Run, RunOnce, RunServicesOnce, Wow6432Node Run and RunOnce, policy Run, Winlogon Shell and Userinit, AppInit values, Image File Execution Options Debugger, BootExecute"
+    justification: "S56 4.2 table, D8 to D14"
+  - rule: "RunOnce ! and * prefixes are flags; the name is kept"
+    justification: "S56 D8"
+  - rule: "BootExecute from the current control set; an unread Select Current skips it"
+    justification: "S56 4.2 step 5"
+  - rule: "Named values with empty data are returned"
+    justification: "S56 O6"
+  - rule: "Unreadable keys and incomplete lists are diagnostics; strict mode returns the first after all rows"
+    justification: "S56 6"
+date: 2026-11-12

@@ -1,0 +1,43 @@
+file: tools/windows/executioncompatcachememory/cache.go
+replaces: [tools/windows/executioncompatcachememory/execution_list_compat_cache.go, tools/windows/executioncompatcachememory/layout.go, tools/windows/executioncompatcachememory/recover.go]
+spec: S41-windows-compat-cache-memory
+spec_sha256: 33d52335ea07a8b1fdf9538a5517d6f2cccdd5d2b2d6f8fe49579fd6298ec335
+sources:
+  - title: "Microsoft Learn, RtlInitializeGenericTableAvl function (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtlinitializegenerictableavl
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, RtlLookupElementGenericTableAvl function (ntddk.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-rtllookupelementgenerictableavl
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, LIST_ENTRY (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-list_entry
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, _UNICODE_STRING (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, NtQueryInformationFile function (ntifs.h) and FILE_INFORMATION_CLASS (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntifs/nf-ntifs-ntqueryinformationfile
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_BASIC_INFORMATION (wdm.h)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_basic_information
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME (minwinbase.h)"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types _RTL_AVL_TABLE, _RTL_BALANCED_LINKS, _LIST_ENTRY, _UNICODE_STRING (ntkrnlmp 0D960CE1, F57E740B, 3DFC5F72, 953A8DE8) and ahcache.sys PDB publics (90B1FCD5, 15896A5F, 95F67F13, 222F1121) through the project's symbol tables, BuilderVersion 10"
+    path: shimcachefacts -publics -types -cache
+    accessed: 2026-11-12
+  - title: "Disassembly of each capture's ahcache.sys routines through the project's disasm package"
+    path: shimcachefacts -code
+    accessed: 2026-11-12
+  - title: "Project measurement: shimcachefacts -cache -entries -scan -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, with each capture's SYSTEM hive AppCompatCache value read through registryhive"
+    path: shimcachefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Refuse a kernel that is not 64-bit; find ahcache.sys by base name, case folded"
+    justification: "S41 4 steps 1-2"
+  - rule: "Load the driver's symbols from its CodeView record and take AhcCacheHandle inside SizeOfImage"
+    justification: "S41 4 step 3, P1, section 5"
+  - rule: "Row fields Position, PositionFromTail, InList, InTable, Key, FileLastWrite, DataSize, Data, flags and Address"
+    justification: "S41 7, O7"
+date: 2026-11-12

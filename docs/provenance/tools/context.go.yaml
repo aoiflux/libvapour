@@ -1,0 +1,21 @@
+file: tools/context.go
+replaces: [tools/context.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, order 253668-093US, chapter 5 Paging (4-KByte pages, CR3)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Validate order: memory, limits, symbols, profile, options"
+    justification: "S70 4.1 step 1, M3"
+  - rule: "ProcessSpace never returns the kernel reader once a factory exists"
+    justification: "S70 4.1 step 3, F10"
+  - rule: "StrictMode reads an unreadable strict value as strict"
+    justification: "S70 4.1 step 5, O3"
+  - rule: "KernelFrames names each missing input"
+    justification: "S70 4.8, M4"
+date: 2026-11-12

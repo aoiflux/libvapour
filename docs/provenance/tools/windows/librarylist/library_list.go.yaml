@@ -1,0 +1,36 @@
+file: tools/windows/librarylist/library_list.go
+replaces: [tools/windows/librarylist/library_list.go, tools/windows/librarylist/filter.go]
+spec: S56-windows-libraries-autostart-process-tree
+spec_sha256: e7d217932a3f445b39b0386fd2fdd43ebb432bb9fe9866283ff696456b3a328c
+sources:
+  - title: "Microsoft Learn, PEB structure (winternl.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winternl/ns-winternl-peb
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PEB_LDR_DATA structure (winternl.h), with LDR_DATA_TABLE_ENTRY"
+    url: https://learn.microsoft.com/windows/win32/api/winternl/ns-winternl-peb_ldr_data
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, UNICODE_STRING structure (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "ntkrnlmp PDB types of the captures (builds 26100 GUIDs 0D960CE1 and 953A8DE8, 19045 F57E740B, 14393 3DFC5F72) read through the project's symbol tables: _PEB, _PEB_LDR_DATA, _LDR_DATA_TABLE_ENTRY, _LDR_DDAG_NODE, _EWOW64PROCESS, _PEB32, LIST_ENTRY32, _STRING32, _EPROCESS, _RTL_USER_PROCESS_PARAMETERS, _SE_AUDIT_PROCESS_CREATION_INFO"
+    path: libraryfacts
+    accessed: 2026-11-12
+  - title: "S03 Windows list entries and the kernel build (LIST_ENTRY walk, recovering walk, CONTAINING_RECORD)"
+    path: docs/specs/S03-windows-list-entry-and-build.md
+    accessed: 2026-11-12
+  - title: "Project measurement: libraryfacts -v -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, with the mem7 host process snapshot"
+    path: libraryfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "A process with PEB 0 gives no rows silently; unreadable PEB, Ldr or Ldr 0 is reported, and is an error in strict mode"
+    justification: "S56 M1, 6"
+  - rule: "WoW64 processes also walk the 32-bit lists via _EWOW64PROCESS.Peb and _PEB32.Ldr; those rows carry no load count or time"
+    justification: "S56 T4, 4.1 step 8, O3"
+  - rule: "DLL keeps its field names; InLoadOrder, InMemoryOrder and InInitializationOrder are new"
+    justification: "S56 7.1, O1"
+  - rule: "DLL.BaseUnreadable flags a DllBase that does not read; the per-process count is a diagnostic, strict an error"
+    justification: "owner decision 2026-11-12, S56 O8; S56 6, 7.1"
+date: 2026-11-12

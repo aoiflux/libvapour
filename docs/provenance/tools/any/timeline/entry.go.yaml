@@ -1,0 +1,38 @@
+file: tools/any/timeline/entry.go
+replaces: [tools/any/timeline/bodyfile.go, tools/any/timeline/linuxsources.go, tools/any/timeline/render.go, tools/any/timeline/timeline_list.go, tools/any/timeline/windowssources.go]
+spec: S60-timeline
+spec_sha256: 12185f5efb5f22a11ed4b85a867e3f4b8416b0bc6e4ced1bd4a5d93d553bf670
+sources:
+  - title: "POSIX.1-2024 (IEEE Std 1003.1-2024), Base Definitions 4.19 Seconds Since the Epoch"
+    url: https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/V1_chap04.html
+    accessed: 2026-11-12
+  - title: "POSIX.1-2024 (IEEE Std 1003.1-2024), Base Definitions <sys/stat.h>: st_atim, st_mtim, st_ctim"
+    url: https://pubs.opengroup.org/onlinepubs/9799919799/basedefs/sys_stat.h.html
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FILE_BASIC_INFORMATION structure (wdm.h), ms.date 2021-05-18"
+    url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/ns-wdm-_file_basic_information
+    accessed: 2026-11-12
+  - title: "RFC 3339, Date and Time on the Internet: Timestamps, section 5.6 Internet Date/Time Format"
+    url: https://www.rfc-editor.org/rfc/rfc3339
+    accessed: 2026-11-12
+  - title: "RFC 3629, UTF-8, a transformation format of ISO 10646, sections 1, 3 and 4"
+    url: https://www.rfc-editor.org/rfc/rfc3629
+    accessed: 2026-11-12
+  - title: "Project specifications of the source tools: S12, S14, S15c, S25, S26, S28, S37, S39, S41, S42, S44, S46, S50, S51, S56 (result schemas, section 7)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: timelinefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24 and mem4_fedora40"
+    path: timelinefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "No installed event: no source gives one"
+    justification: "owner decision 2026-11-12, follow-up D16 (S60 O3)"
+  - rule: "One entry per dated event: time (UTC), event class, tool, source field, subject, virtual and physical address"
+    justification: "S60 7"
+  - rule: "Total order: time, tool, field, subject, address, physical, event; stable for entries equal in every field"
+    justification: "S60 4 step 6, M4"
+  - rule: "Times before 1970 have no seconds-since-the-epoch value"
+    justification: "S60 D1"
+  - rule: "SourceSummary has no malformed count: no source gives a text time"
+    justification: "owner decision 2026-11-12, S60 O6"
+date: 2026-11-12

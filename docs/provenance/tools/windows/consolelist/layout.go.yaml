@@ -1,0 +1,33 @@
+file: tools/windows/consolelist/layout.go
+replaces: [tools/windows/consolelist/layout.go]
+spec: S67-measured-layouts-tcpip-conhost
+spec_sha256: eabf2a36f3c0800f20f0911e35a74cf3aff82007ce230e6310a8bec1389c3b55
+sources:
+  - title: "Microsoft Learn, TCPSTATE (mstcpip.h) and MIB_TCPROW2 (tcpmib.h): state numbering, port byte order"
+    url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, socket function (winsock2.h): AF_INET 2, AF_INET6 23"
+    url: https://learn.microsoft.com/windows/win32/api/winsock2/nf-winsock2-socket
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _POOL_HEADER, _RTL_DYNAMIC_HASH_TABLE, _RTL_BITMAP, _LIST_ENTRY, _EPROCESS (builds 14393, 19045, 26100)"
+    path: symbols/autoload
+    accessed: 2026-11-12
+  - title: "Specifications S03, S17, S28, S33"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, list Class, vector class, basic_string Class (C++ Standard Library)"
+    url: https://learn.microsoft.com/cpp/standard-library/list-class
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CONSOLE_HISTORY_INFO structure"
+    url: https://learn.microsoft.com/windows/console/console-history-info
+    accessed: 2026-11-12
+  - title: "conhost.pdb publics (F020B0E20C73744FE70E0949123FEFE1-1) and the captured conhost.exe code of mem2"
+    path: conhostlayoutfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: conhostlayoutfacts over mem2_win10, mem5_server2016, mem6_server2025"
+    path: conhostlayoutfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Member groups node, history, process record, string, vector and console parts; history offsets from the list node"
+    justification: "S67 4.2 step 1, K6"
+date: 2026-11-12

@@ -1,0 +1,20 @@
+file: layers/systemprocess.go
+replaces: [layers/cr3.go]
+spec: S53-address-translation-layers
+spec_sha256: bd51da949f6304e4a71b7ace847e6a477b0645f0a547cde4c17626eba675f601
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging: 5.3, 5.4, 5.5, 5.7, 5.10.3.3, Tables 5-4 to 5-20"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "ntoskrnl types _MMPTE_HARDWARE, _MMPTE_TRANSITION, _MMPTE_SOFTWARE, _MMPTE_PROTOTYPE, _MMPTE_SUBSECTION, _MI_HARDWARE_STATE, _EPROCESS, _KPROCESS, _LIST_ENTRY of builds 14393, 19045, 26100, read through the project's symbol tables"
+    path: symbols/autoload
+    accessed: 2026-11-12
+  - title: "Project measurement: pagetablefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: pagetablefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "8-byte steps over held windows for UniqueProcessId 4 and ImageFileName System NUL"
+    justification: "S53 4.8, M1, O9"
+  - rule: "Root accepted with bits 60:52 clear, non-zero, inside the image, mapping the upper half; Flink in the upper half"
+    justification: "S53 4.8, A5, A13, A14, A15"
+date: 2026-11-12

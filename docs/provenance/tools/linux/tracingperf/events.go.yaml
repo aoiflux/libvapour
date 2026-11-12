@@ -1,0 +1,25 @@
+file: tools/linux/tracingperf/events.go
+replaces: [tools/linux/tracingperf/tracing_list_perf_events.go (old)]
+spec: S62-linux-kernel-network-file-tools
+spec_sha256: b33116d5dbcb69442ab7d72c8f1b37067e6f5bdd691cea71c49a3d7c847fdb03
+sources:
+  - title: "Linux kernel source, include/linux/sched.h, include/linux/perf_event.h, include/uapi/linux/perf_event.h, kernel/events/core.c, kernel/trace/bpf_trace.c, include/linux/bpf.h, include/linux/filter.h, include/uapi/linux/bpf.h, kernel/bpf/core.c, include/linux/kallsyms.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Project specification S01 (Linux list and task walk)"
+    path: docs/specs/S01-linux-list-task-walk.md
+    accessed: 2026-11-12
+  - title: "Project specification S54 (Linux kernel readers)"
+    path: docs/specs/S54-linux-kernel-readers.md
+    accessed: 2026-11-12
+  - title: "Project measurement: linuxkernfacts (g1 probes) on mem3_ubuntu24 and mem4_fedora40"
+    path: linuxkernfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Events are each thread's perf_event_list over perf_event.owner_entry"
+    justification: "S62 PE1, PE2"
+  - rule: "Only events with a program give rows; without perf_event.prog no event can run one"
+    justification: "S62 PE3, PE4"
+  - rule: "The PMU's name is its kind in the kernel's own words, bounded by NAME_MAX"
+    justification: "S62 PE5"
+date: 2026-11-12

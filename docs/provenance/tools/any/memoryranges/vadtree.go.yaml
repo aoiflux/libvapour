@@ -1,0 +1,26 @@
+file: tools/any/memoryranges/vadtree.go
+replaces: [tools/any/memoryranges/memory_list_pages.go, tools/any/memoryranges/tree.go, tools/any/memoryranges/vadfile.go, tools/any/memoryranges/protection.go, tools/any/memoryranges/pages.go, tools/any/memoryranges/address.go]
+spec: S24-windows-vad-walk
+spec_sha256: 3e38a1f8c17baa6446f432c54a759d6d2f1ec952bff13eb795be1e7c936e32dc
+sources:
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS.VadRoot, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _MMVAD_FLAGS1, _MM_PRIVATE_VAD_FLAGS, _MM_SHARED_VAD_FLAGS, _POOL_HEADER, _SUBSECTION, _CONTROL_AREA, _MMSECTION_FLAGS, _EX_FAST_REF, _FILE_OBJECT, globals MmProtectToValue and MmHighestUserAddress; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: vadfacts -types
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces (Windows drivers), page dated 2024-06-28"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "Project measurement: vadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025"
+    path: vadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Each node once; links and range must read; start <= end; range inside the interval its ancestors allow; end <= highest user address; failing nodes left out with their subtrees"
+    justification: "S24 4.2 step 3, M3, M4, M5"
+  - rule: "Height bound from the fewest nodes of an AVL tree of each height, for MaxListEntries nodes; a deeper kept node refuses the tree"
+    justification: "S24 4.2 step 2, M6, M7"
+  - rule: "MmHighestUserAddress, else the documented top of user space"
+    justification: "S24 4.2 step 3.5, D3, M1"
+  - rule: "VPN from the low member and high byte; Start = VPN * 0x1000, End = last page + 0xFFF"
+    justification: "S24 4.3, T3, D3, D4, M5"
+  - rule: "One diagnostic per process counts the nodes left out by reason; strict mode fails on the first"
+    justification: "S24 6"
+date: 2026-11-12

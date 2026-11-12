@@ -1,0 +1,20 @@
+file: internal/testsupport/poolfixture.go
+replaces: [internal/testsupport/poolfixture.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS, _KPROCESS, _LIST_ENTRY, LIST_ENTRY32, _UNICODE_STRING, _STRING32, _PEB, _PEB_LDR_DATA, _LDR_DATA_TABLE_ENTRY, _EWOW64PROCESS, _PEB32, _RTL_AVL_TREE, _RTL_BALANCED_NODE, _MMVAD_SHORT, _MMVAD, _MMVAD_FLAGS, _POOL_HEADER, _POOL_TRACKER_BIG_PAGES, _HANDLE_TABLE, _HANDLE_TABLE_ENTRY, _SUBSECTION, _CONTROL_AREA, _EX_FAST_REF, _FILE_OBJECT, _OBJECT_HEADER, _KUSER_SHARED_DATA, _DBGKD_GET_VERSION64; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: fixturefacts
+    accessed: 2026-11-12
+  - title: "Specification S31-windows-pool-object-scan: T1, T5, M7"
+    path: docs/specs/S31-windows-pool-object-scan.md
+    accessed: 2026-11-12
+  - title: "Specification S52-windows-pool-listings: T1, T2"
+    path: docs/specs/S52-windows-pool-listings.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "_POOL_HEADER members as the byte-wide bit fields of the two words; PreviousSize and PoolIndex written 0"
+    justification: "S79 T6, 4.5 step 3, S31 M7"
+  - rule: "Pool types 0 free, 2 nonpaged, 3 paged; 16-byte blocks"
+    justification: "S79 4.5 step 3, S31 T5, M7"
+date: 2026-11-12

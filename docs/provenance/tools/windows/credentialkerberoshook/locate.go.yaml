@@ -1,0 +1,17 @@
+file: tools/windows/credentialkerberoshook/locate.go
+replaces: [tools/windows/credentialkerberoshook/credential_check_kerberos_hook.go]
+spec: S23-windows-kerberos-crypto-check
+spec_sha256: 61aa562b650c7a4160c426ca7271f6ad8c69aa8bb56c4ccf5e985607bd587af3
+sources:
+  - title: "Disassembly of the captured cryptdll.dll CDLocateCSystem and CDRegisterCSystem through the project's disasm package on mem1_win11, mem2_win10, mem5_server2016"
+    path: kerberosfacts -code
+    accessed: 2026-11-12
+  - title: "cryptdll.pdb publics CSystems, cCSystems, CDLocateCSystem, CDRegisterCSystem through the project's symbol tables (BuilderVersion 10): 3EBCDA59109ED8EFB1B19A2DBA7355BD-1 (26100), 8CDC194B53A3F978BF1C6CD923C5E47E-1 (19045); kerberos.pdb import slots on 26100, 14393 and Server 2025"
+    path: kerberosfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "First RIP-relative dword mov is the count, first RIP-relative lea the table, shl must scale by 7, decoding stops at ret"
+    justification: "S23 4.3 step 3, M2"
+  - rule: "At most 0x60 bytes and 32 instructions decoded"
+    justification: "S23 8, M2"
+date: 2026-11-12

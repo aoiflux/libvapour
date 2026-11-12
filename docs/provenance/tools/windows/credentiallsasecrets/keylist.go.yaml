@@ -1,0 +1,34 @@
+file: tools/windows/credentiallsasecrets/keylist.go
+replaces: [tools/windows/credentiallsasecrets/credential_read_lsa_secrets.go]
+spec: S21-windows-lsa-secrets
+spec_sha256: 271b443da1da91e374e821c8aff30afe88fc7d8c2863bdc64338c890e36584cb
+sources:
+  - title: "[MS-LSAD] Secret Object Data Model"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-lsad/483f1b6e-7b14-4341-9ab2-9b99c01f896e
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Storing Private Data"
+    url: https://learn.microsoft.com/windows/win32/secmgmt/storing-private-data
+    accessed: 2026-11-12
+  - title: "[MS-DTYP] 2.3.3 FILETIME"
+    url: https://learn.microsoft.com/openspecs/windows_protocols/ms-dtyp/2c57429b-fdd4-488f-b5fc-9e4cf020fcdf
+    accessed: 2026-11-12
+  - title: "NIST FIPS 180-4 Secure Hash Standard (SHA-256)"
+    url: https://csrc.nist.gov/pubs/fips/180-4/upd1/final
+    accessed: 2026-11-12
+  - title: "NIST FIPS 197 Advanced Encryption Standard"
+    url: https://csrc.nist.gov/pubs/fips/197/final
+    accessed: 2026-11-12
+  - title: "S20 system key through credentiallocal.SystemKey"
+    path: docs/specs/S20-windows-sam-hashes.md
+    accessed: 2026-11-12
+  - title: "Project measurement: lsafacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (names of secrets, counts, lengths, layout positions and match flags only)"
+    path: lsafacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "PolEKList absent, absent with PolSecretEncryptionKey, and unreadable are told apart"
+    justification: "S21 4.1 step 2, M1, M2, O2"
+  - rule: "Key list: current identifier at +4, count at +24, entries {identifier, type, length, key} from +28; current key must exist and be 32 bytes"
+    justification: "S21 4.1 step 4, M6, D6"
+  - rule: "A secret value is opened with the key its header identifier names"
+    justification: "S21 4.2 step 3, M7, O3"
+date: 2026-11-12

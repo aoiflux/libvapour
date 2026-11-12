@@ -1,0 +1,43 @@
+file: tools/any/processlist/checks.go
+replaces: [tools/any/processlist/isvalid.go, tools/any/processlist/threadvalid.go, the time and structure tests of the any.process.list sanity filter in process_list.go]
+spec: S17-windows-process-thread-checks
+spec_sha256: c4cf54b5615be05251c9b21b7e7967fbf730a56e185412023b3832993d65d291
+sources:
+  - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
+    url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, FileTimeToSystemTime function (timezoneapi.h)"
+    url: https://learn.microsoft.com/windows/win32/api/timezoneapi/nf-timezoneapi-filetimetosystemtime
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, GetProcessId function (processthreadsapi.h)"
+    url: https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getprocessid
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, GetThreadId function (processthreadsapi.h)"
+    url: https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadid
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Virtual Address Spaces (Windows drivers)"
+    url: https://learn.microsoft.com/windows-hardware/drivers/gettingstarted/virtual-address-spaces
+    accessed: 2026-11-12
+  - title: "WDK 10.0.28000.0 km/wdm.h (KSYSTEM_TIME, SharedSystemTime, KeQuerySystemTime) and shared/ntdef.h (OBJ_HANDLE_TAGBITS)"
+    path: Windows Kits/10/Include/10.0.28000.0
+    accessed: 2026-11-12
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, 253668-093US, chapter 5 (CR3 format)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-11
+  - title: "Project measurement: processfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: processfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Capture window from KeBootTime less the magnitude of KeBootTimeBias to KUSER_SHARED_DATA.SystemTime plus 24 hours; fallbacks 1 and 2^63-1"
+    justification: "S17 4.1, 4.4, M3, F2, F6; allowance and boot-time symbols accepted by the owner 2026-11-12"
+  - rule: "PID, TID and CID process ID nonzero, a multiple of 4, at most 0xFFFFFFFC"
+    justification: "S17 4.2 step 2, 4.3, F3, F4, M2, M4"
+  - rule: "No time exemption for any process; System threads skip only the lower time bound"
+    justification: "S17 4.2 step 3, 4.3 step 3, M3, M4"
+  - rule: "Page-table frame nonzero and below the physical size, or below 2^52 without physical memory; bits 11:0 ignored"
+    justification: "S17 4.2 step 5, F7, M5"
+  - rule: "Each thread-list link is the head itself or in system space; links are not followed"
+    justification: "S17 4.2 step 6, F5, F8, M5"
+  - rule: "Checks return bare sentinels; callers add the tool and address"
+    justification: "S17 section 6"
+date: 2026-11-12

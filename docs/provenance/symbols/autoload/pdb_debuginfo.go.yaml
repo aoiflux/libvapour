@@ -1,0 +1,33 @@
+file: symbols/autoload/pdb_debuginfo.go
+replaces: [the information stream, DBI, module and section header parts of symbols/autoload/pdb.go]
+spec: S32-pdb-and-symbol-identity
+spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+sources:
+  - title: "LLVM, The PDB Info Stream"
+    url: https://llvm.org/docs/PDB/PdbStream.html
+    accessed: 2026-11-12
+  - title: "LLVM, The PDB DBI (Debug Info) Stream"
+    url: https://llvm.org/docs/PDB/DbiStream.html
+    accessed: 2026-11-12
+  - title: "LLVM, The Module Information Stream"
+    url: https://llvm.org/docs/PDB/ModiStream.html
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, PE Format (section table, debug type)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, OMAP structure (dbghelp.h)"
+    url: https://learn.microsoft.com/windows/win32/api/dbghelp/ns-dbghelp-omap
+    accessed: 2026-11-12
+  - title: "Project measurement: pdbfacts (fingerprints, streams, convert, lowstub) on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 and their 29 PDBs"
+    path: pdbfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "GUID from stream 1 bytes 12-27; age from the DBI header"
+    justification: "S32 4.2 step 1, F3, F12, M5"
+  - rule: "DBI header 64 bytes, signature -1, seven non-negative substreams inside the stream in documented order"
+    justification: "S32 4.2 step 2, F12, M5"
+  - rule: "Module entries read until one does not fit"
+    justification: "S32 4.2 step 3, F13"
+  - rule: "Original section headers with OMAP when both present, else slot 5; OMAP by largest rva not above, 0 means removed"
+    justification: "S32 4.2 step 4, 4.4 step 5, F14-F16, O7"
+date: 2026-11-12

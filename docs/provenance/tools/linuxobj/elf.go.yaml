@@ -1,0 +1,27 @@
+file: tools/linuxobj/elf.go
+replaces: [tools/linuxobj/elf.go (old)]
+spec: S38-linux-kallsyms
+spec_sha256: 5cc59a2088b374ad78123eb3d90f988f4a9c7ae1e64196165020a08f103d1fa0
+sources:
+  - title: "System V ABI, ELF gABI, chapter 4 (ELF header, symbol table) and chapter 5 (program header, base address, dynamic section)"
+    url: https://www.sco.com/developers/gabi/latest/contents.html
+    accessed: 2026-11-12
+  - title: "Linux kernel source, include/uapi/linux/elf.h, fs/binfmt_elf.c at v4.19, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "Linux kernel source, arch/x86/include/asm/page_types.h at v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/include/asm/page_types.h
+    accessed: 2026-11-12
+  - title: "Project measurement: kallsymsfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: kallsymsfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "ELF32 and ELF64 little-endian only; other classes and encodings refused"
+    justification: "S38 4.8 step 1, E1"
+  - rule: "Program header entries at least the class size"
+    justification: "S38 4.8 step 2, E3, E6"
+  - rule: "Base address from the lowest PT_LOAD, truncated to 4096"
+    justification: "S38 4.8 step 3, E4, E7"
+  - rule: "Library list from DT_DEBUG, four pointer fields per entry, walk stops at 0, revisit or cap"
+    justification: "S38 4.8 steps 4-5, E5, S2, O6, O8"
+date: 2026-11-12

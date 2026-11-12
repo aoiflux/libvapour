@@ -1,0 +1,30 @@
+file: util/unicodestring.go
+replaces: [util/unicodestring.go]
+spec: S74-shared-helpers
+spec_sha256: 74ce999d20911df3055241f4e24c5652ba2d84c9843ef1d28547f6b2a1d2dfa7
+sources:
+  - title: "Microsoft Learn, _UNICODE_STRING (ntdef.h), updated 2024-02-22"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB type _UNICODE_STRING through the project's symbol tables, builds 26100, 19045, 14393"
+    path: helperfacts
+    accessed: 2026-11-12
+  - title: "The Unicode Standard, Version 16.0.0, Chapter 3 (D75, D91, D93a, D93b, Table 3-7, 3.9.6 and Tables 3-8 to 3-11)"
+    url: https://www.unicode.org/versions/Unicode16.0.0/core-spec/chapter-3/
+    accessed: 2026-11-12
+  - title: "UnicodeData.txt 16.0.0, U+2400 SYMBOL FOR NULL"
+    url: https://www.unicode.org/Public/16.0.0/ucd/UnicodeData.txt
+    accessed: 2026-11-12
+  - title: "Project measurement: helperfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: helperfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "ABI layout replaced by the table's members; nil table gives the 8-byte layout"
+    justification: "S74 4.5, L3, M1"
+  - rule: "Header read through its last member; NULL buffer with Length is an error; text capped at 0xFFFF"
+    justification: "S74 4.5, L3, M2, O2"
+  - rule: "Unpaired surrogates and a final odd byte become U+FFFD; a high surrogate before the odd byte shares it"
+    justification: "S74 4.6, U1, U2, U5, O11"
+  - rule: "Trailing NULs dropped, inner NULs shown as U+2400"
+    justification: "S74 4.5, U7"
+date: 2026-11-12

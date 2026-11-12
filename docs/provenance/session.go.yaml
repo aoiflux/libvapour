@@ -1,0 +1,23 @@
+file: session.go
+replaces: [session.go]
+spec: S76-root-session
+spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+sources:
+  - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: sessionfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: sessionfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "OpenMemory picks the Windows or Linux open by name, case and spaces aside; AnalyzeMemory opens, runs and closes, returning a close failure"
+    justification: "S76 4.1"
+  - rule: "Capture opened through the file provider; its diagnostics become the first session notes"
+    justification: "S76 4.1 step 2, S71 4.10"
+  - rule: "Config fields set their option keys after ToolOptions is copied; cross-check rows copied before file rows are appended"
+    justification: "S76 4.8"
+  - rule: "Open notes go first into the diagnostics sink when there is one, else are kept by the session"
+    justification: "S76 4.9"
+  - rule: "ToolOptions values of the wrong form fail the open before the file is opened, for the keys the shared readers and the session name"
+    justification: "owner decision 2026-11-12, S76 O7"
+date: 2026-11-12

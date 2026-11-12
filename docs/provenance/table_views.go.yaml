@@ -1,0 +1,19 @@
+file: table_views.go
+replaces: [session.go (rebasedSymbolTable, mergedSymbolTable)]
+spec: S76-root-session
+spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+sources:
+  - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: sessionfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: sessionfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Moved table: symbols the predicate accepts move by the shift, modulo 2^64; SymbolsAt answers both halves alike"
+    justification: "S76 4.4"
+  - rule: "Listing and names stay in the table's own space"
+    justification: "S76 4.4"
+  - rule: "Layered table: kernel types first, extra types fill gaps, symbols only from the kernel table"
+    justification: "S76 4.7"
+date: 2026-11-12

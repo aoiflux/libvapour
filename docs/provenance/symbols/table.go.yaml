@@ -1,0 +1,39 @@
+file: symbols/table.go
+replaces: [symbols/table.go]
+spec: S58-symbol-tables
+spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+sources:
+  - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
+    path: symbols/FORMAT.md
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, C Bit Fields"
+    url: https://learn.microsoft.com/cpp/c-language/c-bit-fields
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, 3.1.2 Data Representation (Bit-Fields)"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, Figure 3.1 Scalar Types (low-level-sys-info.tex at commit e1ce0983, 2025-03-12)"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "DWARF Debugging Information Format Version 5, 5.7.6 Data Member Entries"
+    url: https://dwarfstd.org/dwarf5std.html
+    accessed: 2026-11-12
+  - title: "Linux Documentation/bpf/btf.rst (v6.1, v6.17): struct btf_member offset, kind_flag bitfield size, BTF_KIND_ENUM and ENUM64 size"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/bpf/btf.rst?h=v6.17
+    accessed: 2026-11-12
+  - title: "S32 F7 and F9: lfBitfield, lfEnum, lfMember layouts (Microsoft cvinfo.h through the S32 specification)"
+    path: docs/specs/S32-pdb-and-symbol-identity.md
+    accessed: 2026-11-12
+  - title: "Project measurement: tablefacts over the BuilderVersion 10 cache (42 and 50 tables) and the tables the session builds for mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24 and mem4_fedora40"
+    path: tablefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Record wins over an enumeration of its name"
+    justification: "S58 4.6, F5"
+  - rule: "Names sized by the table's platform; ErrPlatformUnknown from FieldSize and SizeOf, Unsized in ReadStruct"
+    justification: "S58 4.4 step 4, V13"
+  - rule: "No width guessed: unknown widths unsized; SizeOf takes expressions"
+    justification: "S58 4.4, 4.6, V8, O4"
+  - rule: "Integers: pointers, bitfields ending by bit 64, named types up to 8 bytes that are not records, floats or big-endian"
+    justification: "S58 4.5 steps 1-3, V10-V12, F4"
+date: 2026-11-12

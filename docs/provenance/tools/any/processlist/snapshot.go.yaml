@@ -1,0 +1,37 @@
+file: tools/any/processlist/snapshot.go
+replaces: [tools/any/processlist/crosscheck.go, tools/any/processlist/snapshot_csv.go, tools/any/processlist/doc.go]
+spec: S65-process-scan-environment-wow64
+spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+sources:
+  - title: "Microsoft Learn, Win32_Process class"
+    url: https://learn.microsoft.com/windows/win32/cimwin32prov/win32-process
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, tasklist"
+    url: https://learn.microsoft.com/windows-server/administration/windows-commands/tasklist
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Process.Id and Process.ProcessName properties"
+    url: https://learn.microsoft.com/dotnet/api/system.diagnostics.process.id
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Export-Csv"
+    url: https://learn.microsoft.com/powershell/module/microsoft.powershell.utility/export-csv
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-12
+  - title: "RFC 4180, Common Format and MIME Type for CSV Files"
+    url: https://www.rfc-editor.org/rfc/rfc4180
+    accessed: 2026-11-12
+  - title: "RFC 3629, UTF-8 (section 6, byte order mark)"
+    url: https://www.rfc-editor.org/rfc/rfc3629
+    accessed: 2026-11-12
+  - title: "Project measurement: procscanfacts -rows -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (with its host snapshot), and -linux on mem3_ubuntu24, mem4_fedora40"
+    path: procscanfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Byte-order mark and #TYPE line dropped"
+    justification: "S65 D10, D12, M8, M14"
+  - rule: "Header names from Win32_Process, tasklist and Process only"
+    justification: "S65 D10, O7"
+  - rule: "Names match ignoring case or by the 14-byte ImageFileName prefix"
+    justification: "S65 D11, M8"
+date: 2026-11-12

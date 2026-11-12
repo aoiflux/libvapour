@@ -1,0 +1,17 @@
+file: tools/poolscan.go
+replaces: [tools/poolscan.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Project specification S31, Windows pool and object scan (layouts, identity, O3, O4)"
+    path: docs/specs/S31-windows-pool-object-scan.md
+    accessed: 2026-11-12
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Gate, layout, minimum size, residency, identity in that order; gaps diagnosed, not fatal"
+    justification: "S70 4.7, F9, M4"
+  - rule: "HasObjectHeaderCookie follows the ObHeaderCookie global"
+    justification: "S70 4.6, M2"
+date: 2026-11-12

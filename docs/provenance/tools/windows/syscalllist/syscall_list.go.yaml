@@ -1,0 +1,22 @@
+file: tools/windows/syscalllist/syscall_list.go
+replaces: [tools/windows/syscalllist/syscall_list.go]
+spec: S64-windows-driver-kernel-tools
+spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+sources:
+  - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _DRIVER_OBJECT, _DRIVER_EXTENSION, _DEVICE_OBJECT, _OBJECT_HEADER, _KPCR, _KPRCB, _KTIMER_TABLE, _KTIMER, _KDPC, _KOBJECTS, _KAFFINITY_EX, _MI_VISIBLE_STATE, _MI_ASSIGNED_REGION_TYPES, _MI_SYSTEM_VA_TYPE, _DBGKD_GET_VERSION64, _KUSER_SHARED_DATA and the S64 globals; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
+    path: drivertoolfacts
+    accessed: 2026-11-12
+  - title: "Project measurement: drivertoolfacts -types, -raw and -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: drivertoolfacts
+    accessed: 2026-11-12
+  - title: "Specs S03 (list walker, build), S31 (pool object scan), S55 (module list, address rules, attribution, filters), S24 (memory ranges), S53 (translation layers)"
+    path: docs/specs/S55-windows-kernel-modules-and-pe-dump.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "KeServiceDescriptorTable preferred over KiServiceTable; a different table reported"
+    justification: "S64 4.14 step 1, S1"
+  - rule: "64-bit entry: signed offset >> 4 from the table; low 4 bits times 4 are argument bytes"
+    justification: "S64 4.14 step 3, S2, S3"
+  - rule: "x86 entries taken as addresses"
+    justification: "S64 4.14 step 3, O8"
+date: 2026-11-12

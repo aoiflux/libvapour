@@ -1,0 +1,12 @@
+file: extract/coverage.go
+replaces: [extract/coverage.go]
+spec: S73-minidump-writer-and-extract-regions
+spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+sources:
+  - title: "Own design: a merged set of covered file offsets, no external format; consumers are the file carvers of S19"
+    path: docs/specs/S73-minidump-writer-and-extract-regions.md
+    accessed: 2026-11-12
+decisions:
+  - rule: "Spans sorted and merged on read; holes are the complement within [0,total)"
+    justification: "S73 4.4"
+date: 2026-11-12

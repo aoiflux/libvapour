@@ -1,0 +1,29 @@
+file: symbols/btf/btf.go
+replaces: [symbols/btf/btf.go]
+spec: S75-symbol-loading-btf-kallsyms
+spec_sha256: 2e430484faf356292c5523605bbf12608e7bc0a06edad9cac1b91bcfebd6a433
+sources:
+  - title: "Linux kernel include/uapi/linux/btf.h at v4.19, v6.1, v6.4, v6.14, v6.17: btf_header, btf_type, kinds, INT data, member offset, enum, enum64, var, var_secinfo, decl_tag"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/include/uapi/linux/btf.h?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel Documentation/bpf/btf.rst at v6.1, v6.4, v6.14, v6.17: string and type encoding, magic byte order"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/Documentation/bpf/btf.rst?h=v6.17
+    accessed: 2026-11-12
+  - title: "Linux kernel kernel/bpf/btf.c at v4.19, v6.1, v6.4, v6.14, v6.17: btf_parse_hdr, btf_check_sec_info, btf_parse_str_sec, btf_parse_type_sec, btf_check_meta, btf_int_check_meta, btf_array_check_meta, btf_fwd_check_meta, btf_parse_vmlinux"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/plain/kernel/bpf/btf.c?h=v6.17
+    accessed: 2026-11-12
+  - title: "Project measurement: symbolloadfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (-os windows) and mem3_ubuntu24, mem4_fedora40 (-os linux)"
+    path: symbolloadfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Header: magic in either byte order, version 1, flags 0, hdr_len at least 24, zero tail"
+    justification: "S75 4.9 step 1, L12, L13"
+  - rule: "Type section at 0, strings directly after it ending the blob, NUL first and last"
+    justification: "S75 4.9 step 2, L13, M10"
+  - rule: "Record info mask, kinds 1 to 19, name offsets, trailing data per kind, INT data rules, zero size word for ARRAY and FWD"
+    justification: "S75 4.9 step 3, L14, L15"
+  - rule: "Every referenced type id exists"
+    justification: "S75 4.9 step 4"
+  - rule: "Kernel span 1 to MaxKernelImageBytes, read whole"
+    justification: "S75 4.9 step 5, L11, M10"
+date: 2026-11-12

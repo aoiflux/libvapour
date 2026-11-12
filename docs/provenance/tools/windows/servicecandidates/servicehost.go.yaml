@@ -1,0 +1,26 @@
+file: tools/windows/servicecandidates/servicehost.go
+replaces: [tools/windows/servicecandidates/service_find_candidates.go, tools/windows/servicecandidates/doc.go]
+spec: S65-process-scan-environment-wow64
+spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+sources:
+  - title: "Microsoft Learn, Service Programs"
+    url: https://learn.microsoft.com/windows/win32/services/service-programs
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Service host grouping in Windows 10"
+    url: https://learn.microsoft.com/windows/application-management/svchost-service-refactoring
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Parsing C command-line arguments"
+    url: https://learn.microsoft.com/cpp/c-language/parsing-c-command-line-arguments
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, Naming Files, Paths, and Namespaces"
+    url: https://learn.microsoft.com/windows/win32/fileio/naming-a-file
+    accessed: 2026-11-12
+  - title: "Project measurement: procscanfacts -rows -tool on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025 (with its host snapshot), and -linux on mem3_ubuntu24, mem4_fedora40"
+    path: procscanfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Placeholder kept: svchost.exe processes with -k group and -s service"
+    justification: "S65 D8, M7, O8"
+  - rule: "Arguments split by the Microsoft C startup rules for spaces and quotes"
+    justification: "S65 D9"
+date: 2026-11-12

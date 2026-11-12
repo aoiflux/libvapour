@@ -1,0 +1,17 @@
+file: tools/registry.go
+replaces: [tools/registry.go]
+spec: S70-tool-context-options-registry
+spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+sources:
+  - title: "Owner decisions: wrong-type option is an error (2026-11-03); pid 0 is PID 0, empty pid list is an error, RE2 patterns (COL-16, 2026-11-07); platform.subject.verb names (2026-11-10)"
+    path: docs/specs/S70-tool-context-options-registry.md
+    accessed: 2026-11-12
+  - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
+    path: toolcorefacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "Names of three lowercase dot-separated parts, unique; list in name order"
+    justification: "S70 4.9, F12, M1"
+  - rule: "Execute recovers a tool's panic and returns ErrToolPanicked naming the tool, without the stack"
+    justification: "owner decision 2026-11-12, S70 O5"
+date: 2026-11-12

@@ -1,0 +1,35 @@
+file: minidump/validate.go
+replaces: [minidump/validate.go]
+spec: S73-minidump-writer-and-extract-regions
+spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+sources:
+  - title: "Microsoft Learn, MINIDUMP_HEADER, MINIDUMP_DIRECTORY, MINIDUMP_LOCATION_DESCRIPTOR, MINIDUMP_STRING (minidumpapiset.h), pages dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minidumpapiset/ns-minidumpapiset-minidump_header
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MINIDUMP_STREAM_TYPE and MINIDUMP_TYPE enumerations (minidumpapiset.h), pages dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minidumpapiset/ne-minidumpapiset-minidump_stream_type
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MINIDUMP_SYSTEM_INFO, MINIDUMP_MODULE_LIST, MINIDUMP_MODULE, MINIDUMP_THREAD_LIST, MINIDUMP_THREAD, MINIDUMP_THREAD_INFO_LIST, MINIDUMP_THREAD_INFO (minidumpapiset.h), pages dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minidumpapiset/ns-minidumpapiset-minidump_thread
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MINIDUMP_HANDLE_DATA_STREAM, MINIDUMP_HANDLE_DESCRIPTOR, MINIDUMP_HANDLE_DESCRIPTOR_2 (minidumpapiset.h), pages dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minidumpapiset/ns-minidumpapiset-minidump_handle_data_stream
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, MINIDUMP_MEMORY_INFO_LIST, MINIDUMP_MEMORY_INFO, MINIDUMP_MEMORY64_LIST, MINIDUMP_MEMORY_DESCRIPTOR (minidumpapiset.h), pages dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/minidumpapiset/ns-minidumpapiset-minidump_memory64_list
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, VS_FIXEDFILEINFO (verrsrc.h) and SYSTEM_INFO (sysinfoapi.h), pages dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
+    accessed: 2026-11-12
+  - title: "Project measurement: minidumpfacts on msedge_server2016.dmp (written by Windows) and on process dumps of mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: minidumpfacts
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, CONTEXT structure (x86 64-bit) (winnt.h), page dated 2018-12-05"
+    url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-context
+    accessed: 2026-11-12
+decisions:
+  - rule: "Every rule V1-V21 of S73 section 5, checked without reading the memory data"
+    justification: "S73 5"
+  - rule: "Repeated failures of one rule reported once with a count"
+    justification: "S73 6"
+date: 2026-11-12

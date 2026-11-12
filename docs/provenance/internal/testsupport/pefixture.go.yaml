@@ -1,0 +1,14 @@
+file: internal/testsupport/pefixture.go
+replaces: [internal/testsupport/pefixture.go]
+spec: S79-windows-test-fixtures
+spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+sources:
+  - title: "Microsoft Learn, PE Format (COFF file header, optional header, section table, export directory)"
+    url: https://learn.microsoft.com/windows/win32/debug/pe-format
+    accessed: 2026-11-12
+decisions:
+  - rule: "DOS, COFF, PE32+ optional and section headers at the PE format's field positions"
+    justification: "S79 4.4 step 1, D1 to D3"
+  - rule: "SizeOfHeaders the first section's raw start, a FileAlignment multiple; raw pointers describe the file layout"
+    justification: "S79 4.4 steps 1-2, D2, D3, P5"
+date: 2026-11-12

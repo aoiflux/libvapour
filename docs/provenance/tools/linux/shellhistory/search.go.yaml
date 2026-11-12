@@ -1,0 +1,40 @@
+file: tools/linux/shellhistory/search.go
+replaces: [tools/linux/shellhistory/shell_read_history.go]
+spec: S15c-linux-shell-history
+spec_sha256: 6377eecb4aae327157ee2a64c2f986961faead6610406f3f9588e7ecee16095c
+sources:
+  - title: "Linux kernel source, fs/exec.c, include/linux/sched.h, include/linux/mm.h, include/linux/mm_types.h at v4.19, v6.1, v6.4, v6.14, v6.17"
+    url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/
+    accessed: 2026-11-12
+  - title: "GNU History Library manual (History 8.3), 2.2 History Storage and 2.3 History Functions"
+    url: https://tiswww.cwru.edu/php/chet/readline/history.html
+    accessed: 2026-11-12
+  - title: "The GNU Bash Reference Manual, Edition 5.3, 5.2 Bash Variables, 6.2 Bash Startup Files, 9.1 Bash History Facilities"
+    url: https://www.gnu.org/software/bash/manual/bash.html
+    accessed: 2026-11-12
+  - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, Fundamental Types and Aggregates"
+    url: https://gitlab.com/x86-psABIs/x86-64-ABI
+    accessed: 2026-11-12
+  - title: "POSIX.1-2017, Base Definitions 4.16 Seconds Since the Epoch"
+    url: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap04.html
+    accessed: 2026-11-12
+  - title: "Project measurement: tracinghistoryfacts on mem3_ubuntu24 and mem4_fedora40"
+    path: tracinghistoryfacts
+    accessed: 2026-11-12
+  - title: "GNU Readline 8.3 source release: history.h, history.c, histexpand.c, histfile.c, shlib/Makefile.in, support/shobj-conf (facts only)"
+    url: https://ftp.gnu.org/gnu/readline/readline-8.3.tar.gz
+    accessed: 2026-11-12
+  - title: "GNU Readline 5.2, 6.3, 7.0, 8.1, 8.2 source releases: history.c, histexpand.c (facts only)"
+    url: https://ftp.gnu.org/gnu/readline/
+    accessed: 2026-11-12
+  - title: "GNU Bash 5.3 source release: bashhist.c, variables.c, configure.ac, lib/readline (facts only)"
+    url: https://ftp.gnu.org/gnu/bash/bash-5.3.tar.gz
+    accessed: 2026-11-12
+decisions:
+  - rule: "An entry is three pointer-aligned words: a text line, a stamp that is '#' or NUL then 1 to 20 digits and is not the line, and unchecked data"
+    justification: "owner decision 2026-11-12, S15c O1; S15c 4.3, H1, H4, H5, H6, M3, X1"
+  - rule: "The history list is the longest null-ended array of entry pointers, lowest address on a tie"
+    justification: "S15c 4.4, H1, H2, H3"
+  - rule: "Stamp time: the digits as a signed 64-bit count of seconds since the Epoch in UTC; the stamp shown as stored, the digits alone for a NUL comment character"
+    justification: "owner decision 2026-11-12, S15c O1; S15c 4.5, H5, H6, X2"
+date: 2026-11-12

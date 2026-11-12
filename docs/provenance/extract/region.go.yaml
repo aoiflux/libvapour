@@ -1,0 +1,19 @@
+file: extract/region.go
+replaces: [extract/region.go]
+spec: S73-minidump-writer-and-extract-regions
+spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+sources:
+  - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 2A FXSAVE (512-byte save area) and Vol. 3A 4.5 (4-KByte pages)"
+    url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+    accessed: 2026-11-12
+  - title: "Project limits: limits.Default().MaxArtifactBytes"
+    path: limits/limits.go
+    accessed: 2026-11-12
+decisions:
+  - rule: "Region end is the last byte; size end-start+1; reversed or whole-space ranges refused"
+    justification: "S73 4.3 step 1, R1"
+  - rule: "One read of the whole range, then page by page on failure; unread pages zero-filled and recorded as merged absolute gaps"
+    justification: "S73 4.3 steps 2-3, I2"
+  - rule: "Copies in 1 MiB chunks; size over the limit refused before any write"
+    justification: "S73 4.3 step 4, R2"
+date: 2026-11-12

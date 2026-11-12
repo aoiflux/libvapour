@@ -1,0 +1,31 @@
+file: tools/windows/processidentity/rules.go
+replaces: [the comparison helpers of tools/windows/processidentity/process_check_identity.go]
+spec: S68-windows-memory-process-dump
+spec_sha256: 6c5307587dff8b227ccc163b732403e3306af2bf401a1876c64e95abd439acae
+sources:
+  - title: "Microsoft Learn, _UNICODE_STRING (ntdef.h)"
+    url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, RTL_USER_PROCESS_PARAMETERS (winternl.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winternl/ns-winternl-rtl_user_process_parameters
+    accessed: 2026-11-12
+  - title: "Microsoft Learn, NtQueryInformationProcess function (winternl.h)"
+    url: https://learn.microsoft.com/windows/win32/api/winternl/nf-winternl-ntqueryinformationprocess
+    accessed: 2026-11-12
+  - title: "ntoskrnl PDB types through the project's symbol tables: _EPROCESS, _SE_AUDIT_PROCESS_CREATION_INFO, _OBJECT_NAME_INFORMATION, _PEB, _RTL_USER_PROCESS_PARAMETERS, _UNICODE_STRING, _TEB, _NT_TIB, _KUSER_SHARED_DATA; builds 26100, 19045, 14393"
+    path: memdumpfacts -types
+    accessed: 2026-11-12
+  - title: "Project specifications S00, S03, S24, S25, S30, S43, S50, S56, S64"
+    path: docs/specs
+    accessed: 2026-11-12
+  - title: "Project measurement: memdumpfacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
+    path: memdumpfacts
+    accessed: 2026-11-12
+decisions:
+  - rule: "ImageFileName compared with the kernel path's file name cut to 14 bytes, ignoring ASCII case"
+    justification: "S68 4.5 step 3, E5, M2"
+  - rule: "Image path compared after the volume, ignoring case, else by file name"
+    justification: "S68 4.5 step 5, M4, O8"
+  - rule: "Rewritten when Length is odd, MaximumLength is not Length + 2, the buffer leaves the block, no NUL at Length, or an image path holds a NUL"
+    justification: "S68 4.5 step 6, D1, M5, M6, O2"
+date: 2026-11-12
