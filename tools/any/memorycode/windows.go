@@ -184,7 +184,7 @@ func (r *windowsRun) process(proc processlist.Process) ([]Finding, error) {
 	if err != nil {
 		return nil, r.problem(object, proc.EPROCESS, "address space not built", err)
 	}
-	le, ok := space.(leafEntries)
+	le, ok := space.(walkEntries)
 	if !ok {
 		return nil, r.problem(object, proc.EPROCESS, "page-table entries not read", ErrNoPageEntries)
 	}
@@ -210,7 +210,7 @@ func (r *windowsRun) process(proc processlist.Process) ([]Finding, error) {
 }
 
 func (r *windowsRun) region(proc processlist.Process, name string, m memoryranges.Mapping, space memory.MemoryReader,
-	le leafEntries, mode disasm.Mode, maps []memoryranges.Mapping) (Finding, bool, error) {
+	le walkEntries, mode disasm.Mode, maps []memoryranges.Mapping) (Finding, bool, error) {
 	value, known := memoryranges.Win32Protection(m.Protection)
 	allocExec := known && executable(value)
 	pages := walkRegion(le, r.prot, m.Start, m.End, allocExec, r.budget)

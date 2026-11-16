@@ -116,9 +116,12 @@ func FindKernelBaseByProcessListAnchor(physical memory.MemoryReader, cr3 uint64,
 }
 
 // Windows 8 and later may keep the block encoded (KdpDataBlockEncoded); an
-// encoded block has no readable tag and the scan finds nothing.
-func FindKernelBaseFromKDBG(physical memory.MemoryReader) (uint64, error) {
+// encoded block has no readable tag and the scan finds nothing. A "KDBG" run
+// can also be chance bytes, so a base counts only where an image starts.
+func FindKernelBaseFromKDBG(physical memory.MemoryReader, cr3 uint64) (uint64, error) {
+	k := newKernelSpace(physical, cr3)
 	var base uint64
+	passed := 0
 	tag := []byte(debuggerTag)
 	coverage := memory.ScanWindows(physical, debuggerScanStep, debuggerMinBytes, func(_ uint64, w []byte) bool {
 		for i := debuggerTagAt; i+debuggerMinBytes-debuggerTagAt <= len(w); i += 8 {
@@ -127,10 +130,15 @@ func FindKernelBaseFromKDBG(physical memory.MemoryReader) (uint64, error) {
 			}
 			size := binary.LittleEndian.Uint32(w[i-debuggerTagAt+debuggerSizeAt:])
 			candidate := binary.LittleEndian.Uint64(w[i-debuggerTagAt+debuggerBaseAt:])
-			if size >= debuggerMinBytes && uint64(size) <= pageBytes && candidate >= upperHalfStart && candidate%pageBytes == 0 {
-				base = candidate
-				return true
+			if size < debuggerMinBytes || uint64(size) > pageBytes || candidate < upperHalfStart || candidate%pageBytes != 0 {
+				continue
 			}
+			if !k.imageAt(candidate) {
+				passed++
+				continue
+			}
+			base = candidate
+			return true
 		}
 		return false
 	})
@@ -139,6 +147,9 @@ func FindKernelBaseFromKDBG(physical memory.MemoryReader) (uint64, error) {
 	}
 	if err := coverage.Incomplete(); err != nil {
 		return 0, fmt.Errorf("layers: kernel base from the debugger data block: none in the readable part of the image: %w", err)
+	}
+	if passed > 0 {
+		return 0, fmt.Errorf("layers: kernel base from the debugger data block: %d blocks name no base that starts an image", passed)
 	}
 	return 0, fmt.Errorf("layers: kernel base from the debugger data block: none in the image")
 }

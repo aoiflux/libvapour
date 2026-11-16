@@ -101,6 +101,40 @@ func TestAPagesOwnProtectionWinsOverTheVADs(t *testing.T) {
 	}
 }
 
+func TestAnUpperLevelXDMakesThePagesBelowNotExecutable(t *testing.T) {
+	for _, shift := range []uint{39, 30, 21} {
+		c := newCodeFixture(t, privateVAD(regionVA, 1, indexReadWrite))
+		c.page(regionVA, true, prologue64)
+		if rows := c.run(c.context()); len(rows) != 1 {
+			t.Fatalf("without XD above the leaf: %+v", rows)
+		}
+		at := c.entryAddress(regionVA, shift)
+		raw, err := c.f.Memory.ReadAt(at, 8)
+		if err != nil {
+			t.Fatal(err)
+		}
+		c.f.Memory.WriteU64(at, binary.LittleEndian.Uint64(raw)|noExecute)
+		if rows := c.run(c.context()); len(rows) != 0 {
+			t.Errorf("XD in the entry at shift %d: %+v", shift, rows)
+		}
+	}
+
+	c := newCodeFixture(t, privateVAD(regionVA, 1, indexExecuteReadWrite))
+	c.page(regionVA, true, prologue64)
+	at := c.entryAddress(regionVA, 21)
+	raw, err := c.f.Memory.ReadAt(at, 8)
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.f.Memory.WriteU64(at, binary.LittleEndian.Uint64(raw)|noExecute)
+	if rows := c.run(c.context()); len(rows) != 0 {
+		t.Fatalf("an executable VAD below an XD directory entry gave %+v", rows)
+	}
+	if !c.hasDiag("1 executable regions hold no readable nonzero byte") {
+		t.Errorf("diagnostics %q", c.diags)
+	}
+}
+
 func TestNotPresentEntriesCarryTheirOwnProtection(t *testing.T) {
 	t.Run("software entry", func(t *testing.T) {
 		c := newCodeFixture(t, privateVAD(regionVA, 1, indexReadWrite))
@@ -372,7 +406,7 @@ func TestAHugeReservationIsWalkedThroughItsTables(t *testing.T) {
 		if err != nil {
 			return nil, err
 		}
-		return countingSpace{MemoryReader: r, entries: r.(leafEntries), n: &lookups}, nil
+		return countingSpace{MemoryReader: r, entries: r.(walkEntries), n: &lookups}, nil
 	}
 	rows := c.run(ctx)
 	if len(rows) != 1 || rows[0].FirstContent != start+size-pageSize || rows[0].Pages != size/pageSize {
@@ -388,13 +422,13 @@ func TestAHugeReservationIsWalkedThroughItsTables(t *testing.T) {
 
 type countingSpace struct {
 	memory.MemoryReader
-	entries leafEntries
+	entries walkEntries
 	n       *int
 }
 
-func (c countingSpace) LeafEntry(va uint64) (uint64, error) {
+func (c countingSpace) WalkEntries(va uint64) ([]uint64, error) {
 	*c.n++
-	return c.entries.LeafEntry(va)
+	return c.entries.WalkEntries(va)
 }
 
 func TestAMissingPageProtectionTableIsReportedOnce(t *testing.T) {

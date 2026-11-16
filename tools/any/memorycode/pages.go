@@ -40,6 +40,21 @@ type leafEntries interface {
 	LeafEntry(virtualAddress uint64) (uint64, error)
 }
 
+type walkEntries interface {
+	WalkEntries(virtualAddress uint64) ([]uint64, error)
+}
+
+// XD in a present entry above the leaf denies instruction fetches from every
+// page that entry maps, whatever the leaf says (S35 4.3 step 3).
+func noExecuteAbove(path []uint64) bool {
+	for _, e := range path[:len(path)-1] {
+		if e&entryPresent != 0 && e&entryNoExec != 0 {
+			return true
+		}
+	}
+	return false
+}
+
 type pageProtections struct {
 	software, transition symbols.IntField
 	table                []uint32
@@ -125,30 +140,31 @@ type regionPages struct {
 
 // A reservation of terabytes walks only the entries its tables hold: a miss
 // above the leaf skips the span that entry covers.
-func walkRegion(le leafEntries, prot pageProtections, start, end uint64, allocExec bool, budget uint64) regionPages {
+func walkRegion(we walkEntries, prot pageProtections, start, end uint64, allocExec bool, budget uint64) regionPages {
 	r := regionPages{pages: (end-start)/pageSize + 1}
 	for page := start &^ (pageSize - 1); ; {
 		step := pageSize
-		entry, err := le.LeafEntry(page)
+		path, err := we.WalkEntries(page)
 		var miss layers.UnmappedPageError
 		switch {
-		case err == nil:
+		case err == nil && len(path) > 0:
 			r.visited++
 			if r.visited > budget {
 				r.cut = true
 				return r
 			}
-			s := prot.decode(entry)
+			s := prot.decode(path[len(path)-1])
 			if s.resident {
 				r.resident++
 			}
 			if s.written {
 				r.written++
 			}
-			if s.ownProtect && s.executable {
+			fetchable := !noExecuteAbove(path)
+			if fetchable && s.ownProtect && s.executable {
 				r.ownExecutable++
 			}
-			if (s.ownProtect && s.executable) || (!s.ownProtect && allocExec) {
+			if fetchable && ((s.ownProtect && s.executable) || (!s.ownProtect && allocExec)) {
 				r.executable++
 				r.executableAt = append(r.executableAt, page)
 			}

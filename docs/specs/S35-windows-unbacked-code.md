@@ -66,6 +66,7 @@ M1 to M8 come from `codefacts` on 2026-11-12 over mem1_win11, mem2_win10, mem5_s
 | M6 | Executable mapped regions by backing: every one is a section with a control area and no file (306 on mem2, 1 on mem5); none is a view of a data file. | | | | | |
 | M7 | Region start: a PE32+ header (machine 0x8664) once (mem2); no header elsewhere; first page unreadable 1, 57, 4, 4, 2. First instruction at the first page holding bytes: `jmp rel32` 2 (mem1) and 2 (mem2), `call rel32` 5, `jmp [rip+disp32]` 18, `mov rax, imm64; jmp rax` 2 (mem2), none on mem5, mem6, mem7. | | | | | |
 | M8 | Process names with regions holding bytes, regions per name, and whether the process maps an image whose name contains `jit`. mem1: SearchHost.exe 6, the capture program 1, explorer.exe 1, svchost.exe 1; none maps such an image. mem2: PhoneExperienc 304 (`clrjit.dll`), dwm.exe 40, SearchApp.exe 31, explorer.exe 29, powershell.exe 12 (`clrjit.dll`), MsMpEng.exe 5, msedge.exe 5, smartscreen.ex 3, LogonUI.exe 2, OneDrive.exe 2, the capture program 1, TextInputHost. 1. mem5: dwm.exe 43, msedge.exe 14, powershell.exe 12 (`clrjit.dll`), MsMpEng.exe 11, explorer.exe 5, LogonUI.exe 2, GenValObj.exe 1, MicrosoftEdgeU 1. mem6: dwm.exe 98, MsMpEng.exe 8, WindowsTermina 6, explorer.exe 4, SearchHost.exe 2, ShellExperienc 2, StartMenuExper 2, LogonUI.exe 1. mem7: dwm.exe 4, LogonUI.exe 1. | | | | | |
+| M9 | Present entries above the leaf in the user half (bit 47 clear) of each process's own root with XD set, over the first 40 roots of the active list besides the System process (`pagetablefacts -upper-xd`, 2026-11-16): 0 on every capture. `UserDirectoryTableBase` is 0 on every one of those processes on 19045 and 26100, and 14393 has no such member, so no process runs user mode on a second root (S25 4.5). The System process's root, which has no VADs to walk, has 2 such entries in its user half on every capture but mem5. | none of 40 | none of 40 | none of 40 | none of 40 | none of 40 |
 
 M2 shows that a VAD's protection is not the protection of its pages: the VAD keeps the allocation protection (D1 `AllocationProtect`), and `VirtualProtect` changes the pages (D2, D3). M3 and M4 show that XD agrees with an executable protection wherever the VAD protection is executable, and that it is clear in a page whose VAD protection is not executable only where the page was made executable. M8's names are truncated to the 15-byte `ImageFileName`. The two processes that map `clrjit.dll`, the .NET just-in-time compiler, hold 316 of mem2's 435 regions.
 
@@ -91,9 +92,10 @@ M2 shows that a VAD's protection is not the protection of its pages: the VAD kee
 
 The range is walked from `Start` to `End` in 4 KB steps.
 
-1. `LeafEntry(page)`. A miss above the leaf (`UnmappedPageError` with a `Span`) skips to the end of that span. Any other failure counts the page as having no entry.
+1. `WalkEntries(page)`, which gives the entries the walk read, root level first, through the leaf. A miss above the leaf (`UnmappedPageError` with a `Span`) skips to the end of that span. Any other failure counts the page as having no entry.
 2. More leaf entries than `MaxRegionScanBytes` / 4096 stop the walk with `ErrRegionScanCut`: the region keeps what was counted, one diagnostic per region; strict mode fails.
 3. **Present** (bit 0 set, D7, T1): the page is resident; it is executable when bit 63 is clear; it is written when bit 6 is set.
+   A present entry above the leaf with bit 63 set denies instruction fetches from every page below it (D7): such a page is not executable, whatever its own entry or protection says, and steps 3 to 5 count it as having no execute right. The root is the process's user-space root (S25 4.5), the one its user-mode code runs on.
 4. **Not present.** The processor ignores the entry (D7); the memory manager's forms apply (T2):
    1. Prototype (bit 10): the protection is the section's; the page has no protection of its own.
    2. Transition (bit 11): the page is resident; its protection is `MmProtectToValue[_MMPTE_TRANSITION.Protection]`.
@@ -151,10 +153,10 @@ One `Finding` per reported region (7), with the preview: up to the preview lengt
 | Rule | Justification | On failure |
 |---|---|---|
 | User reads only through the process's own space | 4.2 step 2 | process skipped, diagnostic |
-| Leaf entries available | 4.3 needs D7 bits | `ErrNoPageEntries`; process skipped |
+| Walk entries available | 4.3 needs D7 bits at every level | `ErrNoPageEntries`; process skipped |
 | Only `private` and `mapped` VADs | D1, O3 | not a candidate |
 | Execute right in the VAD protection or a page's own protection | D1, D2, D4, M2, M3 | not a candidate |
-| XD only in a present entry | D7 | not-present entries use T2 |
+| XD only in a present entry, at any level of the walk | D7, M9 | not-present entries use T2 |
 | A content page in an executable page | D3 | counted, not reported |
 | At most `MaxRegionScanBytes` / 4096 leaf entries per region | 8 | `ErrRegionScanCut`; walk stops |
 | Instruction form must decode at the implied length | D8 | no transfer |
@@ -207,7 +209,7 @@ Counts are exact up to the walk cut (4.3 step 2).
 
 ## 9. Acceptance
 
-1. Synthetic fixtures (`tools/any/memorycode/*_test.go`, on the shared process fixture with `_MMPTE_SOFTWARE`, `_MMPTE_TRANSITION` and a full `MmProtectToValue` added): each rule; present pages with and without XD; software, transition, prototype and zero entries; an executable VAD whose pages are XD; a region of zeros (not listed, counted); image views not listed; backing `section`; each header kind; each transfer form in both modes including an unreadable slot and a target in an image view; the preview option and its bound; the dump and its failure; a refused process space with no kernel reads; a reader without leaf entries; the walk cut; strict mode; span skipping over a reservation of 2^39 bytes.
+1. Synthetic fixtures (`tools/any/memorycode/*_test.go`, on the shared process fixture with `_MMPTE_SOFTWARE`, `_MMPTE_TRANSITION` and a full `MmProtectToValue` added): each rule; present pages with and without XD, and pages below an upper-level entry with XD (`TestAnUpperLevelXDMakesThePagesBelowNotExecutable`); software, transition, prototype and zero entries; an executable VAD whose pages are XD; a region of zeros (not listed, counted); image views not listed; backing `section`; each header kind; each transfer form in both modes including an unreadable slot and a target in an image view; the preview option and its bound; the dump and its failure; a refused process space with no kernel reads; a reader without leaf entries; the walk cut; strict mode; span skipping over a reservation of 2^39 bytes.
 2. Fuzz targets, 30 s each on 2026-11-12: `FuzzHeaderKind` (any bytes: no panic; `pe32`/`pe32+` only with "MZ" and the signature): 3,762,210 executions. `FuzzTransfer` (any bytes, address and mode: no panic; a target only for the four forms; 32-bit targets fit 32 bits): 2,299,252 executions. `FuzzPageEntry` (any entry and table: no panic; a present entry's executability is bit 63 clear): 3,324,079 executions.
 3. On the captures, `codefacts -nofacts -tool`, 2026-11-12, without a pagefile:
 
@@ -228,7 +230,7 @@ Counts are exact up to the walk cut (4.3 step 2).
 
 | # | Point | Closes with |
 |---|---|---|
-| O1 | Only the leaf entry's XD is read. D7 makes a page non-executable when XD is set in any entry of the walk; the process layer does not give the upper entries. M4 shows no executable leaf in a non-executable image view, which is consistent with no upper-level XD, but does not prove it. | A layer call that returns every entry of the walk |
+| O1 | Only the leaf entry's XD was read. D7 makes a page non-executable when XD is set in any entry of the walk. Owner decision 2026-11-16 (plan M1.1): read XD at every level. Done: `WalkEntries` (S53 4.2) gives every entry of the walk, and 4.3 step 3 applies an upper-level XD; M9 finds none in any process's user half, so no measured row changes. Remains: no capture runs user mode on a second root (KVA shadow), so the rule that such a process's user-mode root is `UserDirectoryTableBase` (S25 4.5) is not measured here. | A capture with KVA shadow enabled |
 | O2 | A page whose entry holds no protection (zero or prototype) takes the VAD's protection. That the memory manager does so is not documented; it rests on D1 (`AllocationProtect`) and on M3. | A documented source or a controlled capture |
 | O3 | Image views are not candidates. Code changed inside an image view (a patched page) is file-backed in the VAD sense; finding it needs the file's bytes (S18, S19). | A separate specification |
 | O4 | No executable view of a data file was measured (M6); the `file` backing is untested on real data. | A capture with one |
@@ -246,7 +248,7 @@ The owner answered every point above. Where a point and this table differ, this 
 
 | Point | Decision |
 |---|---|
-| O1 | Read leaf XD only |
+| O1 | Read leaf XD only (2026-11-12); read every level (2026-11-16) |
 | O2 | Take the VAD protection |
 | O3 | Leave to a separate spec |
 | O4 | Defer; untested on real data |

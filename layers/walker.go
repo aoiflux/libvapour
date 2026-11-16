@@ -26,7 +26,7 @@ type walkEnd struct {
 	err      error
 }
 
-func (t *IntelTranslator) walk(va uint64) walkEnd {
+func (t *IntelTranslator) walk(va uint64, path *[]uint64) walkEnd {
 	m := t.Mode.effective()
 	table := m.root(t.CR3)
 	for level := range m.levels {
@@ -37,6 +37,9 @@ func (t *IntelTranslator) walk(va uint64) walkEnd {
 				miss.Span = m.span(level - 1)
 			}
 			return walkEnd{err: miss}
+		}
+		if path != nil {
+			*path = append(*path, e)
 		}
 		s := m.step(level, e)
 		last := level == m.leaf()
@@ -85,7 +88,7 @@ func (t *IntelTranslator) entry(m PagingMode, table, index uint64) (uint64, bool
 }
 
 func (t *IntelTranslator) Translate(virtualAddress uint64) (uint64, error) {
-	end := t.walk(virtualAddress)
+	end := t.walk(virtualAddress, nil)
 	if end.err != nil {
 		return 0, end.err
 	}
@@ -95,9 +98,18 @@ func (t *IntelTranslator) Translate(virtualAddress uint64) (uint64, error) {
 // The entry that ended the walk at the leaf level, or the large-page entry
 // above it, whatever it says; a walk that ends above the leaf is an error.
 func (t *IntelTranslator) LeafEntry(virtualAddress uint64) (uint64, error) {
-	end := t.walk(virtualAddress)
+	end := t.walk(virtualAddress, nil)
 	if end.atLeaf {
 		return end.entry, nil
 	}
 	return 0, end.err
+}
+
+func (t *IntelTranslator) WalkEntries(virtualAddress uint64) ([]uint64, error) {
+	path := make([]uint64, 0, len(t.Mode.effective().levels))
+	end := t.walk(virtualAddress, &path)
+	if end.atLeaf {
+		return path, nil
+	}
+	return path, end.err
 }

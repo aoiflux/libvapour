@@ -111,6 +111,32 @@ func TestAMissAboveTheLeafCarriesItsSpan(t *testing.T) {
 	}
 }
 
+func TestTheWalkGivesEveryEntryItRead(t *testing.T) {
+	img := newPhys(0x100000)
+	pt := newTables(img, ModeX64, 0x1000, 0x2000)
+	pt.page(kva, 0x80000)
+	pd := pt.table(2, kva)
+	img.put8(pd+8*pt.mode.index(kva, 2), pt.table(3, kva)|fP|fRW|fNX)
+	tr := pt.translator()
+	path, err := tr.WalkEntries(kva + 0x123)
+	if err != nil || len(path) != 4 || path[2]&fNX == 0 || path[3] != 0x80000|fP|fRW {
+		t.Fatalf("%#x, %v", path, err)
+	}
+	leaf, _ := tr.LeafEntry(kva)
+	if leaf != path[3] {
+		t.Errorf("leaf 0x%x, walk ends 0x%x", leaf, path[3])
+	}
+	path, err = tr.WalkEntries(kva + 1<<21)
+	miss, ok := missOf(err)
+	if !ok || miss.Span != 1<<21 || len(path) != 3 || path[2] != 0 {
+		t.Errorf("a miss above the leaf: %#x, %v", path, err)
+	}
+	v := NewVirtualMemoryLayer(img, tr)
+	if path, err := v.WalkEntries(kva + 0x123); err != nil || len(path) != 4 {
+		t.Errorf("through the virtual layer: %#x, %v", path, err)
+	}
+}
+
 func TestATableOutsideTheImageIsNotCaptured(t *testing.T) {
 	img := newPhys(0x10000)
 	pt := newTables(img, ModeX64, 0x1000, 0x2000)

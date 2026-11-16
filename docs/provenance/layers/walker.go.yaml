@@ -1,7 +1,7 @@
 file: layers/walker.go
 replaces: [layers/translation.go]
 spec: S53-address-translation-layers
-spec_sha256: bd51da949f6304e4a71b7ace847e6a477b0645f0a547cde4c17626eba675f601
+spec_sha256: bb4b32945e466187b294daeacb0c8cc440ad934c2e509650ded62f71e927f13b
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging: 5.3, 5.4, 5.5, 5.7, 5.10.3.3, Tables 5-4 to 5-20"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
@@ -17,4 +17,6 @@ decisions:
     justification: "S53 4.2"
   - rule: "LeafEntry returns the entry that ended the walk at the leaf or a large page"
     justification: "S53 4.2"
-date: 2026-11-12
+  - rule: "WalkEntries returns every entry the walk read, root level first, through the one that ended it"
+    justification: "S53 4.2, S35 O1"
+date: 2026-11-16

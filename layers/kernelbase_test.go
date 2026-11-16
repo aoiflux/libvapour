@@ -73,20 +73,37 @@ func TestTheProcessListLeadsToTheHead(t *testing.T) {
 }
 
 func TestTheDebuggerDataBlockGivesTheBase(t *testing.T) {
-	img := newPhys(0x200000)
-	block := uint64(0x123450)
+	img, _ := kernelImage("kernel.pdb")
+	block := uint64(0x323450)
 	copy(img.buf[block+0x10:], "KDBG")
 	img.put4(block+0x14, 0x368)
 	img.put8(block+0x18, tBase)
-	copy(img.buf[0x20010:], "KDBG")
-	img.put4(0x20014, 0x368)
-	img.put8(0x20018, tBase+0x10)
-	base, err := FindKernelBaseFromKDBG(img)
+	copy(img.buf[0x220010:], "KDBG")
+	img.put4(0x220014, 0x368)
+	img.put8(0x220018, tBase+0x10)
+	base, err := FindKernelBaseFromKDBG(img, 0x1000)
 	if err != nil || base != tBase {
 		t.Fatalf("0x%x, %v", base, err)
 	}
-	if _, err := FindKernelBaseFromKDBG(newPhys(0x10000)); err == nil {
+	if _, err := FindKernelBaseFromKDBG(newPhys(0x10000), 0x1000); err == nil {
 		t.Fatal("found a block in zeros")
+	}
+}
+
+func TestADebuggerDataBlockNamingNoImageIsSkipped(t *testing.T) {
+	img, _ := kernelImage("kernel.pdb")
+	for _, b := range []struct{ at, base uint64 }{{0x200000, tBase + 0x100000}, {0x300000, tBase}} {
+		copy(img.buf[b.at+0x10:], "KDBG")
+		img.put4(b.at+0x14, 0x368)
+		img.put8(b.at+0x18, b.base)
+	}
+	base, err := FindKernelBaseFromKDBG(img, 0x1000)
+	if err != nil || base != tBase {
+		t.Fatalf("0x%x, %v", base, err)
+	}
+	img.put8(0x300018, tBase+0x200000)
+	if base, err := FindKernelBaseFromKDBG(img, 0x1000); err == nil {
+		t.Fatalf("accepted 0x%x, where no image starts", base)
 	}
 }
 

@@ -105,6 +105,18 @@ func (v *VirtualMemoryLayer) LeafEntry(virtualAddress uint64) (uint64, error) {
 	return t.LeafEntry(virtualAddress &^ (pageBytes - 1))
 }
 
+func (v *VirtualMemoryLayer) WalkEntries(virtualAddress uint64) ([]uint64, error) {
+	t, ok := v.translator.(walkTranslator)
+	if !ok {
+		return nil, fmt.Errorf("layers: translator %T reads no page-table entries", v.translator)
+	}
+	return t.WalkEntries(virtualAddress &^ (pageBytes - 1))
+}
+
+type walkTranslator interface {
+	WalkEntries(virtualAddress uint64) ([]uint64, error)
+}
+
 // Dirty (bit 6) is a hardware bit, so only a present entry has one; in a
 // not-present Windows entry bit 6 is part of Protection.
 func (v *VirtualMemoryLayer) IsDirty(virtualAddress uint64) (bool, error) {

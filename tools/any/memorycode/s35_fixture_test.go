@@ -90,20 +90,24 @@ func (c *codeFixture) page(va uint64, exec bool, data []byte) uint64 {
 	return pa
 }
 
-func (c *codeFixture) leafAddress(va uint64) uint64 {
+func (c *codeFixture) leafAddress(va uint64) uint64 { return c.entryAddress(va, 12) }
+
+// The physical address of the entry that maps va at the level whose index
+// starts at bit shift: 39 for the root, 12 for the leaf.
+func (c *codeFixture) entryAddress(va uint64, shift uint) uint64 {
 	table := c.space().DTB &^ 0xfff
-	for _, shift := range []uint{39, 30, 21} {
-		raw, err := c.f.Memory.ReadAt(table+(va>>shift&0x1ff)*8, 8)
+	for level := uint(39); level > shift; level -= 9 {
+		raw, err := c.f.Memory.ReadAt(table+(va>>level&0x1ff)*8, 8)
 		if err != nil {
 			c.t.Fatal(err)
 		}
 		e := binary.LittleEndian.Uint64(raw)
 		if e&1 == 0 {
-			c.t.Fatalf("no table maps 0x%x at shift %d", va, shift)
+			c.t.Fatalf("no table maps 0x%x at shift %d", va, level)
 		}
 		table = e & 0x000ffffffffff000
 	}
-	return table + (va>>12&0x1ff)*8
+	return table + (va>>shift&0x1ff)*8
 }
 
 // The page's tables are built by mapping it first; the entry then replaces

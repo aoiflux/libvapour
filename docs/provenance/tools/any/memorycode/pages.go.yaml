@@ -1,7 +1,7 @@
 file: tools/any/memorycode/pages.go
 replaces: [tools/any/memorycode/memory_find_code.go]
 spec: S35-windows-unbacked-code
-spec_sha256: c59091c4c54749a17fbc4e0995e05cafabb8041522f1e75aa281fdff0bf3052f
+spec_sha256: 49ba3b97e353dfddc9ff9155bbd7c96919343df28ff8bd014521097de53a547f
 sources:
   - title: "Microsoft Learn, MEMORY_BASIC_INFORMATION (winnt.h), page dated 2018-12-05"
     url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-memory_basic_information
@@ -42,4 +42,6 @@ decisions:
     justification: "S35 4.3 step 5, O2"
   - rule: "A miss above the leaf skips that entry's span; at most MaxRegionScanBytes / 4096 leaf entries per region"
     justification: "S35 4.3 steps 1-2, 8"
-date: 2026-11-12
+  - rule: "XD in a present entry above the leaf makes every page below it not executable"
+    justification: "S35 4.3 step 3, D7, M9, O1"
+date: 2026-11-16

@@ -30,4 +30,6 @@ decisions:
     justification: "S76 4.7"
   - rule: "Strict mode refuses an unconfirmed base, no base, or a table needing a base with no build to check it against"
     justification: "owner decision 2026-11-12, S76 O4"
-date: 2026-11-12
+  - rule: "The debugger data block scan reads its candidate through the session root"
+    justification: "S53 4.9 step 3, O12"
+date: 2026-11-16

@@ -50,8 +50,13 @@ func FuzzTranslate(f *testing.F) {
 		if pa&^(pageBytes-1)&^limit != 0 {
 			t.Fatalf("%s: 0x%x translated to 0x%x, outside the frame field", m.Name(), va, pa)
 		}
-		if _, err := tr.LeafEntry(va); err != nil {
+		leaf, err := tr.LeafEntry(va)
+		if err != nil {
 			t.Fatalf("%s: 0x%x translated but has no leaf entry: %v", m.Name(), va, err)
+		}
+		path, err := tr.WalkEntries(va)
+		if err != nil || len(path) == 0 || len(path) > len(m.effective().levels) || path[len(path)-1] != leaf {
+			t.Fatalf("%s: 0x%x: walk %#x, %v; leaf entry 0x%x", m.Name(), va, path, err, leaf)
 		}
 	})
 }

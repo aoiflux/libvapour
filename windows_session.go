@@ -256,6 +256,6 @@ func (o *opening) baseCandidates(table symbols.SymbolTable, id *autoload.KernelI
 		}})
 	}
 	return append(c, baseCandidate{from: "the debugger data block scan", find: func() (uint64, error) {
-		return layers.FindKernelBaseFromKDBG(o.physical)
+		return layers.FindKernelBaseFromKDBG(o.physical, root)
 	}})
 }
