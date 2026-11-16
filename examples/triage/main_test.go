@@ -39,8 +39,8 @@ func TestTheProcessViewShowsTheToolsHiddenRows(t *testing.T) {
 
 func TestOnlyAnImageOnOneLoaderListIsShown(t *testing.T) {
 	mods := []librarycompare.Module{
-		{PID: 1, Process: "app.exe", Base: 0x400000, InLoad: true, InMem: true, MappedPath: `\app.exe`},
-		{PID: 1, Process: "app.exe", Base: 0x10000000, InInit: true, InMem: true, MappedPath: `\Temp\x.dll`},
+		{PID: 1, Process: "app.exe", Base: 0x400000, OnLoadOrderList: true, OnMemoryOrderList: true, MappedPath: `\app.exe`},
+		{PID: 1, Process: "app.exe", Base: 0x10000000, OnInitOrderList: true, OnMemoryOrderList: true, MappedPath: `\Temp\x.dll`},
 		{PID: 1, Process: "app.exe", Base: 0x20000000, MappedPath: `\Windows\System32\en-US\app.exe.mui`},
 		{PID: 2, Process: "idle.exe", Base: 0x30000000, LoaderListsEmpty: true},
 	}

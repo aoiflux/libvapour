@@ -40,19 +40,19 @@ type Row struct {
 	Disasm        string
 	Bootcode      []byte
 
-	PartitionIndex   int
-	Bootable         bool
-	BootFlag         uint8
-	PartitionType    string
-	PartitionTypeRaw uint8
-	RelativeSectors  uint32
-	TotalSectors     uint32
-	StartingCylinder uint16
+	Entry            int
+	BootIndicator    uint8
+	Active           bool
 	StartingHead     uint8
 	StartingSector   uint8
-	EndingCylinder   uint16
+	StartingCylinder uint16
+	SystemID         uint8
+	SystemIDName     string
 	EndingHead       uint8
 	EndingSector     uint8
+	EndingCylinder   uint16
+	RelativeSectors  uint32
+	TotalSectors     uint32
 }
 
 // Names from the System ID table of Microsoft Learn (S66 BD5); other values
@@ -154,19 +154,19 @@ func entryRow(e entry, addr uint64) Row {
 	return Row{
 		Depth:            1,
 		Offset:           addr,
-		PartitionIndex:   e.index,
-		Bootable:         e.indicator == indicatorActive,
-		BootFlag:         e.indicator,
-		PartitionType:    systemIDNames[e.systemID],
-		PartitionTypeRaw: e.systemID,
-		RelativeSectors:  e.relative,
-		TotalSectors:     e.total,
-		StartingCylinder: e.startCylinder,
+		Entry:            e.index,
+		BootIndicator:    e.indicator,
+		Active:           e.indicator == indicatorActive,
 		StartingHead:     e.startHead,
 		StartingSector:   e.startSector,
-		EndingCylinder:   e.endCylinder,
+		StartingCylinder: e.startCylinder,
+		SystemID:         e.systemID,
+		SystemIDName:     systemIDNames[e.systemID],
 		EndingHead:       e.endHead,
 		EndingSector:     e.endSector,
+		EndingCylinder:   e.endCylinder,
+		RelativeSectors:  e.relative,
+		TotalSectors:     e.total,
 	}
 }
 

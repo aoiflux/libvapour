@@ -32,9 +32,9 @@ type Module struct {
 	PID                  uint64
 	Process              string
 	Base                 uint64
-	InLoad               bool
-	InInit               bool
-	InMem                bool
+	OnLoadOrderList      bool
+	OnMemoryOrderList    bool
+	OnInitOrderList      bool
 	Wow64                bool
 	MappedPath           string
 	MappedPathUnreadable bool
@@ -143,7 +143,7 @@ func compareProcess(ctx tools.Context, decoder memoryranges.Decoder, p processli
 		in := recs.bases[m.Start]
 		rows = append(rows, Module{
 			PID: p.PID, Process: p.Name, Base: m.Start,
-			InLoad: in.load, InInit: in.init, InMem: in.mem, Wow64: in.wow,
+			OnLoadOrderList: in.load, OnMemoryOrderList: in.mem, OnInitOrderList: in.init, Wow64: in.wow,
 			MappedPath: m.Path, MappedPathUnreadable: m.PathUnreadable,
 			LoaderListsEmpty: len(recs.bases) == 0,
 		})

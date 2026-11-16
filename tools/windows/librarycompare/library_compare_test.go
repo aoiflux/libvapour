@@ -65,9 +65,9 @@ func TestEachImageViewIsARowWithTheListsThatHoldItsBase(t *testing.T) {
 		[]testsupport.S56Library{app, library(dllBase, "kernel32.dll"), cut})})
 	rows, _ := run(t, img, nil)
 	want := []Module{
-		{PID: 100, Process: "app.exe", Base: appBase, InLoad: true, InMem: true, MappedPath: `\app.exe`},
-		{PID: 100, Process: "app.exe", Base: dllBase, InLoad: true, InMem: true, InInit: true, MappedPath: `\Windows\System32\kernel32.dll`},
-		{PID: 100, Process: "app.exe", Base: cutBase, InMem: true, MappedPath: `\Temp\cut.dll`},
+		{PID: 100, Process: "app.exe", Base: appBase, OnLoadOrderList: true, OnMemoryOrderList: true, MappedPath: `\app.exe`},
+		{PID: 100, Process: "app.exe", Base: dllBase, OnLoadOrderList: true, OnMemoryOrderList: true, OnInitOrderList: true, MappedPath: `\Windows\System32\kernel32.dll`},
+		{PID: 100, Process: "app.exe", Base: cutBase, OnMemoryOrderList: true, MappedPath: `\Temp\cut.dll`},
 		{PID: 100, Process: "app.exe", Base: hideBase, MappedPath: `\Temp\hidden.dll`},
 	}
 	if len(rows) != len(want) {
@@ -85,7 +85,7 @@ func TestAProcessWithoutLoaderRecordsSaysTheFlagsMeanNothing(t *testing.T) {
 	p.NoPeb = true
 	img := testsupport.BuildS66CImage([]testsupport.S66CProcess{p})
 	rows, diags := run(t, img, nil)
-	if len(rows) != 1 || !rows[0].LoaderListsEmpty || rows[0].InLoad || rows[0].InMem || rows[0].InInit {
+	if len(rows) != 1 || !rows[0].LoaderListsEmpty || rows[0].OnLoadOrderList || rows[0].OnMemoryOrderList || rows[0].OnInitOrderList {
 		t.Fatalf("rows = %+v, want one row on no list with LoaderListsEmpty", rows)
 	}
 	if !contains(diags, "no loader list gave a record: its 1 image views are on no list") {
@@ -102,10 +102,10 @@ func TestA32BitRecordMarksItsViewWoW64(t *testing.T) {
 	if len(rows) != 2 {
 		t.Fatalf("rows = %+v", rows)
 	}
-	if r := rows[0]; r.Base != wowBase || !r.Wow64 || !r.InLoad || !r.InMem || !r.InInit {
+	if r := rows[0]; r.Base != wowBase || !r.Wow64 || !r.OnLoadOrderList || !r.OnMemoryOrderList || !r.OnInitOrderList {
 		t.Errorf("32-bit view row = %+v, want on all three 32-bit lists and Wow64", r)
 	}
-	if r := rows[1]; r.Base != appBase || r.Wow64 || !r.InLoad {
+	if r := rows[1]; r.Base != appBase || r.Wow64 || !r.OnLoadOrderList {
 		t.Errorf("native view row = %+v", r)
 	}
 }
@@ -129,7 +129,7 @@ func TestThePIDSetNarrowsTheProcesses(t *testing.T) {
 		process(600, "b.exe", []testsupport.S43View{imageView(appBase, `\b.exe`)}, []testsupport.S56Library{library(appBase, "b.exe")}),
 	})
 	rows, _ := run(t, img, map[string]any{"pid": uint64(600)})
-	if len(rows) != 1 || rows[0].PID != 600 || !rows[0].InLoad {
+	if len(rows) != 1 || rows[0].PID != 600 || !rows[0].OnLoadOrderList {
 		t.Fatalf("rows = %+v, want pid 600 only", rows)
 	}
 }

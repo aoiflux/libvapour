@@ -1,7 +1,7 @@
 file: objects/object.go
 replaces: [objects/object.go]
 spec: S77-objects-profiles-examples
-spec_sha256: 0a0e6c51ac117181be6e801924da5312a5473ac7aeffb3ef19387c33df6d8ad7
+spec_sha256: d166d44c754fa59e03f5850a83dc727de13556f9121aeddefa52754bfa8d8b4e
 sources:
   - title: "libvapour symbol-table format 1 (S58): members, type expressions, pointer_width"
     path: symbols/FORMAT.md

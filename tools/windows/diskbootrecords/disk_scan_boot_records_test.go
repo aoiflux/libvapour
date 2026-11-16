@@ -99,11 +99,11 @@ func TestARecordIsListedWithItsInUseEntries(t *testing.T) {
 		t.Errorf("listing starts %q", r.Disasm[:min(20, len(r.Disasm))])
 	}
 	p := rows[1]
-	if p.Depth != 1 || p.PartitionIndex != 1 || !p.Bootable || p.PartitionTypeRaw != 7 ||
-		p.PartitionType != "Installable File System (NTFS)" || p.RelativeSectors != 2048 || p.TotalSectors != 1<<20 {
+	if p.Depth != 1 || p.Entry != 1 || !p.Active || p.SystemID != 7 ||
+		p.SystemIDName != "Installable File System (NTFS)" || p.RelativeSectors != 2048 || p.TotalSectors != 1<<20 {
 		t.Errorf("first entry %+v", p)
 	}
-	if rows[2].PartitionIndex != 2 || rows[2].Bootable || rows[2].PartitionType != "Extended (INT 13h extensions)" {
+	if rows[2].Entry != 2 || rows[2].Active || rows[2].SystemIDName != "Extended (INT 13h extensions)" {
 		t.Errorf("second entry %+v", rows[2])
 	}
 }

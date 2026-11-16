@@ -746,7 +746,7 @@ No row fields; the options select the S19 rows. Exports: `OptionVirtAddr`, `Opti
 
 ### windows.library.compare
 
-`librarycompare.Module`: `PID`, `Process`, `Base` (the image view's start), `InLoad`, `InMem`, `InInit` (a loader record at `Base` is on the in-load-order, in-memory-order or in-initialization-order list), `Wow64` (that record came from the 32-bit lists), `MappedPath` (the view's file name, empty when none read), `MappedPathUnreadable`, `LoaderListsEmpty`. Sort: process list order, then `Base`.
+`librarycompare.Module`: `PID`, `Process`, `Base` (the image view's start), `OnLoadOrderList`, `OnMemoryOrderList`, `OnInitOrderList` (a loader record at `Base` is on the in-load-order, in-memory-order or in-initialization-order list, in the order `_PEB_LDR_DATA` holds them, S56 T2), `Wow64` (that record came from the 32-bit lists), `MappedPath` (the view's file name, empty when none read), `MappedPathUnreadable`, `LoaderListsEmpty`. Sort: process list order, then `Base`. Renamed from 0.1.0 (LO8): `InLoad`, `InMem` and `InInit`.
 
 ### windows.credential.find_truecrypt
 
@@ -762,7 +762,7 @@ No row fields; the options select the S19 rows. Exports: `OptionVirtAddr`, `Opti
 
 ### windows.disk.scan_boot_records
 
-`diskbootrecords.Row`, one per record (`Depth` 0) followed by one per entry in use (`Depth` 1). Record rows: `Offset` (physical address), `DiskSignature` (eight hex digits of the little-endian value), `BootcodeMD5`, `FullMBRMD5` (hex), `ValidTable`, `TableProblem` (empty when valid), `Disasm`, `Bootcode`. Entry rows: `Offset` (the record's), `PartitionIndex` (1 to 4), `Bootable`, `BootFlag`, `PartitionType` (BD5 name or empty), `PartitionTypeRaw`, `RelativeSectors`, `TotalSectors`, `StartingCylinder`, `StartingHead`, `StartingSector`, `EndingCylinder`, `EndingHead`, `EndingSector`. Renamed from 0.1.0 (BO5): `StartingLBA` to `RelativeSectors`, `SectorInSize` to `TotalSectors`, `StartingCHS` to `StartingHead`, `EndingCHS` to `EndingHead`. New: `TableProblem`.
+`diskbootrecords.Row`, one per record (`Depth` 0) followed by one per entry in use (`Depth` 1). Record rows: `Offset` (physical address), `DiskSignature` (eight hex digits of the little-endian value), `BootcodeMD5`, `FullMBRMD5` (hex), `ValidTable`, `TableProblem` (empty when valid), `Disasm`, `Bootcode`. Entry rows: `Offset` (the record's), `Entry` (1 to 4), then the BD2 fields in table byte order: `BootIndicator` (raw byte), `Active` (`BootIndicator` is 0x80), `StartingHead`, `StartingSector`, `StartingCylinder`, `SystemID`, `SystemIDName` (BD5 name or empty), `EndingHead`, `EndingSector`, `EndingCylinder`, `RelativeSectors`, `TotalSectors`. Renamed from 0.1.0 (BO5): `StartingLBA` to `RelativeSectors`, `SectorInSize` to `TotalSectors`, `StartingCHS` to `StartingHead`, `EndingCHS` to `EndingHead`. New: `TableProblem`. Renamed from 0.1.0 (BO8): `PartitionIndex` to `Entry`, `BootFlag` to `BootIndicator`, `Bootable` to `Active`, `PartitionTypeRaw` to `SystemID`, `PartitionType` to `SystemIDName`; entry fields reordered to BD2 order.
 
 ## 8. Limits
 
@@ -945,6 +945,7 @@ None: one fixed-size header.
 | LO5 | `VadType` 2 meaning an image view is measured only (S24 O2). | S24 |
 | LO6 | A private VAD (`VadS`) is not an image view. 4.5 gives rows only for image views, and LO3 makes a loader record without an image view a diagnostic, so a private VAD gives no row, whatever it holds. | Owner decision 2026-11-12 (follow-up M5): keep. |
 | LO7 | A loader record with `BaseUnreadable` set (S56 O8) is left out of the base index (4 step 3). | Owner decision 2026-11-12 (follow-up D14): name the flag in S55 and S66. Done: 4 step 3 here, `windows.pe.read_version` 4 step 4 and section 6, `windows.pe.list_imports` 4 step 6, `windows.pe.resolve_symbols` 4 step 2, and S55 4.6 step 2; no code change. |
+| LO8 | Owner decision 2026-11-16: the three list flags are renamed `OnLoadOrderList`, `OnMemoryOrderList` and `OnInitOrderList` and ordered as `_PEB_LDR_DATA` holds the lists (S56 T2). | Owner decision on row fields |
 
 ### windows.credential.find_truecrypt
 
@@ -988,6 +989,7 @@ None: one fixed-size header.
 | BO5 | Owner decision (Q3): four fields renamed to the Microsoft Learn names; the rest kept from 0.1.0. | Owner decision |
 | BO6 | Records are matched at every byte offset because every real record on the captures lies off a sector boundary (BM1). Extended boot records (BD6) are listed like any record, not followed. GPT headers are not read. | Owner decision |
 | BO7 | Follow-up R3: with `full`, a record whose 440 bytes of boot code (0 to 0x1B7) are all zero (boot code MD5 5fb38429d5d77768867c76dcbdb35194) gives rows, with its entries, like any other candidate (4 step 4: `full` lists every candidate with its table problem). Owner decision 2026-11-12: keep; the tool is unchanged. | Closed: kept |
+| BO8 | Owner decision 2026-11-16: entry fields take the BD2 names (`Entry`, `BootIndicator`, `Active`, `SystemID`, `SystemIDName`) and the BD2 byte order. | Owner decision |
 
 ### Owner decisions, 2026-11-12
 
@@ -1025,6 +1027,7 @@ The owner answered every point above. Where a point and this table differ, this 
 | LO5 | Keep measured |
 | LO6 | Keep |
 | LO7 | Add to both specs |
+| LO8 | Rename, loader-data order |
 | TO1 | Keep the tool |
 | TO2 | truecrypt.sys only |
 | TO3 | 4 and 128 |
@@ -1046,6 +1049,7 @@ The owner answered every point above. Where a point and this table differ, this 
 | BO4 | Not a rule |
 | BO5 | Rename four, keep rest |
 | BO6 | Yes, as specified |
+| BO8 | Rename, BD2 order |
 
 ## 11. Provenance
 

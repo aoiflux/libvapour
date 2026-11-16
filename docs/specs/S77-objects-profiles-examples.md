@@ -167,7 +167,7 @@ Tables are aligned columns (two spaces between), each under a heading line `== <
 | `registry` | per hive `<path>, hive at 0x…`: Last written, Key, Name (indented by depth), Type, Data |
 | `network` | Windows: count line, then Protocol, Family, Local, Remote, State, PID, Process, Created; Linux: PID, Process, FD, Family, Type, Protocol, Local, Remote, State |
 | `timeline` | heading with the count; Time, Event, Tool, Field, Subject |
-| `triage` | code: count line, then PID, Process, Start, End, Protection, Rule, Header, First bytes (Linux: File in place of Header); process views: PID, Name, Active list, Kernel list, Session, Pool scan, Thread owner, CSRSS handle, Exit time, Verdict, then `N of M processes shown`; loader lists: PID, Process, Base, Load order, Init order, Memory order, Mapped file, then the shown and counted lines |
+| `triage` | code: count line, then PID, Process, Start, End, Protection, Rule, Header, First bytes (Linux: File in place of Header); process views: PID, Name, Active list, Kernel list, Session, Pool scan, Thread owner, CSRSS handle, Exit time, Verdict, then `N of M processes shown`; loader lists: PID, Process, Base, Load order, Memory order, Init order (the `_PEB_LDR_DATA` order, S56 T2), Mapped file, then the shown and counted lines |
 
 ## 8. Limits
 

@@ -154,16 +154,16 @@ func printProcessViews(w io.Writer, rows []processcompare.Row, all bool) {
 // images are on neither, and a clean system has dozens.
 func printLoaderLists(w io.Writer, mods []librarycompare.Module, all bool) {
 	tw := cli.NewTable(w)
-	fmt.Fprintln(tw, "PID\tProcess\tBase\tLoad order\tInit order\tMemory order\tMapped file")
+	fmt.Fprintln(tw, "PID\tProcess\tBase\tLoad order\tMemory order\tInit order\tMapped file")
 	shown, neither, unlisted := 0, 0, 0
 	for _, m := range mods {
 		switch {
 		case m.LoaderListsEmpty:
 			unlisted++
-		case !m.InLoad && !m.InMem:
+		case !m.OnLoadOrderList && !m.OnMemoryOrderList:
 			neither++
 		}
-		if !all && (m.LoaderListsEmpty || m.InLoad == m.InMem) {
+		if !all && (m.LoaderListsEmpty || m.OnLoadOrderList == m.OnMemoryOrderList) {
 			continue
 		}
 		shown++
@@ -171,8 +171,8 @@ func printLoaderLists(w io.Writer, mods []librarycompare.Module, all bool) {
 		if file == "" {
 			file = "N/A"
 		}
-		fmt.Fprintf(tw, "%d\t%s\t0x%x\t%s\t%s\t%s\t%s\n", m.PID, cli.Text(m.Process), m.Base, yesNo(m.InLoad),
-			yesNo(m.InInit), yesNo(m.InMem), file)
+		fmt.Fprintf(tw, "%d\t%s\t0x%x\t%s\t%s\t%s\t%s\n", m.PID, cli.Text(m.Process), m.Base, yesNo(m.OnLoadOrderList),
+			yesNo(m.OnMemoryOrderList), yesNo(m.OnInitOrderList), file)
 	}
 	tw.Flush()
 	fmt.Fprintf(w, "%d of %d mapped images shown\n", shown, len(mods))
