@@ -1,7 +1,7 @@
 file: tools/any/memorycode/windows.go
 replaces: [tools/any/memorycode/memory_find_code.go]
 spec: S35-windows-unbacked-code
-spec_sha256: 49ba3b97e353dfddc9ff9155bbd7c96919343df28ff8bd014521097de53a547f
+spec_sha256: 1407b2aa4ef875a117ee96295330697eb61176e967d32b61bb0bac937770ac95
 sources:
   - title: "Microsoft Learn, MEMORY_BASIC_INFORMATION (winnt.h), page dated 2018-12-05"
     url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-memory_basic_information
@@ -33,6 +33,15 @@ sources:
   - title: "Project measurement: codefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
     path: codefacts
     accessed: 2026-11-12
+  - title: "Microsoft Learn, Windows Advanced Rasterization Platform (WARP) Guide, page dated 2018-05-31, updated 2025-07-24"
+    url: https://learn.microsoft.com/windows/win32/direct3darticles/directx-warp
+    accessed: 2026-11-16
+  - title: "dotnet/runtime documentation, Using your build with an installed SDK; JIT overview"
+    url: https://github.com/dotnet/runtime/blob/main/docs/workflow/testing/using-your-build-with-installed-sdk.md
+    accessed: 2026-11-16
+  - title: "Chakra hosting header ChakraCommon.h"
+    url: https://github.com/chakra-core/ChakraCore/blob/master/lib/Jsrt/ChakraCommon.h
+    accessed: 2026-11-16
 decisions:
   - rule: "Candidates are private and mapped VADs; image and unknown kinds are not"
     justification: "S35 4.2 step 5, D1, O3"
@@ -50,4 +59,6 @@ decisions:
     justification: "S35 4.9, 4.10"
   - rule: "A process space must give every entry of the walk"
     justification: "S35 4.2 step 3, 4.3, O1"
+  - rule: "Every row names the process's image views documented to generate code at run time (d3d10warp.dll, clrjit.dll, chakra.dll), matched by file name without case; the mark never removes a row"
+    justification: "S35 4.2 step 6, D9, D10, D11, M10, O5, O6"
 date: 2026-11-16

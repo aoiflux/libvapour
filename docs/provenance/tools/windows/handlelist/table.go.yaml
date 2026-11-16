@@ -1,7 +1,7 @@
 file: tools/windows/handlelist/table.go
 replaces: [tools/windows/handlelist/handle_list.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 692febf32331e58d0baa21005109b09a07ff703c33a66d588bc4d49ef86dc740
+spec_sha256: 4673eeb27d55b3794967e41e727ec85a890d87f29d7657f05418ee79d401aea5
 sources:
   - title: "Microsoft Learn, Kernel Objects (handles are process specific; per-process limit 2^24), dated 2018-05-31"
     url: https://learn.microsoft.com/windows/win32/sysinfo/kernel-objects

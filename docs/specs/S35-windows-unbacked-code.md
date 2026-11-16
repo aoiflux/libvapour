@@ -13,7 +13,7 @@ This specification defines which regions are reported (`any.memory.find_code` on
 | Input | Meaning |
 |---|---|
 | Kernel memory | Kernel virtual reads: the process list, the VAD tree, the symbol `MmProtectToValue`. |
-| Process memory | One address space per process, built from its `DirectoryTableBase` (`tools.Context.ProcessSpace`). It must expose page-table leaf entries (`LeafEntry`). |
+| Process memory | One address space per process, built from its `DirectoryTableBase` (`tools.Context.ProcessSpace`). It must expose the page-table entries of each walk (`WalkEntries`, S53 4.2). |
 | Symbol table | The kernel types of section 3.2 and the VAD layout of S24. |
 | Processes | From `any.process.list` (S25), kept by the `pid` option. |
 | VADs | From `memoryranges.Decoder` (S24): range, protection name, kind, path. |
@@ -34,6 +34,9 @@ This specification defines which regions are reported (`any.memory.find_code` on
 | D6 | "At location 0x3c, the stub has the file offset to the PE signature." The signature is "PE\0\0". The optional header magic is 0x10b for PE32 and 0x20b for PE32+. `IMAGE_FILE_MACHINE_AMD64` is 0x8664, `IMAGE_FILE_MACHINE_I386` 0x14c, `IMAGE_FILE_MACHINE_ARM64` 0xaa64. The DOS header's first two bytes are "MZ" (S18). | Microsoft Learn, "PE Format", ms.date 2026-09-10, accessed 2026-11-12; S18. |
 | D7 | A paging-structure entry's bit 0 is P (present). In an entry that maps a page, bit 1 is R/W (writes allowed when set), bit 6 is D (dirty: "software has written to the page"), and bit 63 is XD when IA32_EFER.NXE = 1: "if 1, instruction fetches are not allowed" from the page. With NXE = 0 bit 63 is reserved and must be 0. The processor ignores the other bits of an entry whose P is 0. | Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, "Paging" chapter, entry format tables and "Access Rights". AMD64 APM Vol. 2, "Page Translation and Protection", the NX bit. |
 | D8 | Instruction forms: `E9 cd` is JMP rel32 and `E8 cd` CALL rel32, the target being the next instruction's address plus the sign-extended displacement. `FF /4` is JMP near absolute indirect; with ModRM 0x25 the operand in 64-bit mode is RIP-relative (`[RIP + disp32]`) and in 32-bit mode the absolute `[disp32]`. `REX.W B8` is MOV RAX, imm64; `FF E0` is JMP RAX. Operand size in 32-bit mode truncates the target to 32 bits. | Intel SDM Vol. 2, JMP, CALL, MOV and "Instruction Formats" (ModR/M, RIP-relative addressing). |
+| D9 | WARP is the software rasterizer of Direct3D, shipped in `D3d10warp.dll`. Since Windows 8 the Microsoft Basic Render Adapter makes it the fallback on a system with no GPU. It holds two run-time compilers: one turns shader bytecode into vector commands, and a just-in-time code generator turns those commands into SSE2 to AVX-512 or arm64 machine code. | Microsoft Learn, "Windows Advanced Rasterization Platform (WARP) Guide", ms.date 2018-05-31, updated 2025-07-24, accessed 2026-11-16. |
+| D10 | `clrjit.dll` is the .NET runtime's just-in-time compiler (code name RyuJIT). | dotnet/runtime documentation, "Using your build with an installed SDK" and "JIT overview", accessed 2026-11-16. |
+| D11 | `chakra.dll` exports the flat C hosting API of the Chakra JavaScript engine. A runtime attribute exists that tells the engine not to generate native code. | Chakra hosting header `ChakraCommon.h`, accessed 2026-11-16. |
 
 ### 3.2 Kernel types
 
@@ -67,6 +70,7 @@ M1 to M8 come from `codefacts` on 2026-11-12 over mem1_win11, mem2_win10, mem5_s
 | M7 | Region start: a PE32+ header (machine 0x8664) once (mem2); no header elsewhere; first page unreadable 1, 57, 4, 4, 2. First instruction at the first page holding bytes: `jmp rel32` 2 (mem1) and 2 (mem2), `call rel32` 5, `jmp [rip+disp32]` 18, `mov rax, imm64; jmp rax` 2 (mem2), none on mem5, mem6, mem7. | | | | | |
 | M8 | Process names with regions holding bytes, regions per name, and whether the process maps an image whose name contains `jit`. mem1: SearchHost.exe 6, the capture program 1, explorer.exe 1, svchost.exe 1; none maps such an image. mem2: PhoneExperienc 304 (`clrjit.dll`), dwm.exe 40, SearchApp.exe 31, explorer.exe 29, powershell.exe 12 (`clrjit.dll`), MsMpEng.exe 5, msedge.exe 5, smartscreen.ex 3, LogonUI.exe 2, OneDrive.exe 2, the capture program 1, TextInputHost. 1. mem5: dwm.exe 43, msedge.exe 14, powershell.exe 12 (`clrjit.dll`), MsMpEng.exe 11, explorer.exe 5, LogonUI.exe 2, GenValObj.exe 1, MicrosoftEdgeU 1. mem6: dwm.exe 98, MsMpEng.exe 8, WindowsTermina 6, explorer.exe 4, SearchHost.exe 2, ShellExperienc 2, StartMenuExper 2, LogonUI.exe 1. mem7: dwm.exe 4, LogonUI.exe 1. | | | | | |
 | M9 | Present entries above the leaf in the user half (bit 47 clear) of each process's own root with XD set, over the first 40 roots of the active list besides the System process (`pagetablefacts -upper-xd`, 2026-11-16): 0 on every capture. `UserDirectoryTableBase` is 0 on every one of those processes on 19045 and 26100, and 14393 has no such member, so no process runs user mode on a second root (S25 4.5). The System process's root, which has no VADs to walk, has 2 such entries in its user half on every capture but mem5. | none of 40 | none of 40 | none of 40 | none of 40 | none of 40 |
+| M10 | Tool rows whose process maps an image of 4.2 step 6, of all rows (`codefacts -nofacts -tool`, 2026-11-16). Every `dwm.exe` row on mem2, mem5, mem6 and mem7 names `d3d10warp.dll`, the WARP image of D9. Whether a display driver was present on each capture is not measured. The rows that name none are in `svchost.exe` (mem1), `MsMpEng.exe` (mem2, mem5, mem6), `msedge.exe` (mem2, mem5), `GenValObj.exe` and `MicrosoftEdgeU` (mem5); no source available here names a code generator in them. | 8 of 9 | 157 of 165 | 62 of 89 | 115 of 123 | 5 of 5 |
 
 M2 shows that a VAD's protection is not the protection of its pages: the VAD keeps the allocation protection (D1 `AllocationProtect`), and `VirtualProtect` changes the pages (D2, D3). M3 and M4 show that XD agrees with an executable protection wherever the VAD protection is executable, and that it is clear in a page whose VAD protection is not executable only where the page was made executable. M8's names are truncated to the 15-byte `ImageFileName`. The two processes that map `clrjit.dll`, the .NET just-in-time compiler, hold 316 of mem2's 435 regions.
 
@@ -87,6 +91,7 @@ M2 shows that a VAD's protection is not the protection of its pages: the VAD kee
 3. The address space must give leaf entries. Otherwise `ErrNoPageEntries`: diagnostic, no rows; strict mode fails.
 4. Instruction mode: 32-bit when the process list reports the process as WoW64, else 64-bit.
 5. Each VAD whose kind is `private` or `mapped` goes through 4.3 to 4.9. `image` and `unknown` VADs are not candidates (O3).
+6. **Code generators.** The process's `image` VADs whose file name, the part after the last `\` or `/` and compared without case, is `d3d10warp.dll` (D9), `clrjit.dll` (D10) or `chakra.dll` (D11). Their paths, in VAD order and each once, are every row's `CodeGenerators`. The list says that the process maps an image documented to produce code at run time. It does not say that this image wrote the region, and the row is listed either way (O5). The match is on the name alone: any image that carries one of these names matches.
 
 ### 4.3 Page walk
 
@@ -160,6 +165,7 @@ One `Finding` per reported region (7), with the preview: up to the preview lengt
 | A content page in an executable page | D3 | counted, not reported |
 | At most `MaxRegionScanBytes` / 4096 leaf entries per region | 8 | `ErrRegionScanCut`; walk stops |
 | Instruction form must decode at the implied length | D8 | no transfer |
+| A code generator is an `image` VAD named by D9 to D11 | D9, D10, D11, M10 | `CodeGenerators` empty; the row is still listed |
 
 ## 6. Failure modes
 
@@ -196,6 +202,7 @@ One `Finding` per reported region (7), with the preview: up to the preview lengt
 | `FirstContent` | uint64 | address of the first content page |
 | `Header`, `HeaderMachine` | `Header`, uint16 | 4.7: `none`, `unread`, `dos`, `nt`, `pe32`, `pe32+`; the machine when the PE signature was read, else 0 |
 | `Transfer`, `TransferTarget`, `TransferTargetUnread`, `TransferImage` | `Transfer`, uint64, bool, string | 4.8: empty or `jmp-rel32`, `call-rel32`, `jmp-indirect`, `mov-jmp-rax`; the target; whether an indirect slot did not read; the image path holding the target, empty when none |
+| `CodeGenerators` | []string | 4.2 step 6: paths of the process's images documented to produce code at run time; nil when none |
 | `Preview` | []byte | 4.9 |
 | `Artifact` | string | the dump's file name, empty when not written |
 
@@ -209,7 +216,7 @@ Counts are exact up to the walk cut (4.3 step 2).
 
 ## 9. Acceptance
 
-1. Synthetic fixtures (`tools/any/memorycode/*_test.go`, on the shared process fixture with `_MMPTE_SOFTWARE`, `_MMPTE_TRANSITION` and a full `MmProtectToValue` added): each rule; present pages with and without XD, and pages below an upper-level entry with XD (`TestAnUpperLevelXDMakesThePagesBelowNotExecutable`); software, transition, prototype and zero entries; an executable VAD whose pages are XD; a region of zeros (not listed, counted); image views not listed; backing `section`; each header kind; each transfer form in both modes including an unreadable slot and a target in an image view; the preview option and its bound; the dump and its failure; a refused process space with no kernel reads; a reader without leaf entries; the walk cut; strict mode; span skipping over a reservation of 2^39 bytes.
+1. Synthetic fixtures (`tools/any/memorycode/*_test.go`, on the shared process fixture with `_MMPTE_SOFTWARE`, `_MMPTE_TRANSITION` and a full `MmProtectToValue` added): each rule; present pages with and without XD, and pages below an upper-level entry with XD (`TestAnUpperLevelXDMakesThePagesBelowNotExecutable`); software, transition, prototype and zero entries; an executable VAD whose pages are XD; a region of zeros (not listed, counted); image views not listed; backing `section`; each header kind; each transfer form in both modes including an unreadable slot and a target in an image view; the code generators a process maps, once each, matched by name without case and only in `image` VADs (`TestTheRowsNameTheCodeGeneratorsTheProcessMaps`); the preview option and its bound; the dump and its failure; a refused process space with no kernel reads; a reader without leaf entries; the walk cut; strict mode; span skipping over a reservation of 2^39 bytes.
 2. Fuzz targets, 30 s each on 2026-11-12: `FuzzHeaderKind` (any bytes: no panic; `pe32`/`pe32+` only with "MZ" and the signature): 3,762,210 executions. `FuzzTransfer` (any bytes, address and mode: no panic; a target only for the four forms; 32-bit targets fit 32 bits): 2,299,252 executions. `FuzzPageEntry` (any entry and table: no panic; a present entry's executability is bit 63 clear): 3,324,079 executions.
 3. On the captures, `codefacts -nofacts -tool`, 2026-11-12, without a pagefile:
 
@@ -234,8 +241,8 @@ Counts are exact up to the walk cut (4.3 step 2).
 | O2 | A page whose entry holds no protection (zero or prototype) takes the VAD's protection. That the memory manager does so is not documented; it rests on D1 (`AllocationProtect`) and on M3. | A documented source or a controlled capture |
 | O3 | Image views are not candidates. Code changed inside an image view (a patched page) is file-backed in the VAD sense; finding it needs the file's bytes (S18, S19). | A separate specification |
 | O4 | No executable view of a data file was measured (M6); the `file` backing is untested on real data. | A capture with one |
-| O5 | Rows of processes that map a just-in-time compiler are not marked. M8 measures `clrjit.dll` in two processes (316 of mem2's rows). Owner decision: whether to add such a mark, and from which list of images. | Owner decision |
-| O6 | dwm.exe holds the most `page-executable` regions on mem5, mem6 and mem7 (M8) and maps no image named `jit`; the producer of that code is not determined. | A controlled capture |
+| O5 | Rows of processes that map a just-in-time compiler were not marked. Owner decision 2026-11-16 (plan M1.2): mark them. Done: `CodeGenerators` (4.2 step 6) names the images that vendor documentation says produce code at run time (D9 to D11); M10 measures the rows that carry one. The mark never removes a row. Remains: images whose code generation no available source documents, such as those in `MsMpEng.exe` and `msedge.exe` (M10), are not in the list. | A vendor source for each further image |
+| O6 | dwm.exe held the most `page-executable` regions on mem5, mem6 and mem7 (M8) with no image named `jit`. Every one of its rows maps `d3d10warp.dll` (M10), whose just-in-time code generator D9 documents, and its rows name it. Remains: that WARP wrote each region is not measured; a region's bytes are not tied to the image that wrote them. | A controlled capture |
 | O7 | Only four instruction forms give a transfer (4.8). | Owner decision |
 | O8 | 32-bit kernels: non-PAE entries have no XD bit (D7), so the page rule cannot apply; not measured. | A 32-bit capture (Q7) |
 | O9 | Owner decision (Q2): row field names. Removed from 0.1.0: `Tag`, `CommitCharge`, `CommitChargeKnown`, `PrivateMemory`, `PrivateMemoryKnown`, `Notes`, `Header` ([]byte, now the typed header kind; the bytes are `Preview`), `Type` (now `Kind`), `Reason`, `Classification`, `DirtyPage`, `DirtyPageFound`. Added: `VadAddress`, `Backing`, `Path`, `Rule`, `Pages`, `ExecutablePages`, `ResidentPages`, `WrittenPages`, `ContentPages`, `FirstContent`, `HeaderMachine`, `Transfer`, `TransferTarget`, `TransferTargetUnread`, `TransferImage`, `Preview`, `Artifact`. | Owner decision |
@@ -252,8 +259,8 @@ The owner answered every point above. Where a point and this table differ, this 
 | O2 | Take the VAD protection |
 | O3 | Leave to a separate spec |
 | O4 | Defer; untested on real data |
-| O5 | Do not mark |
-| O6 | Defer; report as found |
+| O5 | Do not mark (2026-11-12); mark from documented generators (2026-11-16) |
+| O6 | Defer; report as found (2026-11-12); name the WARP image on the row (2026-11-16) |
 | O7 | Keep four forms |
 | O8 | Defer |
 | O9 | Accept the new names |

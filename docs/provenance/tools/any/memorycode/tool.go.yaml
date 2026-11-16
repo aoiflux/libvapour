@@ -1,7 +1,7 @@
 file: tools/any/memorycode/tool.go
 replaces: [tools/any/memorycode/memory_find_code.go]
 spec: S35-windows-unbacked-code
-spec_sha256: 49ba3b97e353dfddc9ff9155bbd7c96919343df28ff8bd014521097de53a547f
+spec_sha256: 1407b2aa4ef875a117ee96295330697eb61176e967d32b61bb0bac937770ac95
 sources:
   - title: "Microsoft Learn, MEMORY_BASIC_INFORMATION (winnt.h), page dated 2018-12-05"
     url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-memory_basic_information

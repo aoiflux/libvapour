@@ -3,6 +3,7 @@ package memorycode
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/aoiflux/libvapour/disasm"
@@ -58,6 +59,8 @@ type Finding struct {
 	TransferTarget       uint64
 	TransferTargetUnread bool
 	TransferImage        string
+
+	CodeGenerators []string
 
 	Preview  []byte
 	Artifact string
@@ -193,6 +196,7 @@ func (r *windowsRun) process(proc processlist.Process) ([]Finding, error) {
 		mode = disasm.Mode32
 	}
 	name := util.ReplaceInvalidUTF8(proc.Name)
+	generators := codeGenerators(maps)
 	var out []Finding
 	for _, m := range maps {
 		if m.Type != memoryranges.KindPrivate && m.Type != memoryranges.KindMapped || m.End < m.Start {
@@ -203,10 +207,39 @@ func (r *windowsRun) process(proc processlist.Process) ([]Finding, error) {
 			return nil, err
 		}
 		if ok {
+			f.CodeGenerators = slices.Clone(generators)
 			out = append(out, f)
 		}
 	}
 	return out, nil
+}
+
+// Images whose vendor documents them as producing machine code at run time
+// (S35 D9 to D11). A name in this set marks the process; it never clears a
+// row, since any image can carry the name.
+var codeGeneratorNames = map[string]bool{
+	"d3d10warp.dll": true,
+	"clrjit.dll":    true,
+	"chakra.dll":    true,
+}
+
+func codeGenerators(maps []memoryranges.Mapping) []string {
+	var out []string
+	seen := map[string]bool{}
+	for _, m := range maps {
+		if m.Type != memoryranges.KindImage || seen[m.Path] {
+			continue
+		}
+		name := m.Path
+		if i := strings.LastIndexAny(name, `\/`); i >= 0 {
+			name = name[i+1:]
+		}
+		if codeGeneratorNames[strings.ToLower(name)] {
+			seen[m.Path] = true
+			out = append(out, m.Path)
+		}
+	}
+	return out
 }
 
 func (r *windowsRun) region(proc processlist.Process, name string, m memoryranges.Mapping, space memory.MemoryReader,

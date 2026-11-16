@@ -276,6 +276,35 @@ func TestAJumpIntoAnImageNamesTheImage(t *testing.T) {
 	}
 }
 
+func TestTheRowsNameTheCodeGeneratorsTheProcessMaps(t *testing.T) {
+	const warp, clr = `\Windows\System32\D3D10Warp.dll`, `\Program Files\dotnet\clrjit.dll`
+	image := func(at uint64, path string) testsupport.FixtureVAD {
+		return testsupport.FixtureVAD{Start: at, End: at + pageSize - 1, Path: path, Protection: indexExecuteRead}
+	}
+	viewNamedLikeAGenerator := testsupport.FixtureVAD{Start: 0x38000000, End: 0x38000000 + pageSize - 1, Path: `\Windows\chakra.dll`, Protection: indexReadWrite}
+	c := newCodeFixture(t, privateVAD(regionVA, 1, indexExecuteReadWrite),
+		image(0x30000000, warp), image(0x31000000, `\Windows\System32\target.dll`),
+		image(0x32000000, clr), image(0x33000000, warp), viewNamedLikeAGenerator)
+	for _, at := range []uint64{0x30000000, 0x31000000, 0x32000000, 0x33000000} {
+		c.markImage(at)
+	}
+	c.page(regionVA, true, prologue64)
+	rows := c.run(c.context())
+	if len(rows) != 1 {
+		t.Fatalf("got %d rows", len(rows))
+	}
+	if got := rows[0].CodeGenerators; len(got) != 2 || got[0] != warp || got[1] != clr {
+		t.Errorf("code generators %q, want the two images once each in address order", got)
+	}
+
+	plain := newCodeFixture(t, privateVAD(regionVA, 1, indexExecuteReadWrite), image(0x31000000, `\Windows\System32\target.dll`))
+	plain.markImage(0x31000000)
+	plain.page(regionVA, true, prologue64)
+	if rows := plain.run(plain.context()); len(rows) != 1 || rows[0].CodeGenerators != nil {
+		t.Errorf("a process without a generator: %+v", rows)
+	}
+}
+
 func TestPreviewLength(t *testing.T) {
 	c := newCodeFixture(t, privateVAD(regionVA, 1, indexExecuteReadWrite))
 	c.page(regionVA, true, prologue64)

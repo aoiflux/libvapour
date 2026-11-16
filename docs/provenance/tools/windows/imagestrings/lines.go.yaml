@@ -1,7 +1,7 @@
 file: tools/windows/imagestrings/lines.go
 replaces: [tools/windows/imagestrings/parse.go, ReadLines of tools/windows/imagestrings/image_map_strings.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 692febf32331e58d0baa21005109b09a07ff703c33a66d588bc4d49ef86dc740
+spec_sha256: 4673eeb27d55b3794967e41e727ec85a890d87f29d7657f05418ee79d401aea5
 sources:
   - title: "POSIX.1-2024 (IEEE Std 1003.1-2024), strings utility: -t d output format \"%d %s\""
     url: https://pubs.opengroup.org/onlinepubs/9799919799/utilities/strings.html
