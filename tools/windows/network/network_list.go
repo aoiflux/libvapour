@@ -121,6 +121,7 @@ func RunNetworkList(ctx tools.Context) ([]Endpoint, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", NetworkListName, err)
 	}
+	pickCreationTime(ctx, NetworkListName, l, tcpipPDB)
 	if l.tables == nil {
 		return nil, fmt.Errorf("%s: layout %q: %w", NetworkListName, l.name, ErrNoTables)
 	}

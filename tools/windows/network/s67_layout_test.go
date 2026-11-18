@@ -1,7 +1,12 @@
 package network
 
 import (
+	"errors"
+	"strings"
 	"testing"
+
+	"github.com/aoiflux/libvapour/symbols/autoload"
+	"github.com/aoiflux/libvapour/tools"
 )
 
 // Offsets from S67 section 3, one column per measured build.
@@ -133,5 +138,75 @@ func TestEveryBuildHasTheMembersEveryDecodeNeeds(t *testing.T) {
 		if len(c.owners) == 0 || !c.owners[0].present() {
 			t.Errorf("%s: no owner", l.name)
 		}
+	}
+}
+
+var (
+	pdbMem1  = autoload.Fingerprint{PDBName: "tcpip.pdb", GUID: "DAC097D9D8F30AC6467DB71184A8C2E5", Age: 1}
+	pdbMem67 = autoload.Fingerprint{PDBName: "tcpip.pdb", GUID: "11B241ADFEA742938BFD75329CFFE121", Age: 1}
+)
+
+func pdbIs(fp autoload.Fingerprint, err error) func(tools.Context) (autoload.Fingerprint, error) {
+	return func(tools.Context) (autoload.Fingerprint, error) { return fp, err }
+}
+
+func TestThe26100CreationTimeFollowsTheTcpipPDB(t *testing.T) {
+	unknown := autoload.Fingerprint{PDBName: "tcpip.pdb", GUID: "00000000000000000000000000000000", Age: 2}
+	for _, c := range []struct {
+		name string
+		pdb  func(tools.Context) (autoload.Fingerprint, error)
+		want uint64
+		diag string
+	}{
+		{"mem6 and mem7", pdbIs(pdbMem67, nil), 0x358, ""},
+		{"mem1", pdbIs(pdbMem1, nil), 0x360, ""},
+		{"unmeasured", pdbIs(unknown, nil), 0x360,
+			"windows.network.scan: tcpip.sys: tcpip.pdb 00000000000000000000000000000000 age 2 has no measured creation-time offset, so connection creation times are read at 0x360"},
+		{"unread", pdbIs(autoload.Fingerprint{}, errors.New("debug data directory: unmapped")), 0x360,
+			"windows.network.scan: tcpip.sys: debug data directory: unmapped, so connection creation times are read at 0x360"},
+	} {
+		var diags []string
+		ctx := tools.Context{Options: map[string]any{"diagnostics": &diags}}
+		l := &objectLayout{name: "tcpip-26100"}
+		l.connection.createTime = 0x360
+		pickCreationTime(ctx, Name, l, c.pdb)
+		if l.connection.createTime != c.want {
+			t.Errorf("%s: creation time at 0x%x, want 0x%x", c.name, l.connection.createTime, c.want)
+		}
+		if got := strings.Join(diags, "\n"); got != c.diag {
+			t.Errorf("%s: diagnostics %q, want %q", c.name, got, c.diag)
+		}
+	}
+}
+
+func TestABuildWithOneCreationTimeReadsNoModule(t *testing.T) {
+	var diags []string
+	ctx := tools.Context{Options: map[string]any{"diagnostics": &diags}}
+	l := &objectLayout{name: "tcpip-19041-19045"}
+	l.connection.createTime = 0x2e8
+	pickCreationTime(ctx, Name, l, func(tools.Context) (autoload.Fingerprint, error) {
+		t.Error("tcpip.sys read for a build with one creation-time offset")
+		return autoload.Fingerprint{}, nil
+	})
+	if l.connection.createTime != 0x2e8 || len(diags) != 0 {
+		t.Errorf("creation time 0x%x, diagnostics %q", l.connection.createTime, diags)
+	}
+}
+
+func TestWithoutTcpipInTheModuleListTheTablesOffsetStays(t *testing.T) {
+	w := newWorld(t)
+	ctx := w.ctx(nil)
+	l, err := resolveLayout(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pickCreationTime(ctx, NetworkListName, l, tcpipPDB)
+	if l.connection.createTime != 0x360 {
+		t.Errorf("creation time at 0x%x", l.connection.createTime)
+	}
+	joined := strings.Join(w.diags, "\n")
+	if !strings.Contains(joined, "windows.network.list: tcpip.sys: ") ||
+		!strings.Contains(joined, "so connection creation times are read at 0x360") {
+		t.Errorf("diagnostics %q", w.diags)
 	}
 }

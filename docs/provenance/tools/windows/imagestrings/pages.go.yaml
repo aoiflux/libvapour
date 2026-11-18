@@ -1,7 +1,7 @@
 file: tools/windows/imagestrings/pages.go
 replaces: [buildMap of tools/windows/imagestrings/image_map_strings.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 4673eeb27d55b3794967e41e727ec85a890d87f29d7657f05418ee79d401aea5
+spec_sha256: 101965dbec6944f3f173c705fba97ad9b41147d3f0c74c8a78540f1473a5160e
 sources:
   - title: "Specs S53 (address translation layers, address-space listing) and S25 (process list, kernel page-table root)"
     path: docs/specs/S53-address-translation-layers.md

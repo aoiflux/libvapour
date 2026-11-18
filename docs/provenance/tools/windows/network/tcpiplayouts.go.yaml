@@ -1,7 +1,7 @@
 file: tools/windows/network/tcpiplayouts.go
 replaces: [tools/windows/network/tcpiplayouts.go]
 spec: S67-measured-layouts-tcpip-conhost
-spec_sha256: eabf2a36f3c0800f20f0911e35a74cf3aff82007ce230e6310a8bec1389c3b55
+spec_sha256: 01bb20118645ebabc5457f6931c57b7cbda70f3fa812df7701f411c876584d91
 sources:
   - title: "Microsoft Learn, TCPSTATE (mstcpip.h) and MIB_TCPROW2 (tcpmib.h): state numbering, port byte order"
     url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
@@ -28,10 +28,12 @@ decisions:
     justification: "S67 3 C1-C17, M1-M3"
   - rule: "Object starts from the pool header in front of the table link"
     justification: "S67 3 D3, M2"
-  - rule: "26100 owner offsets 0x348 then 0x350; creation time 0x360"
-    justification: "S67 M5, M6, O1"
+  - rule: "26100 owner offsets 0x348 then 0x350"
+    justification: "S67 M6"
+  - rule: "26100 connection creation time per tcpip.pdb: 0x360 for DAC097D9D8F30AC6467DB71184A8C2E5-1, 0x358 for 11B241ADFEA742938BFD75329CFFE121-1; the table keeps 0x360"
+    justification: "S67 C10, M5, 4.1 step 5, O1 (owner decision 2026-11-18)"
   - rule: "14393 walk members measured but not merged"
     justification: "S67 M9, O3"
   - rule: "Struct sizes end at the last measured member; partition and entry sizes are strides"
     justification: "S67 4.1 step 3, C1, C16"
-date: 2026-11-12
+date: 2026-11-18

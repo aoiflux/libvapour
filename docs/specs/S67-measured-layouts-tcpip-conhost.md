@@ -64,7 +64,7 @@ Each offset below is the displacement of an instruction in the named routine of 
 | M2 | Every link sits at one offset from its object's start: listEntry 0x28 (14393, 19045), 0x30 (26100); listener next 0x78 (14393, 19045), 0x80 (26100); UDP next 0x70 (14393, 19045), 0x78 (26100). These agree with C4 and C13. |
 | M3 | The data admits exactly one offset for: connection owner, inetAF, localPort, addressInfo, listEntry; listener and UDP owner, createTime, localPort, next. Each is the code's (C4-C13). The inetAF of listeners and UDP endpoints is admitted at two offsets (e.g. 0x30 and 0x70 for 26100 listeners); the code reads the second. Connection `state` and the local addresses are admitted at many offsets; the code decides and the data admits it. Code and data agree on 18, 18, 17, 16 and 17 members per capture (mem1, mem2, mem5, mem6, mem7); the rest are code only (table offsets, remotePort). |
 | M4 | mem2's partition 6 has an entry whose Blink does not name the entry before it (S28 M3); the walk stops there. |
-| M5 | Connection creation time: the data admits 0x358, 0x360 and 0x370 on mem6 and mem7 and 0x360, 0x368, 0x378 on mem1. On mem7 both 0x358 and 0x360 equal the host's `CreationTime` to the second for 13 of 13 connections, 0x370 for 9; the two never hold the same value. mem1's code reads 0x360, mem6/7's 0x358. |
+| M5 | Connection creation time: the data admits 0x358, 0x360 and 0x370 on mem6 and mem7 and 0x360, 0x368, 0x378 on mem1. On mem7 both 0x358 and 0x360 equal the host's `CreationTime` to the second for 13 of 13 connections, 0x370 for 9; the two never hold the same value. mem1's code reads 0x360 (tcpip.pdb DAC097D9D8F30AC6467DB71184A8C2E5 age 1), mem6/7's 0x358 (tcpip.pdb 11B241ADFEA742938BFD75329CFFE121 age 1). |
 | M6 | Connection owner: 0x350 on mem1, 0x348 on mem6 and mem7, each for every connection; the other offset names no process (S28 M10). |
 | M7 | mem7 against the host's tables: 13 of 13 connections match a host row by both addresses and ports, with 13 PIDs and 13 creation seconds equal, and 12 states (the 13th holds `TCPSTATE_CLOSED` where the host's first table says `Established`, S28 M9); 23 of 23 listeners match with 23 PIDs and 23 creation seconds; 19 of 25 UDP endpoints match, 18 with PID and second. |
 | M8 | `PartitionCount` is read as a u16 by the code (C3); the u32 the S28 list reads is the same value on every capture (the next two bytes are 0). |
@@ -106,7 +106,7 @@ Data (mem2, PID 3804), reading the console at K1 with the layout: S33's C1-C5 pa
 2. Each record lists, per member, the offset and the captures it was measured on (section 3). A member is in a record only when it has at least one capture.
 3. The table holds the types `tcpEndpoint`, `tcpListener`, `udpEndpoint`, `inetAF`, `addressInfo`, `localAddress` and, when the record has walk members, `partition`, `compartmentSet`, `compartment`, `protocolCompartment`, `portPool`, `portAssignment`, `portAssignmentList`, `portAssignmentEntry`. A struct's size is the end of its last member; `partition` and `portAssignmentEntry` are the measured strides (C1, C16).
 4. 26100 carries both owner offsets, 0x348 first (M6); the table names the first and S28 reads the rest from the record (`layoutNamed`).
-5. 26100's creation time is 0x360: the offset mem1's code reads and that holds the creation second on mem6 and mem7 (M5, O1).
+5. 26100's connection creation time is chosen by the tcpip.pdb that the running tcpip.sys names: 0x360 for mem1's (DAC097D9…, age 1) and 0x358 for mem6/7's (11B241AD…, age 1), the offsets each version's code reads (C10, M5). The symbol table carries 0x360; the record keeps one offset per measured PDB. A PDB the record does not hold keeps 0x360, which holds the creation second on both measured versions (M5); S28 4.1 step 4 leaves a diagnostic then.
 
 ### 4.2 conhost layout (`layout.go`, `layouts.go`)
 
@@ -163,7 +163,7 @@ None: the layouts are tables. The measuring programs bound a bucket walk at 4,09
 
 | # | Point | Closes with |
 |---|---|---|
-| O1 | Owner decision: 26100 has two tcpip.sys versions that read the creation time at different offsets (M5). The layout keeps 0x360, which mem1's code reads and which holds the creation second on mem6/7; mem6/7's code reads 0x358. A layout keyed by tcpip.sys version, or a second creation-time offset like the owner's, would make mem6/7 exact. | Owner decision; selection by tcpip.pdb GUID |
+| O1 | 26100 has two tcpip.sys versions that read the connection creation time at different offsets (M5). Done (owner decision 2026-11-18): the offset is chosen by tcpip.pdb GUID and age (4.1 step 5); an unmeasured PDB keeps 0x360 with a diagnostic. | Done |
 | O2 | Owner decision (Q3): the private member names (`tcpEndpoint`, `inetAF`, `addressInfo`, `localAddress`, `partition`, `compartmentSet`, `portPool`, `portAssignmentList`, …; `historySize`, `historyMax`, `lastDisplayed`, `firstRow`, `processNode`, `aliasEntry`, …) are kept: each names what the measurement shows the member holds, and S28, S33 and `netfacts` read them by name. | Owner decision |
 | O3 | Owner decision: 14393's walk members are measured (M9) but not merged, so `windows.network.list` still refuses mem5. Merging them would add list rows on mem5. | Owner decision; a 14393 list gate |
 | O4 | Owner decision: 26100 console histories are refused (M15). Before this step a history layout for 26100 without a measurement was used. | A 26100 capture with a readable conhost.exe debug record and a `cmd.exe` history |
@@ -178,7 +178,7 @@ The owner answered every point above. Where a point and this table differ, this 
 
 | Point | Decision |
 |---|---|
-| O1 | Keep single offset 0x360 |
+| O1 | Keep single offset 0x360 (2026-11-12); choose the offset by tcpip.pdb GUID (2026-11-18) |
 | O2 | Keep names |
 | O3 | Keep refusing mem5 |
 | O4 | Refuse |

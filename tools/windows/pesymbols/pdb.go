@@ -113,7 +113,7 @@ func (s *pdbSet) table(ctx tools.Context, m Module) symbols.SymbolTable {
 	if ctx.LoadPDB == nil {
 		return nil
 	}
-	fp, err := fingerprint(ctx, m)
+	fp, err := Fingerprint(ctx, m)
 	if err != nil {
 		s.unread++
 		if s.firstErr == nil {
@@ -146,7 +146,7 @@ func (s *pdbSet) report(ctx tools.Context, module string) {
 		s.unread, s.firstErr)
 }
 
-func fingerprint(ctx tools.Context, m Module) (autoload.Fingerprint, error) {
+func Fingerprint(ctx tools.Context, m Module) (autoload.Fingerprint, error) {
 	reader, err := instanceReader(ctx, m)
 	if err != nil {
 		return autoload.Fingerprint{}, err

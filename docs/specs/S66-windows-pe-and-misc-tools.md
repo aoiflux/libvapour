@@ -986,7 +986,7 @@ None: one fixed-size header.
 | BO1 | Owner decision: by default only records whose table passes section 5 are listed, and `full` lists every candidate; in 0.1.0 the option had another meaning. | Owner decision on the option |
 | BO2 | Owner decision: MD5 for the boot code and record hashes, kept from 0.1.0; the disk signature as eight hex digits of its value. | Owner decision |
 | BO3 | The listing gives offsets from the record start; the address firmware loads the record to is not in an allowed source. | A firmware specification |
-| BO4 | System IDs are not a rule: two accepted records (mem6 0x55, mem7 0xBB) have undocumented IDs and look like chance matches (BM2), while real disks also use IDs that BD5 does not list. | Owner decision |
+| BO4 | System IDs are not a rule: two accepted records (mem6 0x55, mem7 0xBB) have undocumented IDs and look like chance matches (BM2), while real disks also use IDs that BD5 does not list. Closed 2026-11-18: the owner decision stands, and the ten record rules of section 5 already apply; no code change. | Done |
 | BO5 | Owner decision (Q3): four fields renamed to the Microsoft Learn names; the rest kept from 0.1.0. | Owner decision |
 | BO6 | Records are matched at every byte offset because every real record on the captures lies off a sector boundary (BM1). Extended boot records (BD6) are listed like any record, not followed. GPT headers are not read. | Owner decision |
 | BO7 | Follow-up R3: with `full`, a record whose 440 bytes of boot code (0 to 0x1B7) are all zero (boot code MD5 5fb38429d5d77768867c76dcbdb35194) gives rows, with its entries, like any other candidate (4 step 4: `full` lists every candidate with its table problem). Owner decision 2026-11-12: keep; the tool is unchanged. | Closed: kept |
@@ -1047,7 +1047,7 @@ The owner answered every point above. Where a point and this table differ, this 
 | BO1 | Valid by default, full lists all |
 | BO2 | Keep MD5 and hex |
 | BO3 | Record-relative offsets |
-| BO4 | Not a rule |
+| BO4 | Not a rule (2026-11-12); closed with no code change (2026-11-18) |
 | BO5 | Rename four, keep rest |
 | BO6 | Yes, as specified |
 | BO8 | Rename, BD2 order |

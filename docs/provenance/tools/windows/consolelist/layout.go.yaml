@@ -1,7 +1,7 @@
 file: tools/windows/consolelist/layout.go
 replaces: [tools/windows/consolelist/layout.go]
 spec: S67-measured-layouts-tcpip-conhost
-spec_sha256: eabf2a36f3c0800f20f0911e35a74cf3aff82007ce230e6310a8bec1389c3b55
+spec_sha256: 01bb20118645ebabc5457f6931c57b7cbda70f3fa812df7701f411c876584d91
 sources:
   - title: "Microsoft Learn, TCPSTATE (mstcpip.h) and MIB_TCPROW2 (tcpmib.h): state numbering, port byte order"
     url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate

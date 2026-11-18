@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aoiflux/libvapour/symbols"
+	"github.com/aoiflux/libvapour/symbols/autoload"
 )
 
 // tcpip.pdb carries publics only, so the session merges these measured
@@ -78,6 +79,23 @@ type connectionOffsets struct {
 	inetAF, addressInfo, listEntry, state measuredOffset
 	localPort, remotePort, createTime     measuredOffset
 	owners                                []measuredOffset
+	createTimeByPDB                       []pdbOffset
+}
+
+// One tcpip.sys version, named by its PDB, and the offset its code reads.
+type pdbOffset struct {
+	guid string
+	age  uint32
+	at   measuredOffset
+}
+
+func (c connectionOffsets) createTimeFor(fp autoload.Fingerprint) (uint64, bool) {
+	for _, k := range c.createTimeByPDB {
+		if k.guid == fp.GUID && k.age == fp.Age && k.at.present() {
+			return k.at.off, true
+		}
+	}
+	return 0, false
 }
 
 type boundOffsets struct {
@@ -151,7 +169,8 @@ var tcpipBuildLayouts = []tcpipBuildLayout{
 	},
 	{
 		// Two tcpip.sys versions share build 26100 and move the owner
-		// (S67 M6); the createTime both hold is the one mem1's code reads.
+		// (S67 M6) and the creation time (S67 M5). The table's createTime
+		// holds the creation second on both, so an unmeasured PDB keeps it.
 		name: "tcpip-26100", first: 26100, last: 26100,
 		connection: connectionOffsets{
 			inetAF: seen(0x18, "mem1", "mem6", "mem7"), addressInfo: seen(0x20, "mem1", "mem6", "mem7"),
@@ -159,6 +178,10 @@ var tcpipBuildLayouts = []tcpipBuildLayout{
 			localPort: seen(0x74, "mem1", "mem6", "mem7"), remotePort: seen(0x76, "mem1", "mem6", "mem7"),
 			createTime: seen(0x360, "mem1", "mem6", "mem7"),
 			owners:     []measuredOffset{seen(0x348, "mem6", "mem7"), seen(0x350, "mem1")},
+			createTimeByPDB: []pdbOffset{
+				{guid: "DAC097D9D8F30AC6467DB71184A8C2E5", age: 1, at: seen(0x360, "mem1")},
+				{guid: "11B241ADFEA742938BFD75329CFFE121", age: 1, at: seen(0x358, "mem6", "mem7")},
+			},
 		},
 		listener: boundOffsets{
 			owner: seen(0x38, "mem1", "mem6", "mem7"), createTime: seen(0x48, "mem1", "mem6", "mem7"),

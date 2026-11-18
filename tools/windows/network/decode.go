@@ -2,13 +2,16 @@ package network
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"net/netip"
 
 	"github.com/aoiflux/libvapour/memory"
 	"github.com/aoiflux/libvapour/symbols"
+	"github.com/aoiflux/libvapour/symbols/autoload"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/any/processlist"
+	"github.com/aoiflux/libvapour/tools/windows/pesymbols"
 	"github.com/aoiflux/libvapour/util"
 )
 
@@ -148,6 +151,40 @@ func ownerOffsets(layoutName string, fromTable uint64) []uint64 {
 		}
 	}
 	return out
+}
+
+// S67 4.1 step 5: the record names the creation-time offset per tcpip.pdb
+// where one build ships tcpip.sys versions that read it at different places.
+func pickCreationTime(ctx tools.Context, tool string, l *objectLayout, pdb func(tools.Context) (autoload.Fingerprint, error)) {
+	rec := layoutNamed(l.name)
+	if rec == nil || len(rec.connection.createTimeByPDB) == 0 {
+		return
+	}
+	fp, err := pdb(ctx)
+	if err == nil {
+		at, ok := rec.connection.createTimeFor(fp)
+		if ok {
+			l.connection.createTime = at
+			return
+		}
+		err = fmt.Errorf("tcpip.pdb %s age %d has no measured creation-time offset", fp.GUID, fp.Age)
+	}
+	ctx.AddDiagnostic("%s: %s: %v, so connection creation times are read at 0x%x", tool, tcpipModule, err, l.connection.createTime)
+}
+
+// Read into a diagnostic after the module name, so it carries no package.
+var errTcpipNotListed = errors.New("not in the kernel module list")
+
+func tcpipPDB(ctx tools.Context) (autoload.Fingerprint, error) {
+	found, err := pesymbols.CollectModules(ctx, pesymbols.SourceKernel, []string{tcpipModule})
+	if err != nil {
+		return autoload.Fingerprint{}, err
+	}
+	mods := found[tcpipModule]
+	if len(mods) == 0 {
+		return autoload.Fingerprint{}, errTcpipNotListed
+	}
+	return pesymbols.Fingerprint(ctx, mods[0])
 }
 
 func resolveTables(t symbols.SymbolTable, linked bool) (*tableMembers, bool) {

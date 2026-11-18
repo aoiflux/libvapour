@@ -49,7 +49,7 @@ Read through the project's kernel tables for builds 26100 (mem1, mem6, mem7), 19
 
 | Type | Members used |
 |---|---|
-| `tcpEndpoint` | `inetAF` (pointer), `addressInfo` (pointer), `listEntry` (`_LIST_ENTRY`), `state` (u32), `localPort`, `remotePort` (u16), `owner` (pointer; the layout record keeps a second offset for 26100), `createTime` (u64) |
+| `tcpEndpoint` | `inetAF` (pointer), `addressInfo` (pointer), `listEntry` (`_LIST_ENTRY`), `state` (u32), `localPort`, `remotePort` (u16), `owner` (pointer; the layout record keeps a second offset for 26100), `createTime` (u64; the layout record keeps one offset per measured tcpip.pdb for 26100, S67 4.1 step 5) |
 | `tcpListener`, `udpEndpoint` | `inetAF`, `owner`, `createTime`, `localAddress` (pointer), `localPort`, `next` (pointer) |
 | `inetAF` | `family` (u16) |
 | `addressInfo` | `local` (pointer to `localAddress`), `remote` (pointer to the address bytes) |
@@ -86,7 +86,8 @@ M1 to M13 come from `netfacts` on 2026-11-12 over mem1_win11 (26100), mem2_win10
 1. The context must hold memory, symbols and a Windows profile, and the table's pointer size must be 8: every measured layout is for x64 (`ErrNotWindows`, `ErrPointerSize`).
 2. Resolve the endpoint members of section 3 from the table. A missing member is `ErrLayout` and ends the run: offsets of another build would decode plausible rows from the wrong places.
 3. Owner offsets: the table's `tcpEndpoint.owner`, then any other offset the named layout record holds (M10).
-4. The table members (`partition` … `portAssignmentEntry`, `_RTL_DYNAMIC_HASH_TABLE`, `_RTL_BITMAP`, `_LIST_ENTRY`) are resolved only when `listEntry` and both `next` members exist. Without them the list refuses the build (`ErrNoTables`).
+4. Creation-time offset: when the named layout record keeps creation-time offsets by tcpip.pdb (S67 4.1 step 5), read the CodeView record of the kernel module named `tcpip.sys` and take the offset recorded for its GUID and age. When no such module is listed, its record does not read, or the record holds no offset for that PDB, the table's `tcpEndpoint.createTime` stays and one diagnostic names why: `<tool>: tcpip.sys: <what failed>, so connection creation times are read at 0x<offset>`.
+5. The table members (`partition` … `portAssignmentEntry`, `_RTL_DYNAMIC_HASH_TABLE`, `_RTL_BITMAP`, `_LIST_ENTRY`) are resolved only when `listEntry` and both `next` members exist. Without them the list refuses the build (`ErrNoTables`).
 
 ### 4.2 Decoding one object
 
@@ -155,6 +156,7 @@ Listener and UDP endpoint: step 2, then the local port must be nonzero (`ErrPort
 | Layout without tables (14393) | `windows.network.list: layout "tcpip-14393": …` (`ErrNoTables`); the scan runs |
 | tcpip.sys publics missing | `windows.network.list: network: tcpip.sys symbols not resolved: …` (`ErrTcpipSymbols`) |
 | Partition table, endpoint table, compartment chain or bitmap unread | Diagnostic `windows.network.list: <object> at 0x<addr>: <what failed>: %w`; that part is skipped. In strict mode the run returns the error. |
+| tcpip.sys not listed, its CodeView record unread, or its PDB not in the layout record (4.1 step 4) | Diagnostic; connection creation times are read at the table's offset |
 | A bucket walk fails | The S03 walker's diagnostic; in strict mode the error |
 | Rule failures | Diagnostic `<tool>: <n> objects not listed: <count> <reason>; …` (list) or `windows.network.scan: <hits> pool tag hits, <passed> passed the pool header checks, <rows> rows, <n> failed the endpoint checks: …` (scan) |
 | No physical memory (scan) | `ErrObjectUnread` |
@@ -187,7 +189,7 @@ Listener and UDP endpoint: step 2, then the local port must be nonzero (`ErrPort
 
 ## 9. Acceptance
 
-1. Synthetic fixtures (`s28_fixture_test.go`, on the 26100 measured layout): every rule of section 5 passing and failing alone; IPv4 and IPv6 connections; wildcard and bound listeners; the second owner offset; the capture window; two partitions with a broken bucket and a `NumEntries` mismatch; a `TableSize` above 128; a TCP pool with a flag-1 entry, a two-listener chain and a port mismatch; a UDP pool; `include_corrupt`; the `pid` filter; the scan over a physical buffer with one object per tag and a garbage candidate; refusal without a layout, without tables and without tcpip symbols.
+1. Synthetic fixtures (`s28_fixture_test.go`, on the 26100 measured layout): every rule of section 5 passing and failing alone; IPv4 and IPv6 connections; wildcard and bound listeners; the second owner offset; the creation-time offset chosen by tcpip.pdb, and the table's offset kept for an unmeasured PDB or a missing tcpip.sys; the capture window; two partitions with a broken bucket and a `NumEntries` mismatch; a `TableSize` above 128; a TCP pool with a flag-1 entry, a two-listener chain and a port mismatch; a UDP pool; `include_corrupt`; the `pid` filter; the scan over a physical buffer with one object per tag and a garbage candidate; refusal without a layout, without tables and without tcpip symbols.
 2. Fuzz targets, 30 s each on 2026-11-12: `FuzzDecodeEndpoint` (arbitrary body for each kind, with marked words replaced by real or garbage pointers; no panic, only rule errors, every accepted row satisfies section 5 as recomputed and its problems agree with its empty values): 1,955,610 executions. `FuzzPortPoolChain` (arbitrary entry and chain links with arbitrary flags among real listeners, a listener on another port, 0 and an unmapped address; no panic, no endpoint listed twice, every row's port equals its bit, no chain walked from an entry without flags 2): 418,626 executions.
 3. On the captures, `netfacts`, 2026-11-12:
 

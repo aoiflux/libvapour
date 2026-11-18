@@ -1,7 +1,7 @@
 file: tools/windows/network/network_scan.go
 replaces: [tools/windows/network/network_scan.go, tools/windows/network/network_list.go]
 spec: S28-windows-network
-spec_sha256: 5d5b02e26b0f5b523fd0e3ec8bb73a7519ef542fb93665d8aab0a00bd5ae7cdf
+spec_sha256: 33966caa1338c04aae3fe6238c59551d6345219a1ca003844183f3794223cbf5
 sources:
   - title: "Microsoft Learn, TCPSTATE (mstcpip.h), dated 2018-12-05"
     url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
@@ -37,4 +37,6 @@ decisions:
     justification: "S28 4.4 step 2, 4.2"
   - rule: "Rows in the scan package's placement order with kernel and physical addresses"
     justification: "S28 4.4 step 3"
-date: 2026-11-12
+  - rule: "Connection creation-time offset chosen by tcpip.pdb before any candidate is decoded"
+    justification: "S28 4.1 step 4 (owner decision 2026-11-18)"
+date: 2026-11-18

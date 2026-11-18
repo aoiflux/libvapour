@@ -1,7 +1,7 @@
 file: tools/windows/imagecrashheader/image_read_crash_header.go
 replaces: [tools/windows/imagecrashheader/image_read_crash_header.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 4673eeb27d55b3794967e41e727ec85a890d87f29d7657f05418ee79d401aea5
+spec_sha256: 101965dbec6944f3f173c705fba97ad9b41147d3f0c74c8a78540f1473a5160e
 sources:
   - title: "Microsoft Learn, KeInitializeCrashDumpHeader function (ntddk.h): DUMP_TYPE_FULL, system process page directory"
     url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/nf-ntddk-keinitializecrashdumpheader

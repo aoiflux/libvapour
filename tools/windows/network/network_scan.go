@@ -54,6 +54,7 @@ func Run(ctx tools.Context) ([]Endpoint, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", Name, err)
 	}
+	pickCreationTime(ctx, Name, l, tcpipPDB)
 	phys := ctx.PhysicalMemory()
 	if phys == nil {
 		return nil, fmt.Errorf("%s: %w: no physical memory", Name, ErrObjectUnread)
