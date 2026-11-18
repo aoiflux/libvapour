@@ -1,7 +1,7 @@
 file: vapour.go
 replaces: [vapour.go]
 spec: S76-root-session
-spec_sha256: c7850a10b526db88ed0648ba1d76d258ceb1119d1959234d3b5bf05bb725e074
+spec_sha256: 92114b74c3b0b8cccf8c26419fe8d78dd864faea538af31e9cd0f6ff27da46f8
 sources:
   - title: "Project specifications S03, S04, S05, S28, S32, S53, S70, S71, S75 (the packages the session builds on)"
     path: docs/specs
@@ -9,4 +9,6 @@ sources:
 decisions:
   - rule: "Version stays the README status line's value"
     justification: "S76 7"
-date: 2026-11-12
+  - rule: "Version is 0.1.1, the release of the fixes since 0.1.0"
+    justification: "S76 7"
+date: 2026-11-18

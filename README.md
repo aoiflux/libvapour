@@ -44,6 +44,7 @@ a shared registry.
 - [Writing a tool](#writing-a-tool)
 - [Examples](#examples)
 - [Validation](#validation)
+- [Changes since 0.1.0](#changes-since-010)
 - [Project status](#project-status)
 - [License](#license)
 
@@ -734,9 +735,77 @@ captures and are not published. The captures:
 `any.timeline.list` and `any.image.dump_layers` have no real-image test. Images
 and test outputs stay local and are never committed.
 
+## Changes since 0.1.0
+
+### Breaking API changes
+
+- `diskbootrecords.Row` (`windows.disk.scan_boot_records`) uses the partition
+  table's own names, in its byte order: `PartitionIndex` is `Entry`,
+  `BootFlag` is `BootIndicator`, `Bootable` is `Active`, `PartitionTypeRaw` is
+  `SystemID` and `PartitionType` is `SystemIDName`.
+- `librarycompare.Module` (`windows.library.compare`): `InLoad`, `InMem` and
+  `InInit` are `OnLoadOrderList`, `OnMemoryOrderList` and `OnInitOrderList`.
+- `layers.FindKernelBaseFromKDBG(physical, cr3)` takes the kernel's
+  page-table root and passes over a block whose base does not start with "MZ".
+
+### Additions
+
+- `layers`: `WalkEntries` on `IntelTranslator` and `VirtualMemoryLayer`;
+  `SoftwareLayout`, `DefaultSoftwareLayout`, `ReadSoftwareLayout`,
+  `PagingMode.WithSoftwareLayout` and `SoftwareLayout.ResolveProtoPTE`.
+- `memorycode.Finding.CodeGenerators` (`any.memory.find_code`): the
+  process's views of d3d10warp.dll, clrjit.dll or chakra.dll, which generate
+  code at run time. Rows are never dropped for it.
+- `socketscan.Socket.RefCount` and `RefCountRead` (`linux.socket.scan`): a
+  count of 0 marks a sock the kernel released. The row stays listed.
+- `pesymbols.Fingerprint`, `processlist.ThreadCheck.Identify` and
+  `processlist.ThreadIdentity`.
+- `minidump.Result.PlaceholderThread`, set when a process with no thread was
+  given a placeholder thread record.
+- `librarylist.ErrLinkBelowZero` and `pagecache.ErrPathUnread`.
+- Test helpers `guitest.Fixture.Objects` and `PatchPage`.
+
+### Behaviour changes
+
+- Windows sessions read the software page-table entry layout from 64-bit
+  symbol tables. When a table cannot give it, the 14393 layout is used and a
+  diagnostic says so.
+- `any.memory.find_code`: no-execute in an entry above the last level makes
+  every page below it non-executable.
+- `windows.network.scan` and `windows.network.list` on build 26100 choose the
+  connection creation-time offset by the tcpip.pdb they find. An unknown or
+  unread PDB keeps the old offset and leaves a diagnostic. On one tcpip.sys
+  version the time changes below the second.
+- `linux.pagecache.list_files` lists an inode whose path does not read with
+  an empty path, and counts paths cut by the step limit apart from bad names.
+  `linux.pagecache.list_pages` counts pages cut by the table cap as a loss.
+- `linux.socket.list` reports a task whose IDs or descriptor table do not
+  read and goes on; in 0.1.0 it stopped with no rows. Bluetooth rows without
+  `bt_sock` in the symbol table no longer claim full coverage.
+- These used to pass silently and now leave a diagnostic, and fail strict
+  mode where they lose data: an unreadable ftrace trampoline
+  (`linux.tracing.check_ftrace`), a shell process refused an address space
+  (`linux.shell.read_history`), an unreadable root object directory
+  (`windows.handle.list`), a page lister that does not build
+  (`windows.console.list`), a missing `MmSystemRangeStart`
+  (`windows.module.list`), a loader link below address 0
+  (`windows.library.list`) and a placeholder thread (`windows.process.dump`).
+- `windows.thread.scan` takes a thread's IDs from the thread check that
+  accepted it. A body whose IDs do not read is counted as rejected, not
+  listed with zero IDs.
+- `windows.image.map_strings` passes over a CR-only line as an empty line.
+- `processlist.ParseSnapshotCSV` returns a read error that follows the
+  `#TYPE` line; in 0.1.0 it returned no rows and no error.
+- Dump tools remove a partial output file and report cleanup errors with the
+  failure. `windows.registry.dump_hives` now removes a partial hive too.
+- `windows.service.find_candidates` says in its description that it is a
+  placeholder.
+- The default symbol cache directory is documented under
+  [Opening a session](#opening-a-session).
+
 ## Project status
 
-libvapour is at **v0.1.0**. It is early-stage, and these limits matter most:
+libvapour is at **v0.1.1**. It is early-stage, and these limits matter most:
 
 - **Narrow image support.** Only x86-64 Windows, and x86-64 Linux with
   VMCOREINFO, open; see [Supported images](#supported-images).

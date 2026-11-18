@@ -179,7 +179,7 @@ Every failure after the capture opens closes it and any pagefile before returnin
 
 ## 7. Result schema
 
-The exported API is unchanged: `Version` ("0.1.0", tied to the README status line), `Limits` (the `limits` type), `OpenConfig` and its fields, `Session` with `Context`, `Execute`, `ExecuteAll`, `ExecuteSelected`, `Diagnostics`, `Close`, `ToolExecution{Spec, Result, Error, Duration}`, `ExecutionReport{Tools, Diagnostics, TotalDuration}`, `OpenWindowsMemory`, `OpenLinuxMemory`, `OpenMemory`, `AnalyzeMemory`. The context is S70's `tools.Context` with the options of 4.8. Diagnostic lines start `libvapour: ` (or `memory: ` for the provider's, `linuxkernel`'s own for VMCOREINFO copies), lowercase, no trailing period.
+The exported API is unchanged: `Version` ("0.1.1", tied to the README status line), `Limits` (the `limits` type), `OpenConfig` and its fields, `Session` with `Context`, `Execute`, `ExecuteAll`, `ExecuteSelected`, `Diagnostics`, `Close`, `ToolExecution{Spec, Result, Error, Duration}`, `ExecutionReport{Tools, Diagnostics, TotalDuration}`, `OpenWindowsMemory`, `OpenLinuxMemory`, `OpenMemory`, `AnalyzeMemory`. The context is S70's `tools.Context` with the options of 4.8. Diagnostic lines start `libvapour: ` (or `memory: ` for the provider's, `linuxkernel`'s own for VMCOREINFO copies), lowercase, no trailing period.
 
 ## 8. Limits
 
