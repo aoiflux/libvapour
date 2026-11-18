@@ -1,7 +1,7 @@
 file: tools/pattern.go
 replaces: [tools/pattern.go]
 spec: S70-tool-context-options-registry
-spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+spec_sha256: 4472dd6a61fc89dea3c53f90c4df9235bb14528787c9162d16f49fcfe781e705
 sources:
   - title: "Go standard library, packages regexp and regexp/syntax (RE2 syntax, (?i) flag), Go 1.26"
     url: https://pkg.go.dev/regexp

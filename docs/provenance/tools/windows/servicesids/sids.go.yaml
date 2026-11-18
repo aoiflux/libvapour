@@ -1,7 +1,7 @@
 file: tools/windows/servicesids/sids.go
 replaces: [tools/windows/servicesids/service_list_sids.go]
 spec: S63-windows-registry-tools
-spec_sha256: b661ed3fd084a4be17e2fce393b423c15b36e5ad4ca55656780f946b49e2653d
+spec_sha256: bfe4ce5739928ddea7aaf4c0fe9cf26fca196a1217eb8370a03638c4420e826e
 sources:
   - title: "Microsoft Learn, [MS-LSAT] 3.1.1.1.2 Configurable Translation Database and Corresponding View, updated 2024-05-01"
     url: https://learn.microsoft.com/openspecs/windows_protocols/ms-lsat/252cb6b0-2edc-4403-9d75-5b2786ba859e

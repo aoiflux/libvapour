@@ -144,13 +144,14 @@ func writeDump(ctx tools.Context, dir string, g *gatherer, p processlist.Process
 		return art, fmt.Errorf("%s: pid %d _EPROCESS at 0x%x: minidump not written: %w", Name, p.PID, p.EPROCESS, err)
 	}
 	res, err := minidump.Write(file, in)
-	if cerr := file.Close(); err == nil {
-		err = cerr
-	}
-	if err != nil {
-		extract.RemoveArtifact(dir, art.FileName)
+	if err := errors.Join(err, file.Close()); err != nil {
+		err = errors.Join(err, extract.RemoveArtifact(dir, art.FileName))
 		art.Skipped = err.Error()
 		return art, fmt.Errorf("%s: pid %d _EPROCESS at 0x%x: minidump not written: %w", Name, p.PID, p.EPROCESS, err)
+	}
+	if res.PlaceholderThread {
+		ctx.AddDiagnostic("%s: pid %d _EPROCESS at 0x%x: no thread read, the minidump holds one placeholder thread",
+			Name, p.PID, p.EPROCESS)
 	}
 	art.Size = res.Size
 	art.MemoryBytes = res.MemoryBytes

@@ -65,7 +65,7 @@ Ops are in list order: newest first (F7).
 
 ### 4.3 One ops
 
-1. Read `func`, `flags` and, when present, `trampoline`. An ops whose `func` or `flags` does not read ends the walk (4.2 step 2).
+1. Read `func`, `flags` and, when present, `trampoline`. An ops whose `func` or `flags` does not read ends the walk (4.2 step 2). A `trampoline` that does not read keeps the ops with trampoline 0 and no owner, and leaves a diagnostic: 0 would otherwise claim that the ops has no trampoline.
 2. The callback owner is `Model.Lookup` over the known modules (S07 4.4) for `func` (S06 4.5). The kernel namer gives the names the symbol table has at the address; when it has none, the nearest symbol below the address in the session's symbol list, as `name+0x<offset>` (S06 7). An ftrace address is usually a few bytes past the start of its function (M3).
 3. When `trampoline` is not 0 and the module model was built, it is looked up the same way. Its owner is the module name, or `kernel`, when a module's regions or the kernel image hold it (F12), and otherwise `allocated code outside modules` (F11). Without a module model the owner is empty.
 4. With filters (4.1 step 3), read `func_hash`, then its `filter_hash` and `notrace_hash`, and read each hash (4.4).
@@ -121,10 +121,11 @@ The names come from the running kernel's release: the text after `Linux version 
 | Module views lossy (S07) | Diagnostic from the views |
 | Walk stops early | Diagnostic `<tool>: ftrace_ops at 0x<addr>: <why the walk stopped>` |
 | Hash does not read or fails 4.4 | Scope `unread`; diagnostic `<tool>: ftrace_ops at 0x<addr>: <hash> at 0x<addr>: <what failed>` |
+| `trampoline` does not read | Rows kept with trampoline 0 and no owner; diagnostic `<tool>: ftrace_ops at 0x<addr>: trampoline does not read: <error>` |
 | Chain broken, count mismatch, entries capped | Diagnostic |
 | A module's symbols do not read during a lookup | Owner kept, symbol empty; one diagnostic |
 | `show_ftrace_flags` set and `linux_banner` missing or unreadable | Diagnostic `<tool>: linux_banner: release not read, flag bits named differently across kernels are given by number: <err>`; names follow 4.5 step 3 |
-| Strict mode | A walk that stops early, an `unread` scope, a notrace hash that does not read, a broken chain, capped entries, a failed module model, lossy or failed module views, and unread entry addresses are an error. |
+| Strict mode | A walk that stops early, an `unread` scope, a notrace hash that does not read, a `trampoline` that does not read, a broken chain, capped entries, a failed module model, lossy or failed module views, and unread entry addresses are an error. |
 
 `ErrNoOpsList` is a package sentinel with the prefix `tracingftrace:`. `ErrUnsupported` is the walker's own sentinel, `linuxwalk.ErrUnsupported`.
 
@@ -157,7 +158,7 @@ The names come from the running kernel's release: the text after `Linux version 
 
 ## 9. Acceptance
 
-- Synthetic fixtures: a list of three ops ending at the marker; an empty filter; a filter with entries in two buckets owned by a module and the kernel; a notrace hash; a hash with `FTRACE_HASH_FL_MOD` and no entries; a `size_bits` past the pointer width; a cycle; a null `next`; an unreadable hash; the no-filter form; the flags option; strict mode; flag names for the releases 6.17, 6.14, 6.4, 6.1, 4.19, 5.10 and 4.14, an empty and an unparsed release, and a v4.19 banner read end to end; a trampoline outside every module, one inside a module, and none.
+- Synthetic fixtures: a list of three ops ending at the marker; an empty filter; a filter with entries in two buckets owned by a module and the kernel; a notrace hash; a hash with `FTRACE_HASH_FL_MOD` and no entries; a `size_bits` past the pointer width; a cycle; a null `next`; an unreadable hash; the no-filter form; the flags option; strict mode; flag names for the releases 6.17, 6.14, 6.4, 6.1, 4.19, 5.10 and 4.14, an empty and an unparsed release, and a v4.19 banner read end to end; a trampoline outside every module, one inside a module, none, and one that does not read.
 - A fuzz target over the ops and hash readers on arbitrary memory (`FuzzHashReader`).
 - On both captures:
 

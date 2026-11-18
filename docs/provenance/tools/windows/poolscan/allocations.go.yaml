@@ -1,7 +1,7 @@
 file: tools/windows/poolscan/allocations.go
 replaces: [tools/windows/poolscan/pool_scan.go, tools/windows/poolscan/file.go]
 spec: S52-windows-pool-listings
-spec_sha256: 969898f64c0434ece5b3bb2a68d624e2aa85c55c654b84bf58fb8c9e03a02ce5
+spec_sha256: 0c4a920b21e6aeb200e005031e37b12d5c45f1181deeeede49ef667c490be01c
 sources:
   - title: "Microsoft Learn, ExAllocatePool2 function (wdm.h)"
     url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepool2

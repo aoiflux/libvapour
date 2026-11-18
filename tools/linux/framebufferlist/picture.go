@@ -158,8 +158,7 @@ func (s *saver) save(rec record) string {
 	_, werr := f.Write(data)
 	cerr := f.Close()
 	if err := errors.Join(werr, cerr); err != nil {
-		s.diag("fb_info at 0x%x: write %s: %v", fb.Address, name, err)
-		_ = extract.RemoveArtifact(s.dir, name)
+		s.diag("fb_info at 0x%x: write %s: %v", fb.Address, name, errors.Join(err, extract.RemoveArtifact(s.dir, name)))
 		return ""
 	}
 	return name

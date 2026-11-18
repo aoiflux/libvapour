@@ -430,7 +430,10 @@ func (e *examiner) mappedNotPE(pr *process, ca uint64, why error) {
 func pageAligned(n uint64) uint64 { return (n + pageSize - 1) &^ (pageSize - 1) }
 
 func (e *examiner) sectionHeaderPage(ca uint64) ([]byte, bool) {
-	pages, _ := e.sections.AvailablePages(ca)
+	pages, err := e.sections.AvailablePages(ca)
+	if err != nil {
+		return nil, false
+	}
 	for _, pg := range pages {
 		if pg.FileOffset != 0 {
 			continue

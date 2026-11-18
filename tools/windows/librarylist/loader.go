@@ -13,9 +13,10 @@ import (
 )
 
 var (
-	ErrLoaderLayout = errors.New("librarylist: symbol table lacks a loader member")
-	ErrNoWow64      = errors.New("librarylist: symbol table lacks _PEB32 or LIST_ENTRY32")
-	ErrBaseUnread   = errors.New("librarylist: DllBase does not read")
+	ErrLoaderLayout  = errors.New("librarylist: symbol table lacks a loader member")
+	ErrNoWow64       = errors.New("librarylist: symbol table lacks _PEB32 or LIST_ENTRY32")
+	ErrBaseUnread    = errors.New("librarylist: DllBase does not read")
+	ErrLinkBelowZero = errors.New("librarylist: a link's record would start below address 0")
 )
 
 type loaderList int
@@ -138,6 +139,7 @@ type record struct {
 type loaderWalk struct {
 	records    []record
 	baseUnread int
+	belowZero  int
 	headErrs   []error
 }
 
@@ -176,6 +178,7 @@ func walkLoader(w winkernel.ListWalker, space memory.MemoryReader, ldr uint64, l
 		for _, link := range walk.Entries {
 			at, ok := winkernel.Container(link, l.links[list])
 			if !ok {
+				out.belowZero++
 				continue
 			}
 			i, seen := index[at]

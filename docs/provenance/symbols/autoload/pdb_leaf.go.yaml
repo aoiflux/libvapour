@@ -1,7 +1,7 @@
 file: symbols/autoload/pdb_leaf.go
 replaces: [the numeric leaf, string and primitive parts of symbols/autoload/pdb.go]
 spec: S32-pdb-and-symbol-identity
-spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+spec_sha256: 8e653aa37eba76f0178b72ebc8a4a931b1652006ea36a82701e2416d00c802d8
 sources:
   - title: "LLVM, The PDB TPI and IPI Streams"
     url: https://llvm.org/docs/PDB/TpiStream.html

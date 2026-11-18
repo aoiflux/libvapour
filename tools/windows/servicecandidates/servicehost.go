@@ -18,8 +18,8 @@ func init() {
 	tools.MustRegister(
 		tools.Spec{
 			Name: Name,
-			Description: "List service host processes (svchost.exe) with the group and service their command lines name; " +
-				"a placeholder that reads no service records",
+			Description: "Placeholder: service host processes (svchost.exe) with the group and service their command lines name; " +
+				"reads no service records",
 		},
 		RunAny,
 	)

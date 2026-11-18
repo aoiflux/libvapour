@@ -1,7 +1,7 @@
 file: tools/windows/credentiallocal/owf.go
 replaces: [tools/windows/credentiallocal/credential_read_local.go]
 spec: S20-windows-sam-hashes
-spec_sha256: 72aba304173fcab5b109e45c4b1e98a3bc73e69bc58ab23934f3a01419f2198e
+spec_sha256: c0d737a9d83f0507cac5da82afbb8ae5e6ddc79b2d269da259dfd4bb20393380
 sources:
   - title: "[MS-SAMR] 2.2.11.1.1 Encrypting an NT or LM Hash Value with a Specified Key"
     url: https://learn.microsoft.com/openspecs/windows_protocols/ms-samr/a5252e8c-25e7-4616-a375-55ced086b19b

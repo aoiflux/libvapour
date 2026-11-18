@@ -2,12 +2,15 @@ package shellhistory
 
 import (
 	"errors"
+	"slices"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/aoiflux/libvapour/limits"
 	"github.com/aoiflux/libvapour/profiles"
 	"github.com/aoiflux/libvapour/tools"
+	"github.com/aoiflux/libvapour/tools/linuxobj"
 	lt "github.com/aoiflux/libvapour/tools/linuxobj/linuxobjtest"
 )
 
@@ -230,4 +233,22 @@ func contains(s, part string) bool {
 		}
 	}
 	return false
+}
+
+func TestAShellRefusedAnAddressSpaceWithoutAReasonIsReported(t *testing.T) {
+	f := newFixture()
+	task := f.process(100, "bash", "/usr/bin/bash", history(), rw)
+	f.k.Mem.U32(task+lt.TaskFlags, linuxobj.PFKThread)
+	rows, diags, err := f.run(t, nil)
+	if err != nil || len(rows) != 0 {
+		t.Fatalf("rows %+v, %v", rows, err)
+	}
+	if !slices.ContainsFunc(*diags, func(d string) bool {
+		return strings.HasPrefix(d, "linux.shell.read_history: process 100 at 0x") && strings.HasSuffix(d, ": no address space: task_struct flags mark a kernel thread, or mm is null")
+	}) {
+		t.Errorf("diagnostics %q", *diags)
+	}
+	if _, _, err := f.run(t, map[string]any{"strict": true}); err == nil {
+		t.Error("strict mode accepts a skipped shell")
+	}
 }

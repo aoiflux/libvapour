@@ -217,10 +217,9 @@ func decodeSettings(c *cursor) (Settings, error) {
 	default:
 		return s, fmt.Errorf("%w: settings block of %d bytes", ErrField, len(b))
 	}
-	r := &cursor{b: b}
 	words := make([]uint32, 7)
 	for i := range words {
-		words[i], _ = r.u32()
+		words[i] = binary.LittleEndian.Uint32(b[4*i:])
 	}
 	s.ExecutionTimeLimit = duration(words[2])
 	s.Priority = words[4]
@@ -400,7 +399,10 @@ func decodeSubscription(r *cursor, t *Trigger) error {
 	if chars > uint64(r.left())/2 {
 		return fmt.Errorf("%w: subscription of %d characters, %d bytes left", ErrTruncated, chars, r.left())
 	}
-	query, _ := r.take(2 * chars)
+	query, err := r.take(2 * chars)
+	if err != nil {
+		return err
+	}
 	if t.Subscription, err = text(query); err != nil {
 		return err
 	}

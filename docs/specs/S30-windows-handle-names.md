@@ -66,6 +66,7 @@ The form is chosen by the handle's type name: `File`, `Key`, `Process`, `Thread`
 3. Walk `Directory`: each directory's own name info gives the next component (D1, D2, M1).
    - The chain reaches `ObpRootDirectoryObject`: the name is `\` and the components joined by `\`, outermost first.
    - The chain ends at a null `Directory` or at a directory with no name info: the components so far, joined by `\`, with no leading backslash. The missing leading backslash says the path is not anchored at the root (M1, M2).
+   - Without the symbol `ObpRootDirectoryObject`, or when the pointer it names does not read, no chain can reach the root, so every path is given the relative form. The end of the run says so once.
    - A directory seen twice, a step past `MaxPathSteps`, or a component that does not read: not read.
 4. A table without `_OBJECT_HEADER_NAME_INFO.Directory` gives the leaf name alone.
 
@@ -116,6 +117,7 @@ Unchanged in behaviour. Its diagnostics now name the object and address in the f
 | Table cannot place name info | Namespace names empty, not "not read" |
 | Table lacks a member of 4.2 to 4.5 | That form's names are not read; counted |
 | Unreadable string, pointer or block | Not read; counted |
+| No `ObpRootDirectoryObject`, or its pointer does not read | Paths in the relative form (4.1 step 3); end of run `windows.handle.list: no ObpRootDirectoryObject symbol, so no namespace path starts at the root` or `windows.handle.list: ObpRootDirectoryObject at 0x<addr> does not read, so no namespace path starts at the root` |
 | End of run | `windows.handle.list: <n> <form> handle names did not read; first: object at 0x<addr>: <reason>` |
 
 Sentinels: `handlelist: object name not readable`, `handlelist: name path past MaxPathSteps`, `handlelist: key path length disagrees with TotalLevels`.
@@ -130,7 +132,7 @@ Sentinels: `handlelist: object name not readable`, `handlelist: name path past M
 
 ## 9. Acceptance
 
-1. Synthetic fixtures (`tools/windows/handlelist/names_test.go`): a rooted path, a path under an unnamed directory, a leaf with no directory, the root itself, a cycle, `MaxPathSteps`; a file with an absolute, an empty and a relative `FileName`; a key across a mounted hive, a compressed and a wide level, a `TotalLevels` mismatch, a key chain past `MaxPathSteps`; process and thread forms; the per-form diagnostic.
+1. Synthetic fixtures (`tools/windows/handlelist/names_test.go`): a rooted path, a path under an unnamed directory, a root pointer that does not read, a leaf with no directory, the root itself, a cycle, `MaxPathSteps`; a file with an absolute, an empty and a relative `FileName`; a key across a mounted hive, a compressed and a wide level, a `TotalLevels` mismatch, a key chain past `MaxPathSteps`; process and thread forms; the per-form diagnostic.
 2. Fuzz target `FuzzKeyLevel` (arbitrary name block bytes, either compression: no panic, compressed output has one character per byte), 30 s on 2026-11-12: 3.09 million executions.
 3. On the captures, `windows.handle.list` through `poolfacts -handles`, 2026-11-12:
 

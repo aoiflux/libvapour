@@ -1,7 +1,7 @@
 file: tools/windows/consolelist/host.go
 replaces: [tools/windows/consolelist/conhost.go, console_list.go, history.go, objects.go, registry.go, scan.go, screens.go, sizes.go, space.go, version.go]
 spec: S33-windows-console
-spec_sha256: 4b02cb487a8b71468b07ad3256c1b4d2bc131446494489614099d66db7f144e0
+spec_sha256: a07ff7e7143deb71916eb293d27b769a43df08eee5f6b7849ce54fcfe12c3866
 sources:
   - title: "Microsoft Learn, Windows Console and Terminal Definitions (Console Host)"
     url: https://learn.microsoft.com/windows/console/definitions
@@ -45,4 +45,6 @@ sources:
 decisions:
   - rule: "Hosts are conhost.exe processes kept by pid; regions are their VADs; search runs are the present pages"
     justification: "S33 4.2 step 2, F1, M2"
-date: 2026-11-12
+  - rule: "A page lister that does not build is reported once"
+    justification: "S33 4.2 step 2, section 6, O11"
+date: 2026-11-18

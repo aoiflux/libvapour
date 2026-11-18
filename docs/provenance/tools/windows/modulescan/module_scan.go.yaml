@@ -1,7 +1,7 @@
 file: tools/windows/modulescan/module_scan.go
 replaces: [tools/windows/modulescan/module_scan.go]
 spec: S64-windows-driver-kernel-tools
-spec_sha256: edf9c0e0d1c16fe421294359c1b2d1a6c542ff3912a9bbc92e8488d8b3f16b43
+spec_sha256: b85a96e0157e6c1da4ee351731872bc1c8fa42b953794226a5b4fecb8a4a453d
 sources:
   - title: "Microsoft Learn, UNICODE_STRING structure (ntdef.h)"
     url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string

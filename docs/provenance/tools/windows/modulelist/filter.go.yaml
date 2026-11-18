@@ -1,7 +1,7 @@
 file: tools/windows/modulelist/filter.go
 replaces: [tools/windows/modulelist/filter.go]
 spec: S55-windows-kernel-modules-and-pe-dump
-spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+spec_sha256: b3c84995cd4d417b51f6f92f1c1dcfd9afd351f4bf68b1382cb056671a61b541
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 3A, order number 253668-093US, sections 2.5, 4.5, 5.3, 5.4"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

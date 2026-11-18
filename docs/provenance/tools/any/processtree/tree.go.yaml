@@ -1,7 +1,7 @@
 file: tools/any/processtree/tree.go
 replaces: [tools/any/processtree/process_tree.go, tools/any/processtree/details.go]
 spec: S56-windows-libraries-autostart-process-tree
-spec_sha256: e7d217932a3f445b39b0386fd2fdd43ebb432bb9fe9866283ff696456b3a328c
+spec_sha256: d006704fc4e7c6d0b596f85f7bc8825f049d4ee0959f2bbd6857e609c7047dab
 sources:
   - title: "Microsoft Learn, Process Handles and Identifiers"
     url: https://learn.microsoft.com/windows/win32/procthread/process-handles-and-identifiers

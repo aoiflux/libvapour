@@ -1,7 +1,7 @@
 file: extract/region.go
 replaces: [extract/region.go]
 spec: S73-minidump-writer-and-extract-regions
-spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+spec_sha256: dde88d13478d3c8c71615e6ebfa908a9f0490174600f4c01bd7a99cb43276b96
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 2A FXSAVE (512-byte save area) and Vol. 3A 4.5 (4-KByte pages)"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

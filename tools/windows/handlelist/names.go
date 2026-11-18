@@ -62,6 +62,7 @@ type nameReader struct {
 	nameFld  uint64
 	root     uint64
 	rootRead bool
+	rootGap  string
 
 	fileDevice, fileNameOff uint64
 	processID, imageName    uint64
@@ -170,8 +171,13 @@ func (n *nameReader) name(ctx tools.Context, form nameForm, header uint64) (stri
 func (n *nameReader) rootDirectory(ctx tools.Context) uint64 {
 	if !n.rootRead {
 		n.rootRead = true
-		if s, err := n.table.LookupSymbol("ObpRootDirectoryObject"); err == nil {
-			n.root, _ = n.table.ReadPointer(ctx.Memory, s.Address)
+		s, err := n.table.LookupSymbol("ObpRootDirectoryObject")
+		if err != nil {
+			n.rootGap = "no ObpRootDirectoryObject symbol"
+			return 0
+		}
+		if n.root, err = n.table.ReadPointer(ctx.Memory, s.Address); err != nil {
+			n.root, n.rootGap = 0, fmt.Sprintf("ObpRootDirectoryObject at 0x%x does not read", s.Address)
 		}
 	}
 	return n.root
@@ -388,6 +394,10 @@ func (n *nameReader) report(ctx tools.Context) {
 		}
 	}
 	sort.Ints(forms)
+	// Without the root a rooted path reads as one not anchored at the root.
+	if n.rootGap != "" {
+		ctx.AddDiagnostic("%s: %s, so no namespace path starts at the root", Name, n.rootGap)
+	}
 	for _, f := range forms {
 		ctx.AddDiagnostic("%s: %d %s handle names did not read; first: %s", Name, n.unreadable[f], formLabels[f],
 			n.examples[f])

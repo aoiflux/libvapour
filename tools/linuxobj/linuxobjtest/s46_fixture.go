@@ -2,6 +2,7 @@ package linuxobjtest
 
 import (
 	"encoding/binary"
+	"fmt"
 
 	"github.com/aoiflux/libvapour/symbols"
 )
@@ -61,7 +62,10 @@ func (k *Kernel) AddClockChecks(sequence uint32, wallAgrees, sleepAgrees bool) {
 	k.Table.AddStruct(symbols.StructType{Name: "seqcount_t", Size: 4, Fields: []symbols.Field{
 		k.s46Field("sequence", 0, scalar("unsigned int")),
 	}})
-	tk, _ := k.Table.LookupSymbol("tk_core")
+	tk, err := k.Table.LookupSymbol("tk_core")
+	if err != nil {
+		panic(fmt.Sprintf("s46 fixture: %v", err))
+	}
 	k.Mem.U32(tk.Address+S46TkSequence, sequence)
 	at := tk.Address + TkCoreTimekeeper
 	real := int64(k.u64(at + TimekeeperReal))

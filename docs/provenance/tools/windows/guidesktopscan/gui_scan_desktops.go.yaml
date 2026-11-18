@@ -1,7 +1,7 @@
 file: tools/windows/guidesktopscan/gui_scan_desktops.go
 replaces: [tools/windows/guidesktopscan/gui_scan_desktops.go]
 spec: S57-windows-gui-objects
-spec_sha256: 2021f18ea7c0b4dfe4c8d3309e74107c6845213b69a0fcae3bbea36805d4f042
+spec_sha256: 11ae10c71b02e50ebc10099c78864ac71cf9edf16980d20f77cd0ea5836021be
 sources:
   - title: "Microsoft Learn, Window Stations"
     url: https://learn.microsoft.com/windows/win32/winstation/window-stations

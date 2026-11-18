@@ -90,6 +90,16 @@ func (r *read) miss(what string) {
 	r.lost = true
 }
 
+// A value that bytes gave but that does not parse counts as a member that did
+// not read.
+func (r *read) parsed(what string, err error) bool {
+	if err != nil {
+		r.miss(what)
+		return false
+	}
+	return true
+}
+
 func (r *read) uint(mem memory.MemoryReader, base uint64, typ, member string) (uint64, bool) {
 	v, err := r.d.k.Uint(mem, base, typ, member)
 	if err != nil {
@@ -186,6 +196,9 @@ func (d *Decoder) Decode(in memory.MemoryReader, sk uint64) (Decoded, error) {
 		out.Protocol = r.named(indexedName(btProtocolNames[:]), proto, "bluetooth protocol")
 		if stateOK {
 			out.State = r.named(indexedName(btStateNames[:]), state, "bluetooth state")
+		}
+		if _, ok := r.container("bt_sock"); !ok {
+			r.noType(&out, "bt_sock")
 		}
 	default:
 		out.Coverage = CoverageNotDecoded
@@ -346,24 +359,28 @@ func (r *read) inet(out *Decoded, family, proto, state uint64, stateOK bool) {
 		return
 	}
 	if b, ok := r.bytes(r.in, in, "inet_sock", "inet_sport", 2); ok {
-		p, _ := Port(b)
-		out.LocalPort = text(strconv.FormatUint(uint64(p), 10))
+		if p, err := Port(b); r.parsed("inet_sock.inet_sport", err) {
+			out.LocalPort = text(strconv.FormatUint(uint64(p), 10))
+		}
 	}
 	if b, ok := r.commonBytes("skc_dport", 2); ok {
-		p, _ := Port(b)
-		out.RemotePort = text(strconv.FormatUint(uint64(p), 10))
+		if p, err := Port(b); r.parsed("sock_common.skc_dport", err) {
+			out.RemotePort = text(strconv.FormatUint(uint64(p), 10))
+		}
 	}
 	local, remote, size, render := "skc_rcv_saddr", "skc_daddr", uint64(4), IPv4
 	if family == afInet6 {
 		local, remote, size, render = "skc_v6_rcv_saddr", "skc_v6_daddr", 16, IPv6
 	}
 	if b, ok := r.commonBytes(local, size); ok {
-		s, _ := render(b)
-		out.LocalAddress = text(s)
+		if s, err := render(b); r.parsed("sock_common."+local, err) {
+			out.LocalAddress = text(s)
+		}
 	}
 	if b, ok := r.commonBytes(remote, size); ok {
-		s, _ := render(b)
-		out.RemoteAddress = text(s)
+		if s, err := render(b); r.parsed("sock_common."+remote, err) {
+			out.RemoteAddress = text(s)
+		}
 	}
 }
 
@@ -475,8 +492,9 @@ func (r *read) packet(out *Decoded) {
 		return
 	}
 	if b, ok := r.bytes(r.in, p, "packet_sock", "num", 2); ok {
-		v, _ := Port(b)
-		out.Protocol = text(ethProtocol(v))
+		if v, err := Port(b); r.parsed("packet_sock.num", err) {
+			out.Protocol = text(ethProtocol(v))
+		}
 	}
 	idx, err := r.d.k.Int(r.in, p, "packet_sock", "ifindex")
 	if err != nil {

@@ -1,7 +1,7 @@
 file: internal/testsupport/s55_fixture.go
 replaces: []
 spec: S55-windows-kernel-modules-and-pe-dump
-spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+spec_sha256: b3c84995cd4d417b51f6f92f1c1dcfd9afd351f4bf68b1382cb056671a61b541
 sources:
   - title: "Specification S55-windows-kernel-modules-and-pe-dump: T1, T4, 4.6, O11"
     path: docs/specs/S55-windows-kernel-modules-and-pe-dump.md

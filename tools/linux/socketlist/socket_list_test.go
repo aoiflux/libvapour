@@ -2,9 +2,11 @@ package socketlist
 
 import (
 	"errors"
+	"slices"
 	"strings"
 	"testing"
 
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 )
 
@@ -332,5 +334,45 @@ func TestFamilyAndTypeNamesFollowTheSources(t *testing.T) {
 		if got := TypeName(v); got != want {
 			t.Errorf("type %d: %q, want %q", v, got, want)
 		}
+	}
+}
+
+func TestABluetoothSockWithoutItsTypeSaysSo(t *testing.T) {
+	w := newWorld(t, layout{noBt: true})
+	rows, diags := run(t, w.f, nil)
+	r := bySock(rows)[w.bt.sk]
+	want := Decoded{Family: "AF_BLUETOOTH", Type: "SOCK_SEQPACKET", Protocol: text("BTPROTO_RFCOMM"), State: text("BT_LISTEN"),
+		Filter: text(""), NetNS: initInum, NetNSKnown: true, Coverage: CoverageNoType}
+	if r.Decoded != want {
+		t.Errorf("got %+v\nwant %+v", r.Decoded, want)
+	}
+	if !strings.Contains(strings.Join(diags, "\n"), "AF_BLUETOOTH (bt_sock)") {
+		t.Errorf("diags %q", diags)
+	}
+}
+
+func TestATaskWhoseIDsDoNotReadIsALossNotAFailure(t *testing.T) {
+	w := newWorld(t, layout{})
+	task, err := w.f.k.Table.Struct("task_struct")
+	if err != nil {
+		t.Fatal(err)
+	}
+	task.Fields = slices.Clone(task.Fields)
+	for i, f := range task.Fields {
+		if f.Name == "tgid" {
+			task.Fields[i].Type = symbols.TypeRef{Name: "int", IsArray: true, ArrayLength: 2, Element: &symbols.TypeRef{Name: "int"}}
+		}
+	}
+	w.f.k.Table.AddStruct(task)
+	rows, diags := run(t, w.f, nil)
+	if len(rows) != 0 {
+		t.Errorf("%d rows from a task whose tgid does not read", len(rows))
+	}
+	if !strings.Contains(strings.Join(diags, "\n"), "linux.socket.list: 1 tasks holding sockets whose tgid or pid does not read, first: task at 0x") {
+		t.Errorf("diags %q", diags)
+	}
+	ctx, _ := w.f.k.Context(map[string]any{"strict": true})
+	if _, err := Run(ctx); err == nil {
+		t.Error("strict mode accepts a lost task")
 	}
 }

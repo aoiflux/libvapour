@@ -89,7 +89,7 @@ M1 to M9 come from `consolefacts` on 2026-11-12 over mem1_win11 (26100), mem2_wi
 ### 4.2 Finding consoles
 
 1. **Sizes.** The `max_history` option's values, or 50 when it is absent (M1); then every `HistoryBufferSize` a `Console` key or subkey sets, unless `no_registry` (F10, F13). The same for `NumberOfHistoryBuffers` with `max_buffers`, default 4 (M1). A console keeps the size it was created with, so a registry value changed later still finds the consoles made before it.
-2. **Hosts.** Every process named `conhost.exe` (F1, case-insensitive) that the `pid` option keeps. Its regions are its VADs; the search reads only the pages its page tables map, clipped to the VADs (M2). When the page lister does not build (`NewPageLister` fails), every VAD page is read, with no diagnostic (O11). When it builds but a host's pages do not list, every VAD page of that host is read, with a diagnostic.
+2. **Hosts.** Every process named `conhost.exe` (F1, case-insensitive) that the `pid` option keeps. Its regions are its VADs; the search reads only the pages its page tables map, clipped to the VADs (M2). When the page lister does not build (`NewPageLister` fails), every VAD page is read, and one diagnostic says so when there is a host (O11). When it builds but a host's pages do not list, every VAD page of that host is read, with a diagnostic.
 3. **Search.** For every size pair, the 8 bytes `HistoryBufferSize | NumberOfHistoryBuffers << 32` at 8-byte-aligned addresses: the two settings are adjacent UINT members (F10, layout), and the measured console puts them 8-aligned (M4).
 4. Each hit, less the offset of `historySize`, is a candidate. It is accepted when it passes C1 to C5 (section 5).
 
@@ -155,7 +155,7 @@ M1 to M9 come from `consolefacts` on 2026-11-12 over mem1_win11 (26100), mem2_wi
 | No layout, or no console members for the list tool | `ErrUnsupportedVersion` |
 | Process list fails | `<tool>: process list: <error>` |
 | A host's address space or VADs do not build | Diagnostic `<tool>: process <pid> at 0x<eprocess>: address space not built: …` or `VADs not read: …`; the host is skipped |
-| Page lister does not build | Every VAD is searched; no diagnostic (O11) |
+| Page lister does not build | Every VAD is searched; `<tool>: present pages not listed, every VAD of every host is searched: <error>` (O11) |
 | A host's pages do not list | Diagnostic `<tool>: process <pid> at 0x<eprocess>: present pages not listed, every VAD is searched: …` |
 | `MaxRegionScanBytes` or `MaxMatchesPerChunk` reached | Diagnostic `… search cut short: consolelist: …`; the candidates found so far are checked |
 | Rejected candidates | One diagnostic per host: `<tool>: process <pid> at 0x<eprocess>: <n> candidates rejected: <rule> <count>, …` |
@@ -197,7 +197,7 @@ Both tools emit nothing for an empty part: a console with no aliases has a nil `
 ## 9. Acceptance
 
 1. Synthetic fixtures (`tools/windows/consolelist/s33_fixture_test.go`, on the 19041 layout and a history-only copy of it): a whole console with titles, a process, a history with commands, aliases and two screens with a wrapped row ring; each of C1 to C5 and H1 to H6 broken alone; an empty history; an unreadable command and row; the limits; inline and heap strings and their refusals; the search's alignment, page skipping and budgets; `Run` end to end on a process fixture, its refusals, options and strict mode. `consolehistory` tests build their heap from `Layout.Members()` only.
-2. Fuzz targets, 30 s each on 2026-11-12: `FuzzReadConsole` (arbitrary console object and heap; an accepted console keeps C1, C2, C5, row order and limits): 302,768 executions. `FuzzReadHistory` (the 19041 layout, arbitrary heap and node; accepted histories keep H2, H4, H6 and command indices): 2,074,067. `FuzzWideString` (arbitrary string object; length ≤ capacity, capacity ≥ 7, inline exactly when capacity ≤ 7): 1,892,738.
+2. Fuzz targets, 30 s each on 2026-11-12: `FuzzReadConsole` (arbitrary console object and heap; an accepted console keeps C1, C2, C5, row order and limits): 302,768 executions. `FuzzReadHistory` (the 19041 layout, arbitrary heap and node; accepted histories keep H2, H4, H6 and command indices): 2,074,067. `FuzzWideString` (arbitrary string object; length ≤ capacity, capacity ≥ 7, inline exactly when capacity ≤ 7): 1,892,738. On 2026-11-18, 30 s: `FuzzScanHistoriesOfAPatchedHeap` (`windows.console.scan_history` over a heap of two histories with bytes patched anywhere: rows only from the host process's PID, inside its heap, in address order) 4,324 executions, no failure.
 3. On the captures, `consolefacts`, 2026-11-12:
 
 | Capture | Build | Hosts | Pages searched | Consoles (accepted / rejected) | Screens (rows, non-blank) | Histories via console | History candidates (accepted / rejected H1) | Commands |
@@ -245,7 +245,7 @@ Both tools emit nothing for an empty part: a console with no aliases has a nil `
 | O8 | Microsoft publishes the console host's source; it was not used, being outside this wave's allowed sources. It could confirm or replace every measured offset. | Owner decision on that source |
 | O9 | The settings-pair alignment (8 bytes) rests on one console (M4); a console placed at 4 mod 8 would be missed. | More captures; or a 4-byte step at about twice the candidates |
 | O10 | Follow-up R8: the O6 rows hold no member addresses; a console's or history's own address is the only address in its rows. A history names its attached process record (4.5 step 3); the record's handle is not read. Owner decision 2026-11-12: keep these rows. Done: no row field changed. | Closed |
-| O11 | `FindHosts` (`tools/windows/consolelist/host.go`) drops the error of `NewPageLister`: when the page lister does not build, every VAD of every host is searched and nothing is reported. Only a failed `Pages` call for one host gives a diagnostic. Owner decision 2026-11-12: kept for v0.1.0; a diagnostic when the page lister does not build in v0.2.0. | v0.2.0 |
+| O11 | `FindHosts` (`tools/windows/consolelist/host.go`) drops the error of `NewPageLister`: when the page lister does not build, every VAD of every host is searched and nothing is reported. Only a failed `Pages` call for one host gives a diagnostic. Owner decision 2026-11-12: kept for v0.1.0; a diagnostic when the page lister does not build in v0.2.0. Done 2026-11-18, brought forward to v0.1.1 by the plan of 2026-11-16: 4.2 step 2 and section 6; `TestAPageListerThatDoesNotBuildIsReported`. | Done |
 
 ### Owner decisions, 2026-11-12
 

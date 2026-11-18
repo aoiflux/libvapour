@@ -1,7 +1,7 @@
 file: tools/windows/handlelist/objecttype.go
 replaces: [tools/windows/handlelist/handle_list.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 101965dbec6944f3f173c705fba97ad9b41147d3f0c74c8a78540f1473a5160e
+spec_sha256: 2023fb0ad8005f052bf803efd090176dfe58fdc91d96a574cf903d29543a7d63
 sources:
   - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _EPROCESS.ObjectTable, _HANDLE_TABLE, _HANDLE_TABLE_ENTRY, _OBJECT_HEADER, _OBJECT_TYPE, ObTypeIndexTable, ObHeaderCookie; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
     path: petoolfacts

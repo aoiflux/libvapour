@@ -1,7 +1,7 @@
 file: tools/windows/threadlist/trapframe.go
 replaces: [tools/windows/threadlist/trapframe.go]
 spec: S50-windows-threads
-spec_sha256: 6e00b270533e2376ae2851cb766004e981b1b23a65e8cd8a4b4ed3abc8bbece5
+spec_sha256: 06b0f06a61dee30e7c5b7d2be39f5e86ef9c20b198abd0744eddc029a499fa5c
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A (253668-093US): Protection, Privilege Levels; Interrupt and Exception Handling, 64-Bit Mode Stack Frame"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

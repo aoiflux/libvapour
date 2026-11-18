@@ -185,6 +185,11 @@ func (c *check) trampolineOwner(addr uint64) string {
 }
 
 func (c *check) rows(o ops, showFlags bool) []Hook {
+	if o.trampolineErr != nil {
+		c.lossy = true
+		o.trampoline = 0
+		c.diag("%s: ftrace_ops at %#x: trampoline does not read: %v", Name, o.at, o.trampolineErr)
+	}
 	cb := c.owner(o.fn)
 	base := Hook{OpsAddress: o.at, CallbackAddress: o.fn, Callback: cb.symbol, Module: cb.module,
 		ModuleAddress: cb.address, ModuleFound: cb.found, TrampolineAddress: o.trampoline,

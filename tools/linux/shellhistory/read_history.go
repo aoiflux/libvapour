@@ -157,6 +157,10 @@ func (r *reader) task(task uint64) ([]Command, error) {
 	if !ok {
 		if why != nil {
 			r.skip(task, pid, "no address space: %v", why)
+		} else {
+			// The process was chosen by its mapped shell, so a refusal with
+			// no reason contradicts what was just read.
+			r.skip(task, pid, "no address space: task_struct flags mark a kernel thread, or mm is null")
 		}
 		return nil, nil
 	}

@@ -3,6 +3,7 @@ package registryhive
 import (
 	"errors"
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/aoiflux/libvapour/extract"
@@ -112,15 +113,25 @@ func DumpHive(ctx tools.Context, hive Hive, cellReader memory.MemoryReader, dir 
 		d.Skipped = err.Error()
 		return d
 	}
-	defer f.Close()
+	err = errors.Join(writeHive(f, h, &d, block, stable), f.Close())
+	if err != nil {
+		// A cut hive file left behind would pass for a whole hive.
+		d.Skipped = errors.Join(err, extract.RemoveArtifact(dir, d.FileName)).Error()
+		d.Gaps = nil
+		return d
+	}
+	d.Captured = d.Size - d.Gaps.PaddedBytes()
+	return d
+}
+
+func writeHive(w io.Writer, h *HiveLayer, d *Dump, block, stable uint64) error {
 	base, err := h.BaseBlock()
 	if err != nil {
 		base, d.BaseBlockUnreadable = make([]byte, block), true
 		d.Gaps = addGap(d.Gaps, 0, block)
 	}
-	if _, err := f.Write(base); err != nil {
-		d.Skipped = err.Error()
-		return d
+	if _, err := w.Write(base); err != nil {
+		return err
 	}
 	const chunk = 256 * 4096
 	for off := uint64(0); off < stable; off += chunk {
@@ -129,13 +140,11 @@ func DumpHive(ctx tools.Context, hive Hive, cellReader memory.MemoryReader, dir 
 		for _, g := range gaps {
 			d.Gaps = addGap(d.Gaps, g.Start+block, g.Length)
 		}
-		if _, err := f.Write(b); err != nil {
-			d.Skipped = err.Error()
-			return d
+		if _, err := w.Write(b); err != nil {
+			return err
 		}
 	}
-	d.Captured = d.Size - d.Gaps.PaddedBytes()
-	return d
+	return nil
 }
 
 func runDumpAny(ctx tools.Context) (any, error) { return RunDump(ctx) }

@@ -1,7 +1,7 @@
 file: tools/windows/registryautostart/registry_list_autostart.go
 replaces: [tools/windows/registryautostart/registry_list_autostart.go]
 spec: S56-windows-libraries-autostart-process-tree
-spec_sha256: e7d217932a3f445b39b0386fd2fdd43ebb432bb9fe9866283ff696456b3a328c
+spec_sha256: d006704fc4e7c6d0b596f85f7bc8825f049d4ee0959f2bbd6857e609c7047dab
 sources:
   - title: "Microsoft Learn, Run and RunOnce Registry Keys"
     url: https://learn.microsoft.com/windows/win32/setupapi/run-and-runonce-registry-keys

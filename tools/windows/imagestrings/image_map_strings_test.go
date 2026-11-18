@@ -177,3 +177,10 @@ func TestRefusals(t *testing.T) {
 		t.Errorf("linux: %v", err)
 	}
 }
+
+func TestAnEmptyLineOfACRLFListingIsPassedOver(t *testing.T) {
+	lines, rejected, err := ReadLines(strings.NewReader("1 a\r\n\r\n2 b\r\n"), 16, 10)
+	if err != nil || len(lines) != 2 || len(rejected) != 0 || lines[1].Number != 3 || lines[1].Text != "b" {
+		t.Errorf("lines %+v, rejected %+v, err %v", lines, rejected, err)
+	}
+}

@@ -1,7 +1,7 @@
 file: tools/windows/peimports/tally.go
 replaces: [tools/windows/peimports/pe_list_imports.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 101965dbec6944f3f173c705fba97ad9b41147d3f0c74c8a78540f1473a5160e
+spec_sha256: 2023fb0ad8005f052bf803efd090176dfe58fdc91d96a574cf903d29543a7d63
 sources:
   - title: "Project measurement: petoolfacts -tool pesymbols,peimports,peversion on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
     path: petoolfacts

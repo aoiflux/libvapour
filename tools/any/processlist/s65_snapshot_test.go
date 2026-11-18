@@ -2,8 +2,10 @@ package processlist
 
 import (
 	"errors"
+	"io"
 	"strings"
 	"testing"
+	"testing/iotest"
 )
 
 func TestSnapshotHeadersOfEachSource(t *testing.T) {
@@ -84,5 +86,17 @@ func TestTheCrossCheckerMatchesPIDNameAndAddress(t *testing.T) {
 func TestLoadSnapshotNamesTheFile(t *testing.T) {
 	if _, err := LoadSnapshotCSV(t.TempDir() + "/missing.csv"); err == nil || !strings.Contains(err.Error(), "open snapshot csv") {
 		t.Errorf("err %v", err)
+	}
+}
+
+func TestAReadFailureAfterTheTypeLineIsAnError(t *testing.T) {
+	broken := errors.New("device gone")
+	for name, r := range map[string]io.Reader{
+		"type line":  io.MultiReader(strings.NewReader("#TYPE System.Diagnostics.Process"), iotest.ErrReader(broken)),
+		"first byte": iotest.ErrReader(broken),
+	} {
+		if rows, err := ParseSnapshotCSV(r); !errors.Is(err, broken) {
+			t.Errorf("%s: rows %+v, err %v", name, rows, err)
+		}
 	}
 }

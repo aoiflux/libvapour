@@ -1,7 +1,7 @@
 file: tools/windows/modulelist/module_list.go
 replaces: [tools/windows/modulelist/module_list.go, tools/windows/modulelist/doc.go]
 spec: S55-windows-kernel-modules-and-pe-dump
-spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+spec_sha256: b3c84995cd4d417b51f6f92f1c1dcfd9afd351f4bf68b1382cb056671a61b541
 sources:
   - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _KLDR_DATA_TABLE_ENTRY, _LDR_DATA_TABLE_ENTRY, _UNICODE_STRING, _LIST_ENTRY, PsLoadedModuleList, MmSystemRangeStart; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
     path: kmodfacts

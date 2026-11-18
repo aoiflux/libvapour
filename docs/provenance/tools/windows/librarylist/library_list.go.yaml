@@ -1,7 +1,7 @@
 file: tools/windows/librarylist/library_list.go
 replaces: [tools/windows/librarylist/library_list.go, tools/windows/librarylist/filter.go]
 spec: S56-windows-libraries-autostart-process-tree
-spec_sha256: e7d217932a3f445b39b0386fd2fdd43ebb432bb9fe9866283ff696456b3a328c
+spec_sha256: d006704fc4e7c6d0b596f85f7bc8825f049d4ee0959f2bbd6857e609c7047dab
 sources:
   - title: "Microsoft Learn, PEB structure (winternl.h)"
     url: https://learn.microsoft.com/windows/win32/api/winternl/ns-winternl-peb
@@ -33,4 +33,6 @@ decisions:
     justification: "S56 7.1, O1"
   - rule: "DLL.BaseUnreadable flags a DllBase that does not read; the per-process count is a diagnostic, strict an error"
     justification: "owner decision 2026-11-12, S56 O8; S56 6, 7.1"
-date: 2026-11-12
+  - rule: "Below-zero links are reported per process; strict fails with ErrLinkBelowZero"
+    justification: "S56 4.1 step 4, sections 5 and 6, O10"
+date: 2026-11-18

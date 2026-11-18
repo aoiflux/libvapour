@@ -19,8 +19,7 @@ func NewFileMemoryReader(path string) (*FileMemoryReader, error) {
 	}
 	r, err := NewFileMemoryReaderFromFile(f)
 	if err != nil {
-		_ = f.Close()
-		return nil, err
+		return nil, errors.Join(err, f.Close())
 	}
 	return r, nil
 }

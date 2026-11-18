@@ -236,6 +236,11 @@ func (l *lister) loader(p processlist.Process, where string, space memory.Memory
 	for _, e := range w.headErrs {
 		l.ctx.AddDiagnostic("%v", e)
 	}
+	if w.belowZero > 0 {
+		if err := l.fail(fmt.Errorf("%s: %d loader list links skipped: %w", where, w.belowZero, ErrLinkBelowZero)); err != nil {
+			return err
+		}
+	}
 	if w.baseUnread > 0 {
 		if err := l.fail(fmt.Errorf("%s: %d loader records flagged: %w", where, w.baseUnread, ErrBaseUnread)); err != nil {
 			return err

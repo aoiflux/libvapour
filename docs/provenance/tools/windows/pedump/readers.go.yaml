@@ -1,7 +1,7 @@
 file: tools/windows/pedump/readers.go
 replaces: [KernelReaders and ReaderForModule of tools/windows/pedump/pe_dump.go, processReader of base.go]
 spec: S55-windows-kernel-modules-and-pe-dump
-spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+spec_sha256: b3c84995cd4d417b51f6f92f1c1dcfd9afd351f4bf68b1382cb056671a61b541
 sources:
   - title: "Project measurement: kmodfacts -types, -raw -list and -tool -pid 0 on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025"
     path: kmodfacts

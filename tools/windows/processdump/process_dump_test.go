@@ -334,3 +334,21 @@ func TestAnOutputDirectoryIsRequired(t *testing.T) {
 }
 
 type memoryReader = memory.MemoryReader
+
+func TestAProcessWithoutThreadsSaysItsDumpHoldsAPlaceholder(t *testing.T) {
+	f := testsupport.BuildProcessFixture([]testsupport.FixtureProcess{sProcess(1200, "one.exe")})
+	f.AddS50Threads(nil, `\SystemRoot\system32\ntoskrnl.exe`)
+	sKernelValues(f)
+	rows, diags, _ := sRun(t, f, nil)
+	if len(rows) != 1 || !rows[0].Written() || rows[0].Threads != 0 {
+		t.Fatalf("rows %+v", rows)
+	}
+	want := "windows.process.dump: pid 1200 _EPROCESS at 0x"
+	found := false
+	for _, d := range diags {
+		found = found || strings.HasPrefix(d, want) && strings.HasSuffix(d, ": no thread read, the minidump holds one placeholder thread")
+	}
+	if !found {
+		t.Errorf("diagnostics %q", diags)
+	}
+}

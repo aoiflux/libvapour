@@ -1,7 +1,7 @@
 file: tools/windowsversion.go
 replaces: [tools/windowsversion.go]
 spec: S70-tool-context-options-registry
-spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+spec_sha256: 4472dd6a61fc89dea3c53f90c4df9235bb14528787c9162d16f49fcfe781e705
 sources:
   - title: "Microsoft Learn, Operating System Version, page dated 2020-09-15"
     url: https://learn.microsoft.com/windows/win32/sysinfo/operating-system-version

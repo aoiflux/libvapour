@@ -38,6 +38,7 @@ var (
 	ErrName          = errors.New("pagecache: dentry name is empty, too long or holds a separator")
 	ErrPathSteps     = errors.New("pagecache: path is longer than Limits.MaxPathSteps")
 	ErrDetached      = errors.New("pagecache: dentry chain ends at a root other than the super_block's")
+	ErrPathUnread    = errors.New("pagecache: a dentry or name on the path does not read")
 	ErrStrict        = errors.New("pagecache: strict mode: the walk left objects out")
 	ErrFileType      = errors.New("pagecache: file type not one of REG, DIR, LNK, CHR, BLK, FIFO, SOCK")
 )
@@ -356,11 +357,11 @@ func (sb SuperBlock) viewOf(rel string) (View, string, bool) {
 }
 
 type losses struct {
-	walks, unread, foreign, unnamed, detached, pages int
+	walks, unread, foreign, unnamed, detached, cut, pathUnread, pages int
 }
 
 func (l losses) total() int {
-	return l.walks + l.unread + l.foreign + l.unnamed + l.detached + l.pages
+	return l.walks + l.unread + l.foreign + l.unnamed + l.detached + l.cut + l.pathUnread + l.pages
 }
 
 type model struct {
@@ -766,6 +767,9 @@ func (m *model) inode(sb SuperBlock, at uint64) (inode, error) {
 			return in, ErrName
 		}
 		rel, err := m.pathIn(first-m.s.dAlias, sb.Root)
+		if errors.Is(err, ErrUnread) {
+			return in, ErrPathUnread
+		}
 		if err != nil {
 			return in, err
 		}
@@ -813,7 +817,7 @@ func (m *model) files(sbs []SuperBlock, visit func(SuperBlock, inode) bool) {
 			m.diag("%s: s_inodes of super_block at %#x: %v", m.tool, sb.Address, err)
 			continue
 		}
-		var counts [4]int
+		var counts [6]int
 		for _, at := range entries {
 			in, err := m.inode(sb, at)
 			switch {
@@ -825,6 +829,10 @@ func (m *model) files(sbs []SuperBlock, visit func(SuperBlock, inode) bool) {
 				continue
 			case errors.Is(err, ErrDetached):
 				counts[3]++
+			case errors.Is(err, ErrPathSteps):
+				counts[4]++
+			case errors.Is(err, ErrPathUnread):
+				counts[5]++
 			case err != nil:
 				counts[2]++
 			}
@@ -836,7 +844,9 @@ func (m *model) files(sbs []SuperBlock, visit func(SuperBlock, inode) bool) {
 		m.lost.foreign += counts[1]
 		m.lost.unnamed += counts[2]
 		m.lost.detached += counts[3]
-		for n, e := range []error{ErrUnread, ErrForeign, ErrName, ErrDetached} {
+		m.lost.cut += counts[4]
+		m.lost.pathUnread += counts[5]
+		for n, e := range []error{ErrUnread, ErrForeign, ErrName, ErrDetached, ErrPathSteps, ErrPathUnread} {
 			if counts[n] > 0 {
 				m.diag("%s: super_block at %#x: %d inodes: %v", m.tool, sb.Address, counts[n], e)
 			}

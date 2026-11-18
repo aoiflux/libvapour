@@ -157,7 +157,10 @@ func TestEmptyInputStillHasTheRequiredStreams(t *testing.T) {
 func TestNoThreadsGetsThePlaceholderThread(t *testing.T) {
 	in := fullInput()
 	in.Threads = nil
-	d, _ := write(t, in)
+	d, res := write(t, in)
+	if !res.PlaceholderThread {
+		t.Error("Result does not say the thread is a placeholder")
+	}
 	b := body(t, d, StreamThreadList)
 	if u32(b, 0) != 1 || !bytes.Equal(b[listCountSize:], make([]byte, threadSize)) {
 		t.Errorf("thread list % x", b)

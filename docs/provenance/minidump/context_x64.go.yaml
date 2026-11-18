@@ -1,7 +1,7 @@
 file: minidump/context_x64.go
 replaces: [minidump/context_x64.go]
 spec: S73-minidump-writer-and-extract-regions
-spec_sha256: 52ca5d7747d60815431bd882efdc034e5fbf5ce54ac5272f35303bf9b24c6244
+spec_sha256: dde88d13478d3c8c71615e6ebfa908a9f0490174600f4c01bd7a99cb43276b96
 sources:
   - title: "Microsoft Learn, CONTEXT structure (x86 64-bit) (winnt.h), page dated 2018-12-05"
     url: https://learn.microsoft.com/windows/win32/api/winnt/ns-winnt-context

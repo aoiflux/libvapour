@@ -88,7 +88,7 @@ M1 to M10 come from `threadfacts -types -pool` on 2026-11-12 over mem1_win11, me
 
 Read from the thread's body with the reader that holds it (kernel memory for the list, physical memory for the scan).
 
-1. **Identity.** `PID` is `Cid.UniqueProcess`; on the list it is the listing process's PID (M2 measured them equal but one). `TID` is `Cid.UniqueThread`.
+1. **Identity.** `PID` is `Cid.UniqueProcess`; on the list it is the listing process's PID (M2 measured them equal but one). `TID` is `Cid.UniqueThread`. The scan takes both from the S17 thread check that accepted the body (`Identify`), so a scanned row never carries an ID that did not read.
 2. **Owner.** `Process` is `_KTHREAD.Process` (M2).
 3. **Times.** `CreateTime` and `ExitTime` are 8-byte values decoded as FILETIMEs (D4). A value of 0, or with bit 63 set, is no time and gives the zero time, readable. For `ExitTime` this is the rule that separates the exit time from the `KeyedWaitChain` that shares its storage (T2, M4).
 4. **Start addresses.** `StartAddress` and `Win32StartAddress` are pointers. When the table has `StartAddressInvalid` and the bit reads 1, `StartAddress` is reported as 0 with `StartAddressInvalid` set: its storage then holds `PostBlockList` (T2, M5). A bit that does not read leaves the address as read.

@@ -1,7 +1,7 @@
 file: tools/windows/processdump/streams.go
 replaces: [the stream builders of tools/windows/processdump/process_dump.go]
 spec: S68-windows-memory-process-dump
-spec_sha256: 6c5307587dff8b227ccc163b732403e3306af2bf401a1876c64e95abd439acae
+spec_sha256: 16654528a2a3e5ed57ee15054d2c76c0cc027293ba1f4e5bf3d46752cf754117
 sources:
   - title: "Microsoft Learn, MINIDUMP_SYSTEM_INFO (minidumpapiset.h)"
     url: https://learn.microsoft.com/windows/win32/api/minidumpapiset/ns-minidumpapiset-minidump_system_info

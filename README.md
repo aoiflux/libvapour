@@ -177,8 +177,10 @@ image: the kernel's kallsyms, BTF and banner.
   <img src="assets/diagrams/session-open-light.svg" alt="How a session opens: OpenWindowsMemory identifies the kernel, loads or downloads its symbols and finds its page tables; OpenLinuxMemory reads VMCOREINFO and checks or assembles the symbol table.">
 </picture>
 
-Windows symbol tables are cached under
-`{os.UserCacheDir}/libvapour/symbols/windows/<version>/` as `.vsym` files, in
+Windows symbol tables are cached under `SymbolLoad.CacheDir`, or, when that is
+empty, under `{os.UserCacheDir}/libvapour/symbols/windows/<version>/`: the one
+value libvapour takes from its environment, and the operating system provides
+it. They are `.vsym` files, in
 libvapour's own symbol-table format ([symbols/FORMAT.md](symbols/FORMAT.md)).
 `<version>` is the version of the PDB reader that wrote them; a table from
 another version is neither read nor deleted. A table holds the PDB's public

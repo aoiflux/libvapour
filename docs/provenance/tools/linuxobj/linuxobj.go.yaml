@@ -28,4 +28,6 @@ decisions:
     justification: "S46 4.1 step 5"
   - rule: "The module model is built once per Kernel from the shared S06 model"
     justification: "S46 4.1 step 7"
-date: 2026-11-12
+  - rule: "A type size that does not resolve is the integer error's reason; Deref resolves its member before reading"
+    justification: "S46 4.1 step 3; project rule: no error is dropped"
+date: 2026-11-18

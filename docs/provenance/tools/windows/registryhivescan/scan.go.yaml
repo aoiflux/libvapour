@@ -1,7 +1,7 @@
 file: tools/windows/registryhivescan/scan.go
 replaces: [tools/windows/registryhivescan/registry_scan_hives.go]
 spec: S63-windows-registry-tools
-spec_sha256: b661ed3fd084a4be17e2fce393b423c15b36e5ad4ca55656780f946b49e2653d
+spec_sha256: bfe4ce5739928ddea7aaf4c0fe9cf26fca196a1217eb8370a03638c4420e826e
 sources:
   - title: "ntkrnlmp.pdb types through the project's symbol tables: _CMHIVE, _HHIVE (Signature, GetCellRoutine, ReleaseCellRoutine), _UNICODE_STRING, _LIST_ENTRY; symbols CmpHiveListHead, HvpGetCellPaged, HvpReleaseCellPaged; builds 0D960CE103763A6097E839406D8B369F-1, F57E740B088E5056E8AF0772F1CC5BEB-1, 3DFC5F7228304C26859E55E481700385-1, 953A8DE880B0818C32DA2DEC1D79C2D9-1"
     path: registrytoolfacts -scan -routine

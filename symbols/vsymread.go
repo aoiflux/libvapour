@@ -24,9 +24,8 @@ func ReadFileWith(path string, opts ReadOptions) (*Table, error) {
 	if err != nil {
 		return nil, fmt.Errorf("symbols: read table: %w", err)
 	}
-	defer f.Close()
 	data, err := io.ReadAll(io.LimitReader(f, opts.MaxTableFile+1))
-	if err != nil {
+	if err := errors.Join(err, f.Close()); err != nil {
 		return nil, fmt.Errorf("symbols: read table %s: %w", path, err)
 	}
 	if int64(len(data)) > opts.MaxTableFile {

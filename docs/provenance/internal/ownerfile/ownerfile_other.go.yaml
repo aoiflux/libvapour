@@ -9,4 +9,6 @@ sources:
 decisions:
   - rule: "O_EXCL with 0600; O_TRUNC then fchmod of a regular file; 0700 directories; private means no group or other bits"
     justification: "S74 4.11, P1, P2, P3, O10"
-date: 2026-11-12
+  - rule: "A close after a failed narrowing is joined to the failure, not dropped"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

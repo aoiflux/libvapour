@@ -38,19 +38,16 @@ func (r Reader) treeShape(rootType string) (treeShape, error) {
 		return s, fmt.Errorf("linuxwalk: tree root: no type name: %w", ErrUnsupported)
 	}
 	nodeType, ownerName := "", ""
-	switch {
-	case r.has(rootType, "xa_head"):
-		s.xarray, ownerName = true, "array"
-		s.head, _ = r.offset(rootType, "xa_head")
+	if head, err := r.offset(rootType, "xa_head"); err == nil {
+		s.xarray, s.head, ownerName = true, head, "array"
 		nodeType = "xa_node"
 		if _, err := r.Sym.Struct(nodeType); err != nil {
 			nodeType = "radix_tree_node"
 		}
-	case r.has(rootType, "rnode"):
-		ownerName = "root"
-		s.head, _ = r.offset(rootType, "rnode")
+	} else if head, err := r.offset(rootType, "rnode"); err == nil {
+		s.head, ownerName = head, "root"
 		nodeType = "radix_tree_node"
-	default:
+	} else {
 		return s, fmt.Errorf("linuxwalk: %s: no xa_head and no rnode: %w", rootType, ErrUnsupported)
 	}
 	slots, err := r.member(nodeType, "slots")

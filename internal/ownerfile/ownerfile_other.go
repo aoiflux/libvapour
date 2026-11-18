@@ -2,7 +2,10 @@
 
 package ownerfile
 
-import "os"
+import (
+	"errors"
+	"os"
+)
 
 const (
 	privateFile os.FileMode = 0o600
@@ -29,8 +32,7 @@ func create(path string) (*os.File, error) {
 		err = f.Chmod(privateFile)
 	}
 	if err != nil {
-		f.Close()
-		return nil, err
+		return nil, errors.Join(err, f.Close())
 	}
 	return f, nil
 }

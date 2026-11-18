@@ -1,7 +1,7 @@
 file: tools/gui/guitest/s57_fixture.go
 replaces: [tools/gui/guitest/fixture.go]
 spec: S57-windows-gui-objects
-spec_sha256: 2021f18ea7c0b4dfe4c8d3309e74107c6845213b69a0fcae3bbea36805d4f042
+spec_sha256: 11ae10c71b02e50ebc10099c78864ac71cf9edf16980d20f77cd0ea5836021be
 sources:
   - title: "Microsoft Learn, Window Stations"
     url: https://learn.microsoft.com/windows/win32/winstation/window-stations
@@ -54,4 +54,6 @@ sources:
 decisions:
   - rule: "Fixture lays out every object by a gui.Layout over real x64 page tables so the S31 scan places and type-tests it"
     justification: "S57 9"
-date: 2026-11-12
+  - rule: "Objects lists each object's address and PatchPage writes inside that object's page, so a fuzz patch reaches headers, members and links but never the kernel globals"
+    justification: "S57 9"
+date: 2026-11-18

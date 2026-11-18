@@ -105,10 +105,11 @@ type Input struct {
 }
 
 type Result struct {
-	Size        uint64
-	Streams     []StreamRecord
-	MemoryBytes uint64
-	MemoryGaps  extract.GapMap
+	Size              uint64
+	Streams           []StreamRecord
+	MemoryBytes       uint64
+	MemoryGaps        extract.GapMap
+	PlaceholderThread bool
 }
 
 type StreamRecord struct {
@@ -189,7 +190,7 @@ func Write(w io.Writer, in Input) (Result, error) {
 	b.stacks(threads, list, written)
 	b.header(dir, in.TimeDateStamp)
 
-	res := Result{Streams: dir}
+	res := Result{Streams: dir, PlaceholderThread: placeholder}
 	if _, err := w.Write(b.buf); err != nil {
 		return res, err
 	}

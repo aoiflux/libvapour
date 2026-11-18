@@ -80,6 +80,8 @@ A candidate that passes every rule gives its PID and image name, the name as rea
 
 A thread's creation time is not compared with its process's (M4).
 
+`Identify` runs the same steps and, for a thread that passes, also returns the two IDs it read in steps 1 and 2, so a caller does not read them a second time.
+
 ### 4.4 Allowance
 
 Latest is the capture's `SystemTime` plus 24 hours, in FILETIME units (864,000,000,000). The measured overshoot is at most 7.4 s (M3), but it grows with the length of the acquisition, which the image does not record. The allowance changes how much garbage the rule rejects very little. A uniformly random 63-bit value lands in a window of a few days with odds near 10^−7, with or without the allowance. The owner accepted the value on 2026-11-12 (O1).
@@ -112,7 +114,7 @@ The checks return the sentinel itself, with no wrapping, because a pool scan run
 | Result | Fields |
 |---|---|
 | Process identity | `PID` (uint64), `Name` (string: bytes up to the first NUL, not decoded) |
-| Thread check | an error only |
+| Thread check | `Check`: an error only. `Identify`: `ThreadIdentity` (`PID`, the owner ID; `TID`, the thread ID; both uint64), zero with the error when the thread fails |
 | Window | `Earliest`, `Latest` (uint64 FILETIME values) and `Holds(t)` |
 
 ## 8. Limits
@@ -122,7 +124,7 @@ No `Limits` field applies. Each check reads a fixed number of members, and no lo
 ## 9. Acceptance
 
 1. Every process and thread that M2 to M5 measured passes, and no thread of the idle process does. `processfacts` runs both checks on each capture. On 2026-11-12 they rejected 0 of 498 processes and 0 of 6,908 threads, and accepted none of the idle threads.
-2. Synthetic fixtures for each rule: one passing candidate, and one candidate that breaks only that rule and gets its sentinel.
+2. Synthetic fixtures for each rule: one passing candidate, and one candidate that breaks only that rule and gets its sentinel. `Identify` gives the passing thread's two IDs, and nothing with a rejection.
 3. Window fixtures: system time and boot time present, each one absent, and a bias larger than the boot time.
 4. A fuzz target that feeds arbitrary bytes as a candidate body to both checks. It must not panic, and any accepted candidate must satisfy every rule of section 5 as recomputed by the test.
 5. With `-pool`, the same script runs the pool scan with these checks. On 2026-11-12 the scan matched by image name every listed process on mem2 and mem5, and every one except System on mem1, mem6 and mem7. System is also missing when the check accepts every candidate, so the scan finds no pool allocation for it on those builds. That is a pool-scan matter, outside S17.

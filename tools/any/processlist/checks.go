@@ -293,31 +293,42 @@ func NewThreadCheck(ctx tools.Context) ThreadCheck {
 
 func (c ThreadCheck) Usable() bool { return c.usable }
 
+type ThreadIdentity struct {
+	PID uint64
+	TID uint64
+}
+
 func (c ThreadCheck) Check(r memory.MemoryReader, ethread uint64) error {
+	_, err := c.Identify(r, ethread)
+	return err
+}
+
+func (c ThreadCheck) Identify(r memory.MemoryReader, ethread uint64) (ThreadIdentity, error) {
 	if !c.usable {
-		return ErrCheckUnusable
+		return ThreadIdentity{}, ErrCheckUnusable
 	}
 	tid, err := c.tid.read(r, ethread)
 	if err != nil {
-		return err
+		return ThreadIdentity{}, err
 	}
 	owner, err := c.owner.read(r, ethread)
 	if err != nil {
-		return err
+		return ThreadIdentity{}, err
 	}
 	if !validID(tid) || !validID(owner) {
-		return ErrBadID
+		return ThreadIdentity{}, ErrBadID
 	}
+	id := ThreadIdentity{PID: owner, TID: tid}
 	if !c.created.ok {
-		return nil
+		return id, nil
 	}
 	created, err := c.created.read(r, ethread)
 	if err != nil {
-		return err
+		return ThreadIdentity{}, err
 	}
 	// The System process's first threads start before the clock is set (S17 M4).
 	if created > c.window.Latest || owner != systemPID && created < c.window.Earliest {
-		return ErrCreateTime
+		return ThreadIdentity{}, ErrCreateTime
 	}
-	return nil
+	return id, nil
 }

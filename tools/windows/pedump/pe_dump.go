@@ -259,14 +259,9 @@ func (w writer) save(name string, data []byte) error {
 	if err != nil {
 		return err
 	}
-	if _, err := f.Write(data); err != nil {
-		f.Close()
-		extract.RemoveArtifact(w.dir, name)
-		return err
-	}
-	if err := f.Close(); err != nil {
-		extract.RemoveArtifact(w.dir, name)
-		return err
+	_, err = f.Write(data)
+	if err := errors.Join(err, f.Close()); err != nil {
+		return errors.Join(err, extract.RemoveArtifact(w.dir, name))
 	}
 	return nil
 }

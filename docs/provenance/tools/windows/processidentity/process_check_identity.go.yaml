@@ -1,7 +1,7 @@
 file: tools/windows/processidentity/process_check_identity.go
 replaces: [tools/windows/processidentity/process_check_identity.go]
 spec: S68-windows-memory-process-dump
-spec_sha256: 6c5307587dff8b227ccc163b732403e3306af2bf401a1876c64e95abd439acae
+spec_sha256: 16654528a2a3e5ed57ee15054d2c76c0cc027293ba1f4e5bf3d46752cf754117
 sources:
   - title: "Microsoft Learn, _UNICODE_STRING (ntdef.h)"
     url: https://learn.microsoft.com/windows/win32/api/ntdef/ns-ntdef-_unicode_string

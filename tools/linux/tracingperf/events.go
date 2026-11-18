@@ -49,11 +49,16 @@ func Run(ctx tools.Context) ([]Event, error) {
 		return nil, fmt.Errorf("%s: %w", Name, err)
 	}
 	k := linuxtrace.New(ctx)
-	if !k.Has("task_struct", "perf_event_list") {
+	listAt, err := k.Field("task_struct", "perf_event_list")
+	if err != nil {
 		return nil, fmt.Errorf("%s: %w", Name, ErrNoPerfEvents)
 	}
+	attrAt, err := k.Field("perf_event", "attr")
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", Name, err)
+	}
 	for _, m := range [][2]string{{"task_struct", "pid"}, {"task_struct", "tgid"}, {"task_struct", "comm"},
-		{"perf_event", "owner_entry"}, {"perf_event", "pmu"}, {"perf_event", "attr"}, {"perf_event_attr", "type"},
+		{"perf_event", "owner_entry"}, {"perf_event", "pmu"}, {"perf_event_attr", "type"},
 		{"perf_event_attr", "config"}, {"pmu", "name"}} {
 		if _, err := k.Field(m[0], m[1]); err != nil {
 			return nil, fmt.Errorf("%s: %w", Name, err)
@@ -73,8 +78,6 @@ func Run(ctx tools.Context) ([]Event, error) {
 	for _, l := range walk.Walks {
 		lossy = lossy || l.Broken()
 	}
-	listAt, _ := k.Field("task_struct", "perf_event_list")
-	attrAt, _ := k.Field("perf_event", "attr")
 	var out []Event
 	for _, task := range walk.Tasks {
 		head := task + listAt.Offset

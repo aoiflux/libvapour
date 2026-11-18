@@ -278,12 +278,11 @@ func httpFetcher(timeout time.Duration, maxDownload int64) symbolFetcher {
 		if err != nil {
 			return nil, fmt.Errorf("download %s: %w", location, err)
 		}
-		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			return nil, fmt.Errorf("download %s: server answered %s", location, resp.Status)
+			return nil, errors.Join(fmt.Errorf("download %s: server answered %s", location, resp.Status), resp.Body.Close())
 		}
 		data, err := readPDBBody(resp.Body, resp.ContentLength, maxDownload)
-		if err != nil {
+		if err := errors.Join(err, resp.Body.Close()); err != nil {
 			return nil, fmt.Errorf("download %s: %w", location, err)
 		}
 		return data, nil
@@ -297,16 +296,20 @@ func replaceFile(dest string, r io.Reader) error {
 	if err != nil {
 		return fmt.Errorf("create temporary file: %w", err)
 	}
-	defer os.Remove(tmp.Name())
+	discard := func(err error) error {
+		if rerr := os.Remove(tmp.Name()); rerr != nil {
+			return errors.Join(err, fmt.Errorf("remove temporary file: %w", rerr))
+		}
+		return err
+	}
 	if _, err := io.Copy(tmp, r); err != nil {
-		tmp.Close()
-		return fmt.Errorf("write temporary file: %w", err)
+		return discard(errors.Join(fmt.Errorf("write temporary file: %w", err), tmp.Close()))
 	}
 	if err := tmp.Close(); err != nil {
-		return fmt.Errorf("close temporary file: %w", err)
+		return discard(fmt.Errorf("close temporary file: %w", err))
 	}
 	if err := os.Rename(tmp.Name(), dest); err != nil {
-		return fmt.Errorf("move the table into the cache: %w", err)
+		return discard(fmt.Errorf("move the table into the cache: %w", err))
 	}
 	return nil
 }

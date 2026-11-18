@@ -454,7 +454,7 @@ Measurements TM1 to TM4: `petoolfacts -tool credentialtruecrypt`, 2026-11-12, on
 ### windows.image.map_strings
 
 1. The profile must be Windows (`ErrNotWindows`), the file option set (`ErrNoFile`) and physical memory present (`ErrNoPhysicalMemory`).
-2. **Lines.** Read the file line by line. A line ends at LF; a CR before it is dropped, since a listing written on Windows ends lines with CRLF. Empty lines are passed over. The empty test comes before the CR is dropped, so a line that holds only CR is not passed over: `ParseLine` drops the CR and rejects the empty rest as "no decimal offset" (GO6). A line longer than `MaxTextBytes` is rejected whole.
+2. **Lines.** Read the file line by line. A line ends at LF; a CR before it is dropped, since a listing written on Windows ends lines with CRLF. Empty lines, and lines that hold only CR (the empty lines of a CRLF listing), are passed over (GO6). A line longer than `MaxTextBytes` is rejected whole.
 3. **Parse.** Optional blanks (space or tab), then decimal digits, then one blank, then the string (GD1). The string keeps every byte after that blank. Text that is valid UTF-8 is kept; otherwise each byte becomes the rune of its value (Latin-1), so no byte is lost (GO3). A line without digits, without the blank, with nothing after the blank, or whose offset does not fit 64 bits is rejected with its reason. Rejected lines are counted in one diagnostic that names the first ten with their reasons. More than `MaxRowsPerObject` accepted lines is an error.
 4. **Physical address.** With segments, the offset is inside the segment whose file range holds it, and the physical address is that segment's base plus the distance into it; an offset in no segment (a header) holds no memory. Without segments, the offset is the physical address when it lies below the layer's size (GD2, GM1). Offsets that hold no memory are counted in a diagnostic and give rows with `InMemory` false.
 5. **Kernel space.** List the runs of the session's kernel root with the session's paging mode (GD3). No kernel root is `ErrNoKernelRoot`; a kernel listing that fails is an error.
@@ -823,7 +823,8 @@ None: one fixed-size header.
 ### windows.pe.list_imports
 
 1. Synthetic fixtures (`tools/windows/peimports/s66_test.go`): rows in descriptor order with slot addresses across a descriptor's terminator and the `Bound` rule; ordinal names from the mapped library, from the table, and none; the section-base fallback and the no-PEB count; an unreadable hint/name flagged with the row kept; the pid option; an image without imports; the profile refusal. The tool has no parser of its own (`pe.ParseImports` is fuzzed in `pe`).
-2. On the captures: IM1 to IM4.
+2. Fuzz target `FuzzImportsOfAPatchedImage` (bytes patched anywhere into an image with two descriptors: no panic; every row of the process and image asked; a name source only on an ordinal import, and only `exports` or `table`), 45 s on 2026-11-18: 4,732 executions, no failure.
+3. On the captures: IM1 to IM4.
 
 ### windows.pe.resolve_symbols
 
@@ -968,7 +969,7 @@ None: one fixed-size header.
 | GO3 | Owner decision: non-UTF-8 text is read as Latin-1. | Owner decision |
 | GO4 | Owner decision: more lines than `MaxRowsPerObject` (default 2^20) is an error, not a cut. | Owner decision on a limit |
 | GO5 | Pages the layer's listing leaves out (a table of one repeated value, S53) give no address. | S53 |
-| GO6 | `ReadLines` (`tools/windows/imagestrings/lines.go`) tests for an empty line before `ParseLine` drops the CR, so a line that holds only CR (an empty line of a CRLF listing) is a rejected line, "no decimal offset", where an empty LF line is passed over. Owner decision 2026-11-12: kept for v0.1.0; pass over a CR-only line as an empty line in v0.2.0. | v0.2.0 |
+| GO6 | `ReadLines` (`tools/windows/imagestrings/lines.go`) tests for an empty line before `ParseLine` drops the CR, so a line that holds only CR (an empty line of a CRLF listing) is a rejected line, "no decimal offset", where an empty LF line is passed over. Owner decision 2026-11-12: kept for v0.1.0; pass over a CR-only line as an empty line in v0.2.0. Done 2026-11-18, brought forward to v0.1.1 by the plan of 2026-11-16: step 2 of `windows.image.map_strings` passes it over; `TestAnEmptyLineOfACRLFListingIsPassedOver`. | Done |
 
 ### windows.image.read_crash_header
 

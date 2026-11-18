@@ -1,7 +1,7 @@
 file: tools/linuxkern/types.go
 replaces: [tools/linuxkern/types.go (old)]
 spec: S54-linux-kernel-readers
-spec_sha256: f7f872ed4a8b4880bb5a0c36338d8321419965ff6e12a5a3f536d35489ceae49
+spec_sha256: 2cb8cff885318891a3a39260d8458afbc66e1356ab0bc9bcd6fd857f183e57fd
 sources:
   - title: "System V Application Binary Interface, AMD64 Architecture Processor Supplement, version 1.0, section 3.1.2 (fundamental types, bit-fields), low-level-sys-info.tex at commit e1ce0983"
     url: https://gitlab.com/x86-psABIs/x86-64-ABI
@@ -28,4 +28,6 @@ decisions:
     justification: "S54 4.4 step 1, S06 F9"
   - rule: "Pointee size 0 for void, functions and unsized types"
     justification: "S54 4.4 step 2"
-date: 2026-11-12
+  - rule: "A type size that does not resolve is the integer error's reason"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

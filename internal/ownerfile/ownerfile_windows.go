@@ -95,12 +95,10 @@ func create(path string) (*os.File, error) {
 		return nil, err
 	}
 	if err := applyPrivateList(windows.Handle(f.Fd()), sd); err != nil {
-		f.Close()
-		return nil, &os.PathError{Op: "restrict", Path: path, Err: err}
+		return nil, errors.Join(&os.PathError{Op: "restrict", Path: path, Err: err}, f.Close())
 	}
 	if err := f.Truncate(0); err != nil {
-		f.Close()
-		return nil, err
+		return nil, errors.Join(err, f.Close())
 	}
 	return f, nil
 }

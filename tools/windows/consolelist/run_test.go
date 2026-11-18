@@ -213,3 +213,17 @@ func TestEveryMemberIsListedForMeasurement(t *testing.T) {
 		t.Errorf("members %v", seen)
 	}
 }
+
+func TestAPageListerThatDoesNotBuildIsReported(t *testing.T) {
+	f, _ := layout19041Fixture(t)
+	f.console(fixtureConsole, defaultConsole())
+	ctx := runContext(t, f, 19045)
+	delete(ctx.Options, tools.OptionPhysicalMemory)
+	rows, err := Run(ctx)
+	if err != nil || len(rows) != 1 {
+		t.Fatalf("rows %+v, %v", rows, err)
+	}
+	if !hasDiagnostic(ctx, "windows.console.list: present pages not listed, every VAD of every host is searched: ") {
+		t.Errorf("diagnostics %q", diagnostics(ctx))
+	}
+}

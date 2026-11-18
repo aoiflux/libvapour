@@ -530,3 +530,68 @@ func TestSharedRootShowsThroughTheInitialNamespace(t *testing.T) {
 		t.Errorf("/dev/null: %+v (found %v)", r, ok)
 	}
 }
+
+func TestAPathCutByTheStepCapOrAnUnreadNameIsListedWithoutAPath(t *testing.T) {
+	s := newScene(kt.PageCacheOptions{})
+	f := s.f
+	d := s.etcD
+	for _, n := range []string{"a", "b", "c"} {
+		d = f.Name(0, d, n)
+	}
+	deep := f.AddInode(s.rootSB, kt.InodeSpec{Mode: 0o100644, Ino: 41})
+	f.Name(deep, d, "deep")
+	hidden := f.AddInode(s.rootSB, kt.InodeSpec{Mode: 0o100644, Ino: 42})
+	f.Mem.U64(f.Name(hidden, s.etcD, "hidden")+kt.DName+8, 0xffff888077000000)
+	ctx, diags := s.ctx(t, nil)
+	ctx.Limits.MaxPathSteps = 3
+	rows, err := pagecache.RunFiles(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	listed := map[uint64]string{}
+	for _, r := range rows {
+		listed[r.InodeNumber] = r.Path
+	}
+	for _, ino := range []uint64{41, 42} {
+		if p, ok := listed[ino]; !ok || p != "" {
+			t.Errorf("inode %d: listed %v, path %q; want listed without a path", ino, ok, p)
+		}
+	}
+	joined := strings.Join(*diags, "\n")
+	for _, want := range []string{"1 inodes: " + pagecache.ErrPathSteps.Error(), "1 inodes: " + pagecache.ErrPathUnread.Error()} {
+		if !strings.Contains(joined, want) {
+			t.Errorf("diagnostics lack %q: %q", want, *diags)
+		}
+	}
+	if strings.Contains(joined, pagecache.ErrName.Error()) {
+		t.Errorf("a cut or unread path is labelled a bad name: %q", *diags)
+	}
+	ctx.Options["strict"] = true
+	if _, err := pagecache.RunFiles(ctx); !errors.Is(err, pagecache.ErrStrict) {
+		t.Errorf("strict: %v", err)
+	}
+}
+
+func TestAPageWalkCutByTheTableCapIsALoss(t *testing.T) {
+	s := newScene(kt.PageCacheOptions{Folio: true})
+	big := s.f.AddInode(s.rootSB, kt.InodeSpec{Mode: 0o100644, Ino: 50, Size: 3 * 4096})
+	s.f.Name(big, s.etcD, "big")
+	for i := range uint64(3) {
+		s.f.Cache(big, i, []byte("page"))
+	}
+	opts := map[string]any{pagecache.OptionListPagesFind: "/etc/big"}
+	ctx, diags := s.ctx(t, opts)
+	ctx.Limits.MaxTableEntries = 1
+	if _, err := pagecache.RunListPages(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(strings.Join(*diags, "\n"), "capped true") {
+		t.Fatalf("diagnostics %q", *diags)
+	}
+	opts["strict"] = true
+	ctx, _ = s.ctx(t, opts)
+	ctx.Limits.MaxTableEntries = 1
+	if _, err := pagecache.RunListPages(ctx); !errors.Is(err, pagecache.ErrStrict) {
+		t.Errorf("strict: %v", err)
+	}
+}

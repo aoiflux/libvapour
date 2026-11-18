@@ -1,7 +1,7 @@
 file: tools/pagesize.go
 replaces: [tools/pagesize.go]
 spec: S70-tool-context-options-registry
-spec_sha256: 8e73fe7081adf70c7361b78f94d4f823ceead4b763eab65f5cbc7d8354a65feb
+spec_sha256: 4472dd6a61fc89dea3c53f90c4df9235bb14528787c9162d16f49fcfe781e705
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, order 253668-093US, chapter 5 Paging (4-KByte pages, CR3)"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

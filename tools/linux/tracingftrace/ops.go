@@ -108,6 +108,7 @@ func (s *shape) pointer(f symbols.IntField, at uint64) (uint64, error) {
 
 type ops struct {
 	at, fn, flags, trampoline uint64
+	trampolineErr             error
 }
 
 type opsWalk struct {
@@ -146,7 +147,7 @@ func (s *shape) opsList() (opsWalk, error) {
 			return w, nil
 		}
 		if s.trampoline != nil {
-			o.trampoline, _ = s.pointer(*s.trampoline, cur)
+			o.trampoline, o.trampolineErr = s.pointer(*s.trampoline, cur)
 		}
 		seen[cur] = true
 		w.ops = append(w.ops, o)

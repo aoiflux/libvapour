@@ -1,7 +1,7 @@
 file: tools/windows/servicecandidates/servicehost.go
 replaces: [tools/windows/servicecandidates/service_find_candidates.go, tools/windows/servicecandidates/doc.go]
 spec: S65-process-scan-environment-wow64
-spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+spec_sha256: 83533e54574389d1e92ba4ba56ed3ce1636ae7eb5da9648b683e09ec5e4b9cf4
 sources:
   - title: "Microsoft Learn, Service Programs"
     url: https://learn.microsoft.com/windows/win32/services/service-programs
@@ -23,4 +23,6 @@ decisions:
     justification: "S65 D8, M7, O8"
   - rule: "Arguments split by the Microsoft C startup rules for spaces and quotes"
     justification: "S65 D9"
-date: 2026-11-12
+  - rule: "The description starts with Placeholder: as the other placeholders' do"
+    justification: "S65 section 1"
+date: 2026-11-18

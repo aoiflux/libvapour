@@ -36,4 +36,6 @@ decisions:
     justification: "owner decision 2026-11-12, follow-up Mem-M9; S19 4.1 step 6, O9"
   - rule: "Control areas with BeingDeleted set are carved and flagged; a null FilePointer is accepted only for them"
     justification: "owner decision 2026-11-12, S19 O2"
-date: 2026-11-12
+  - rule: "Close and removal failures after a failed write are joined to the reason; a removal that fails after no cached read is a diagnostic"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

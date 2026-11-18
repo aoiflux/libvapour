@@ -449,3 +449,15 @@ func FuzzProcessAndThreadChecks(f *testing.F) {
 		}
 	})
 }
+
+func TestAThreadThatPassesGivesTheIDsItWasCheckedOn(t *testing.T) {
+	im := newCkImage()
+	check := NewThreadCheck(im.ctx)
+	if id, err := check.Identify(im.mem, ckETHREAD); err != nil || id != (ThreadIdentity{PID: 1300, TID: 1304}) {
+		t.Errorf("got %+v, %v", id, err)
+	}
+	im.mem.put64(ckETHREAD+ckThreadTime, 0)
+	if id, err := check.Identify(im.mem, ckETHREAD); !errors.Is(err, ErrCreateTime) || id != (ThreadIdentity{}) {
+		t.Errorf("rejected thread: %+v, %v", id, err)
+	}
+}

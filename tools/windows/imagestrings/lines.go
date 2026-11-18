@@ -79,7 +79,7 @@ func ReadLines(r io.Reader, maxLineBytes int64, maxLines int) ([]Line, []Rejecte
 		switch {
 		case overlong:
 			rejected = append(rejected, Rejected{Number: n, Reason: fmt.Sprintf("longer than %d bytes", maxLineBytes)})
-		case len(raw) == 0:
+		case len(raw) == 0, len(raw) == 1 && raw[0] == '\r':
 		default:
 			off, text, reason := ParseLine(raw)
 			if reason != "" {

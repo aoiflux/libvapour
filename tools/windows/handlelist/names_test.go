@@ -1,6 +1,7 @@
 package handlelist
 
 import (
+	"slices"
 	"strings"
 	"testing"
 	"unicode/utf16"
@@ -262,4 +263,24 @@ func FuzzKeyLevel(f *testing.F) {
 			t.Fatalf("%d bytes gave %d characters", len(raw), len([]rune(got)))
 		}
 	})
+}
+
+func TestAnUnreadableRootDirectoryIsReported(t *testing.T) {
+	m := newS30Memory()
+	m.named(0x1100, "Sessions", 0x1000+s30Body)
+	m.named(0x1200, "1", 0x1100+s30Body)
+	var diags []string
+	ctx := s30Context(m, &diags)
+	table := s30Table()
+	table.AddSymbol(symbols.Symbol{Name: "ObpRootDirectoryObject", Address: 0x20000})
+	ctx.Symbols = table
+	n := newNameReader(ctx.Symbols, 16)
+	name, unreadable := n.read(ctx, "Event", 0x1200)
+	n.report(ctx)
+	if name != `Sessions\1` || unreadable {
+		t.Errorf("name %q %v", name, unreadable)
+	}
+	if want := "windows.handle.list: ObpRootDirectoryObject at 0x20000 does not read, so no namespace path starts at the root"; !slices.Contains(diags, want) {
+		t.Errorf("diagnostics %q, want %q", diags, want)
+	}
 }

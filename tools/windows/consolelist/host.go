@@ -65,5 +65,8 @@ func FindHosts(ctx tools.Context, tool string) ([]Host, []processlist.Process, e
 		}
 		hosts = append(hosts, Host{Process: p, Space: sp})
 	}
+	if listerErr != nil && len(hosts) > 0 {
+		ctx.AddDiagnostic("%s: present pages not listed, every VAD of every host is searched: %v", tool, listerErr)
+	}
 	return hosts, procs, nil
 }

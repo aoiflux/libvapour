@@ -38,4 +38,6 @@ decisions:
     justification: "S49 4.9 steps 1-2, D7"
   - rule: "Unread blocks and pages written as zeros and recorded as gaps by file offset; unread base block flagged"
     justification: "S49 4.9 step 3"
-date: 2026-11-12
+  - rule: "A hive whose write or close fails is removed and skipped, its removal error joined"
+    justification: "S49 4.9; project rule: no error is dropped"
+date: 2026-11-18

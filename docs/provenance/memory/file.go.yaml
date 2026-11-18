@@ -9,4 +9,6 @@ sources:
 decisions:
   - rule: "ReadAt through os.File, directory refused, short read is ErrUnexpectedEOF, immutable"
     justification: "S71 4.2"
-date: 2026-11-12
+  - rule: "A close after a failed open is joined to the failure"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

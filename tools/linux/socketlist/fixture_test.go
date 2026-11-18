@@ -103,6 +103,7 @@ func chars(n uint64) symbols.TypeRef {
 
 type layout struct {
 	noVsock     bool
+	noBt        bool
 	noNetNSType bool
 	noFileOps   bool
 }
@@ -168,6 +169,9 @@ func newFixture(l layout) *fixture {
 		field("state", xdpState, named("xsk_state")))
 	if !l.noVsock {
 		family("vsock_sock", field("local_addr", vsLocal, named("sockaddr_vm")), field("remote_addr", vsRemote, named("sockaddr_vm")))
+	}
+	if !l.noBt {
+		family("bt_sock")
 	}
 	t.AddStruct(symbols.StructType{Name: "sockaddr_vm", Size: 16, Fields: []symbols.Field{
 		field("svm_family", 0, u16), field("svm_port", svmPort, u32), field("svm_cid", svmCid, u32)}})

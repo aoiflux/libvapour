@@ -387,7 +387,10 @@ func (img *S43Image) imageFile(vad uint64, f *S43File) (ca, fo uint64) {
 	WriteS19ControlArea(k, S19ControlArea{Address: ca, Segment: segment, FilePointer: fo | 0x3, TotalPtes: 1,
 		Image: !f.NotImage, File: true})
 	if f.DeleteOnClose || f.NoFilePointer {
-		flags, _ := k.ReadAt(ca+s19FlagsAt, 4)
+		flags, err := k.ReadAt(ca+s19FlagsAt, 4)
+		if err != nil {
+			panic(fmt.Sprintf("s43 fixture: control area flags at 0x%x: %v", ca+s19FlagsAt, err))
+		}
 		v := binary.LittleEndian.Uint32(flags)
 		if f.DeleteOnClose {
 			v |= 1 << s43DeleteOnClose

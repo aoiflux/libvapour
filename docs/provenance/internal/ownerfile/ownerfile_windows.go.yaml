@@ -28,4 +28,6 @@ decisions:
     justification: "S74 4.11, L4, L6, O9"
   - rule: "IsPrivate: NULL DACL not private; allow entries only for user and system; deny entries allowed; other kinds not vouched for"
     justification: "S74 4.11, L6"
-date: 2026-11-12
+  - rule: "A close after a failed restriction or truncation is joined to the failure, not dropped"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

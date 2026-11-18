@@ -39,4 +39,6 @@ decisions:
     justification: "S37 M9, O13"
   - rule: "Event-driven record layout, WNF tail without filler, event tail zero"
     justification: "S37 L5, L7"
-date: 2026-11-12
+  - rule: "Settings words are read from the length-checked block; the subscription take is checked"
+    justification: "S37; project rule: no error is dropped"
+date: 2026-11-18

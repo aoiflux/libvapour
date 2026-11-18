@@ -129,8 +129,11 @@ func (l *Layout) FindHistories(s Space, historySizes []uint64, b limits.Limits) 
 	hits, _, err := s.FindAligned(patterns, width, b)
 	for _, hit := range hits {
 		node := uint64(int64(hit) - l.history.capacity.off)
-		want, _ := s.uint(hit, width)
-		v := l.InspectHistory(s, node, want, b)
+		want, err := s.uint(hit, width)
+		v := Verdict{Address: node, Rule: RuleBufferSize, Err: err}
+		if err == nil {
+			v = l.InspectHistory(s, node, want, b)
+		}
 		if v.Accepted() {
 			out.Accepted = append(out.Accepted, node)
 		} else {

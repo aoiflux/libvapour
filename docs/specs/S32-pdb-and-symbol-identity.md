@@ -147,7 +147,7 @@ From F18, for an S_PUB32 name on x86:
 1. GUID text: the 32-bit field as 8 upper-case hex digits, the two 16-bit fields as 4 each, then the 8 bytes as 2 each (F20).
 2. Fingerprint notation: `<pdb>/<GUID>-<age>`, age in decimal. It is the project's notation, shared with `symbols.PDBBuild`. `tools/gui` keys its layouts by the GUID and age.
 3. Symbol-server path (F19, M8): `<server>/<pdb>/<GUID><age>/<pdb>`, GUID in upper case and age in upper-case hexadecimal.
-4. Cache path: `<cache>/<BuilderVersion>/<pdb without .pdb>-<GUID upper case>-<age decimal>.vsym`. `BuilderVersion` is 10 (section 9).
+4. Cache path: `<cache>/<BuilderVersion>/<pdb without .pdb>-<GUID upper case>-<age decimal>.vsym`. `BuilderVersion` is 10 (section 9). `<cache>` is `LoadOptions.CacheDir`. When that is empty it is `CacheDir()`: the operating system's per-user cache directory, as `os.UserCacheDir` returns it, joined with `libvapour/symbols/windows` and created with mode 0700. That directory is the one value the library takes from its environment, and it comes from the operating system, not from a libvapour setting (O9). A caller that wants every input explicit sets `CacheDir`.
 5. A fingerprint whose PDB name is not a bare file name of letters, digits and `._-+~`, or whose GUID is not 32 hex digits, is refused before it reaches a path or URL.
 6. Kernel PDB names: `ntoskrnl.pdb`, `ntkrnlmp.pdb`, `ntkrnlpa.pdb`, `ntkrpamp.pdb`, without regard to case, after the four kernel images (uniprocessor, multiprocessor, and their x86 PAE forms).
 
@@ -248,6 +248,7 @@ Table content (`symbols.Declaration`, encoded by `symbols.Encode`; ordering is `
 | O6 | No PDB with OMAP or LF_CLASS/LF_INTERFACE was measured (M3, M5); those paths are tested on fixtures only. ARM64 PDBs (0xAA64) are accepted on the PE/COFF machine value alone. | A PDB of those kinds |
 | O7 | An OMAP entry mapped to 0 is read as removed code; F16 does not say so. | A PDB with OMAP |
 | O8 | The scalar names (`int` names the 32-bit integer and `long long` the 64-bit one) and the fixed scalar set are the table vocabulary (Q2/Q3 naming). | Owner decision |
+| O9 | With no `CacheDir`, the cache follows the operating system's per-user cache directory (4.6 step 4). Done: owner decision 2026-11-16, kept as a documented value the operating system provides; README and this section say so. | Done |
 
 ### Owner decisions, 2026-11-12
 
@@ -263,6 +264,7 @@ The owner answered every point above. Where a point and this table differ, this 
 | O6 | Defer; fixtures only |
 | O7 | Read as removed code |
 | O8 | Keep these names and fixed set |
+| O9 | Keep the operating-system default, documented (2026-11-16) |
 
 ## 11. Provenance
 

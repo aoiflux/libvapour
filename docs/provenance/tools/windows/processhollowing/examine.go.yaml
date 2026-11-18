@@ -42,4 +42,6 @@ decisions:
     justification: "S43 4.4 steps 2-3, D4, M4, M5, O1"
   - rule: "H10-H13 from the 4 KB page at ImageBaseAddress and the section's header page; a non-PE page in both copies is counted, not found"
     justification: "S43 4.4 steps 6-8, D9, D11, M9, M10, O7"
-date: 2026-11-12
+  - rule: "Section pages that do not read give no header page"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

@@ -1,7 +1,7 @@
 file: internal/testsupport/s69_fixture.go
 replaces: []
 spec: S69-windows-object-scans-jobs-sessions
-spec_sha256: 9d9aaef3d2fc2c6241bea2e82fab3deeec2f337a39f631821fcb4a4d188826ff
+spec_sha256: 3a807f1a3b526a166be09a2aeb4f22f5b8e7dc1723ec615051e87dcafa41cec1
 sources:
   - title: "Specification S69-windows-object-scans-jobs-sessions: T1 to T6 and section 9 item 1"
     path: docs/specs/S69-windows-object-scans-jobs-sessions.md
@@ -11,4 +11,6 @@ decisions:
     justification: "S69-windows-object-scans-jobs-sessions T1 to T6 and section 9 item 1; S79 section 1"
   - rule: "_EPROCESS Job 0x510, JobLinks 0x5c8, SeAuditProcessCreationInfo 0x5c0, Session 0x558, CreateTime 0x468: the 19045 offsets, the build the process fixture lays out"
     justification: "owner decision 2026-11-12, S79 P1"
-date: 2026-11-12
+  - rule: "A fixture type lookup that fails panics instead of building a wrong table"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

@@ -19,4 +19,6 @@ decisions:
     justification: "S58 4.8 step 4, F2, F3, V5"
   - rule: "File read bounded by MaxTableFile"
     justification: "S58 4.8 step 1"
-date: 2026-11-12
+  - rule: "A table file that does not close fails the read"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

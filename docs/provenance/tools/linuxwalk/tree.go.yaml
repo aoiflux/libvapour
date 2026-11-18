@@ -28,4 +28,6 @@ decisions:
     justification: "S02 8"
   - rule: "An IDR needs idr_rt; idr_base is added when present"
     justification: "S02 I1, I2, 4.4"
-date: 2026-11-11
+  - rule: "The root's head offset decides the tree shape, its error checked"
+    justification: "S02 4.1; project rule: no error is dropped"
+date: 2026-11-18

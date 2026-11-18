@@ -9,4 +9,6 @@ sources:
 decisions:
   - rule: "Fixture written from S46-linux-kernel-object-core by the agent that wrote that specification; kept, not rewritten by S80"
     justification: "S46-linux-kernel-object-core section 9; S80 section 1"
-date: 2026-11-12
+  - rule: "A fixture symbol lookup that fails panics"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

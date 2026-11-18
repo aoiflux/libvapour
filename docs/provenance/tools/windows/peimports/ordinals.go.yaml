@@ -1,7 +1,7 @@
 file: tools/windows/peimports/ordinals.go
 replaces: [tools/windows/peimports/pe_list_imports.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 101965dbec6944f3f173c705fba97ad9b41147d3f0c74c8a78540f1473a5160e
+spec_sha256: 2023fb0ad8005f052bf803efd090176dfe58fdc91d96a574cf903d29543a7d63
 sources:
   - title: "Microsoft Learn, PE Format (import, export, resource and debug directories; Import Lookup Table; Export Ordinal Table)"
     url: https://learn.microsoft.com/windows/win32/debug/pe-format

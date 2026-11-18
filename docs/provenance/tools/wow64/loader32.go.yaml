@@ -1,7 +1,7 @@
 file: tools/wow64/loader32.go
 replaces: [tools/wow64/wow64.go]
 spec: S65-process-scan-environment-wow64
-spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+spec_sha256: 83533e54574389d1e92ba4ba56ed3ce1636ae7eb5da9648b683e09ec5e4b9cf4
 sources:
   - title: "Microsoft Learn, WOW64 Implementation Details"
     url: https://learn.microsoft.com/windows/win32/winprog64/wow64-implementation-details

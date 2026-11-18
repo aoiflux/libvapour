@@ -22,4 +22,6 @@ decisions:
     justification: "S62 PE3, PE4"
   - rule: "The PMU's name is its kind in the kernel's own words, bounded by NAME_MAX"
     justification: "S62 PE5"
-date: 2026-11-12
+  - rule: "The list and attr offsets come from the checks that refuse the run without them"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

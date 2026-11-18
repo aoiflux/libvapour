@@ -1,7 +1,7 @@
 file: tools/windows/threadscan/columns.go
 replaces: [tools/windows/threadscan/columns.go]
 spec: S50-windows-threads
-spec_sha256: 6e00b270533e2376ae2851cb766004e981b1b23a65e8cd8a4b4ed3abc8bbece5
+spec_sha256: 06b0f06a61dee30e7c5b7d2be39f5e86ef9c20b198abd0744eddc029a499fa5c
 sources:
   - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
     url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime

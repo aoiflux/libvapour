@@ -363,3 +363,23 @@ func TestATrampolineInsideAModuleNamesTheModule(t *testing.T) {
 		t.Errorf("no trampoline: %+v", rows[1])
 	}
 }
+
+func TestAnUnreadableTrampolineIsReportedNotTakenAsNone(t *testing.T) {
+	f := newFixture(false)
+	at := uint64(heap + 0x20000 - 0x40)
+	f.Mem.Map(at, 0x40)
+	f.Mem.U64(at, kernelCB)
+	f.Mem.U64(at+opsFlags, 1)
+	f.Mem.U64(at+opsNext, listEnd)
+	f.Mem.U64(opsList, at)
+	rows, diags, err := f.run(t, nil)
+	if err != nil || len(rows) != 1 || rows[0].TrampolineAddress != 0 || rows[0].TrampolineOwner != "" {
+		t.Fatalf("rows %+v, %v", rows, err)
+	}
+	if !contains(*diags, "trampoline does not read") {
+		t.Errorf("diagnostics %q", *diags)
+	}
+	if _, _, err := f.run(t, map[string]any{"strict": true}); err == nil {
+		t.Error("strict mode accepts an unread trampoline")
+	}
+}

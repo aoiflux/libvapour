@@ -20,7 +20,10 @@ func nameBytes(s string) []byte {
 func aesHashRecord(t *testing.T, domainKey, hash []byte, rid uint32) []byte {
 	t.Helper()
 	iv := bytes.Repeat([]byte{0x33}, 16)
-	wrapped := hashUnderRID(hash, rid, false)
+	wrapped, err := hashUnderRID(hash, rid, false)
+	if err != nil {
+		t.Fatal(err)
+	}
 	cipher, err := aesCBCEncrypt(domainKey, iv, padTo16(wrapped[:]))
 	if err != nil {
 		t.Fatal(err)
@@ -111,4 +114,14 @@ func FuzzDecodeDomainKey(f *testing.F) {
 			t.Fatalf("key length %d", len(key))
 		}
 	})
+}
+
+func TestAShortAESRecordWithALengthIsAnUnreadableHash(t *testing.T) {
+	rec := make([]byte, recordAESMinLen-1)
+	binary.LittleEndian.PutUint16(rec[recordRevisionOffset:], revisionAES)
+	binary.LittleEndian.PutUint32(rec[recordLengthOffset:], 16)
+	v := buildV(nameBytes("synthetic-user"), rec)
+	if _, present, ok := hashFromRecord(v, bytes.Repeat([]byte{0x42}, 16), vNTHashEntry, 1013, true); !present || ok {
+		t.Errorf("present=%v ok=%v, want a stored hash that does not read", present, ok)
+	}
 }

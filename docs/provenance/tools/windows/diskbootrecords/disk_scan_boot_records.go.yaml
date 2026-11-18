@@ -1,7 +1,7 @@
 file: tools/windows/diskbootrecords/disk_scan_boot_records.go
 replaces: [tools/windows/diskbootrecords/disk_scan_boot_records.go]
 spec: S66-windows-pe-and-misc-tools
-spec_sha256: 101965dbec6944f3f173c705fba97ad9b41147d3f0c74c8a78540f1473a5160e
+spec_sha256: 2023fb0ad8005f052bf803efd090176dfe58fdc91d96a574cf903d29543a7d63
 sources:
   - title: "Microsoft Learn (archived Windows Server 2003 library), How Basic Disks and Volumes Work: master boot record, partition table fields, System ID values, protective MBR; ms.date 2009-10-08"
     url: https://learn.microsoft.com/previous-versions/windows/it-pro/windows-server-2003/cc739412(v=ws.10)

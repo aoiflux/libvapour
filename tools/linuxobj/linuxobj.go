@@ -289,7 +289,11 @@ func (k *Kernel) resolveInt(typeName, member string) intMember {
 	case f.Type.IsPointer:
 		width = k.PointerSize()
 	case width == 0:
-		width, _ = k.SizeOf(f.Type.Name)
+		n, err := k.SizeOf(f.Type.Name)
+		if err != nil {
+			return intMember{err: fmt.Errorf("%w: %s.%s: %w", ErrNotInteger, typeName, member, err)}
+		}
+		width = n
 	}
 	if width == 0 || width > 8 || f.Type.IsArray || f.Type.ArrayLength > 0 {
 		return intMember{err: fmt.Errorf("%w: %s.%s is %d bytes of %q", ErrNotInteger, typeName, member, width, f.Type.Name)}
@@ -378,6 +382,10 @@ func (k *Kernel) word(mem memory.MemoryReader, addr uint64) (uint64, error) {
 // S46 4.1 step 3: ok means the pointer is set and the whole object it points at
 // reads; an untyped pointee needs its first byte only.
 func (k *Kernel) Deref(mem memory.MemoryReader, base uint64, typeName, member string) (uint64, bool, error) {
+	f, err := k.sym.Field(typeName, member)
+	if err != nil {
+		return 0, false, fmt.Errorf("linuxobj: %s.%s: %w", typeName, member, err)
+	}
 	v, err := k.Pointer(mem, base, typeName, member)
 	if err != nil {
 		return 0, false, err
@@ -385,7 +393,6 @@ func (k *Kernel) Deref(mem memory.MemoryReader, base uint64, typeName, member st
 	if v == 0 {
 		return 0, false, nil
 	}
-	f, _ := k.sym.Field(typeName, member)
 	return v, readable(mem, v, k.PointeeSize(f)), nil
 }
 

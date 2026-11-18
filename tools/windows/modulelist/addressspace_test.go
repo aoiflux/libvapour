@@ -117,6 +117,19 @@ func TestSystemSpaceStartsAtMmSystemRangeStart(t *testing.T) {
 	}
 }
 
+func TestTheModuleListSaysWhenItTakesTheUpperHalfForWantOfTheSymbol(t *testing.T) {
+	ctx, diags := rangeContext(8, nil, "x64")
+	ctx.Symbols = symbols.NewTable("bare", 8)
+	if got := newSystemSpace(ctx).start; got != 0xffff800000000000 {
+		t.Errorf("start 0x%x", got)
+	}
+	want := "windows.module.list: modulelist: symbol table has no MmSystemRangeStart"
+	if len(*diags) != 1 || !strings.HasPrefix((*diags)[0], want) ||
+		!strings.HasSuffix((*diags)[0], ": system space taken to start at 0xffff800000000000") {
+		t.Errorf("diagnostics %q", *diags)
+	}
+}
+
 func FuzzCanonicalAddress(f *testing.F) {
 	f.Add(uint64(0x0000f80566510000), uint8(48))
 	f.Add(uint64(0x7fffffffffff), uint8(57))

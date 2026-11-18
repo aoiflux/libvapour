@@ -1,7 +1,7 @@
 file: tools/windows/pedump/pe_dump.go
 replaces: [tools/windows/pedump/pe_dump.go]
 spec: S55-windows-kernel-modules-and-pe-dump
-spec_sha256: 2d5be9e4cad4aecf179863185cc96344898d21dc8901e120494b35106306d4bd
+spec_sha256: b3c84995cd4d417b51f6f92f1c1dcfd9afd351f4bf68b1382cb056671a61b541
 sources:
   - title: "Microsoft Learn, PE Format (SizeOfImage, AddressOfEntryPoint, ImageBase)"
     url: https://learn.microsoft.com/windows/win32/debug/pe-format
@@ -23,4 +23,6 @@ decisions:
     justification: "S55 4.6 step 6, O4"
   - rule: "A process module whose DllBase does not read is skipped with that reason"
     justification: "owner decision 2026-11-12, S56 O8"
-date: 2026-11-12
+  - rule: "Write, close and removal failures are joined"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

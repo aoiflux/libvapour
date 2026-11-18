@@ -64,14 +64,12 @@ func Run(ctx tools.Context) ([]Thread, error) {
 		return nil, err
 	}
 	columns := NewColumnReader(ctx, Name)
-	cid := resolveIDs(ctx)
 	placed, stats, err := find(ctx, sweep, func(body uint64) (Thread, bool) {
-		if sweep.check.Check(sweep.physical, body) != nil {
+		id, err := sweep.check.Identify(sweep.physical, body)
+		if err != nil {
 			return Thread{}, false
 		}
-		pid, _ := cid.pid.Read(sweep.physical, body)
-		tid, _ := cid.tid.Read(sweep.physical, body)
-		return Thread{PID: pid, TID: tid, Columns: columns.Read(sweep.physical, body)}, true
+		return Thread{PID: id.PID, TID: id.TID, Columns: columns.Read(sweep.physical, body)}, true
 	})
 	if err != nil {
 		return nil, err
@@ -165,17 +163,4 @@ func find[T any](ctx tools.Context, s sweep, decode func(body uint64) (T, bool))
 
 func report(ctx tools.Context, rows int, stats scan.ObjectScanStats) {
 	ctx.AddDiagnostic("%s: %d threads from %d tag hits (%s)", Name, rows, stats.TagHits, stats.Describe())
-}
-
-type ids struct{ pid, tid Member }
-
-func resolveIDs(ctx tools.Context) ids {
-	pointer := uint64(ctx.Symbols.PointerSize())
-	cid := ResolveMember(ctx.Symbols, "_ETHREAD", "Cid", pointer)
-	pid := ResolveMember(ctx.Symbols, "_CLIENT_ID", "UniqueProcess", pointer)
-	tid := ResolveMember(ctx.Symbols, "_CLIENT_ID", "UniqueThread", pointer)
-	pid.Field.Offset += cid.Field.Offset
-	tid.Field.Offset += cid.Field.Offset
-	pid.Field.Width, tid.Field.Width = pointer, pointer
-	return ids{pid: pid, tid: tid}
 }

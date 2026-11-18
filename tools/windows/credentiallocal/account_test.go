@@ -38,7 +38,10 @@ func ridHex(rid uint32) string {
 func buildVFor(domainKey []byte, name string, rid uint32) []byte {
 	nt := NTOWFv1("fixture-" + name)
 	iv := bytes.Repeat([]byte{0x33}, 16)
-	wrapped := hashUnderRID(nt[:], rid, false)
+	wrapped, err := hashUnderRID(nt[:], rid, false)
+	if err != nil {
+		panic(err)
+	}
 	cipher, _ := aesCBCEncrypt(domainKey, iv, padTo16(wrapped[:]))
 	rec := make([]byte, recordAESMinLen)
 	rec[recordRevisionOffset] = byte(revisionAES)

@@ -11,4 +11,6 @@ decisions:
     justification: "S71 4.10 steps 2-3, O7, O10"
   - rule: "Strict mode refuses a container that needed a repair (recounted run, zero tail) with ErrStrictRepair"
     justification: "owner decision 2026-11-12, S71 O7"
-date: 2026-11-12
+  - rule: "A close after a failed detection or strict refusal is joined to the failure"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

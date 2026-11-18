@@ -109,7 +109,11 @@ func IntegerMember(sym symbols.SymbolTable, parent string, f symbols.Field, offs
 			width = CWidth(t.Name, uint64(sym.PointerSize()))
 		}
 		if width == 0 && t.Name != "" {
-			width, _ = SizeOf(sym, t.Name)
+			n, err := SizeOf(sym, t.Name)
+			if err != nil {
+				return Integer{}, fmt.Errorf("%w: %s: %w", ErrNotInteger, where, err)
+			}
+			width = n
 		}
 	}
 	if width == 0 || width > 8 {

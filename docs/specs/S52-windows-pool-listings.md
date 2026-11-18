@@ -77,7 +77,7 @@ M1 to M9 come from `bigpoolfacts` on 2026-11-12 over mem1_win11, mem2_win10, mem
 
 ### 4.1 Locating the table (`windows.pool.list_big`)
 
-1. Resolve `_POOL_TRACKER_BIG_PAGES` and its `Va` and `Key` (T1, T2). `NumberOfBytes`, `PoolType` and `PoolFlags` are used when present. Every member must end within the entry; the entry size is the stride.
+1. Resolve `_POOL_TRACKER_BIG_PAGES` and its `Va` and `Key` (T1, T2). `NumberOfBytes`, `PoolType` and `PoolFlags` are used when present. Every member must end within the entry and be an integer of 1 to 8 bytes; the entry size is the stride. An entry is decoded only from a whole stride of bytes, so no member decode can fail once the layout resolves.
 2. Read the pointer at `PoolBigPageTable` (T3). It must be nonzero and a multiple of 4,096 (M1, D2).
 3. Read 4 bytes at `PoolBigPageTableSize` as the slot count (M1: the upper dword is 0). It must be at least 1 and at most `MaxTableEntries`.
 

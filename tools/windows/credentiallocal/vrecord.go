@@ -79,7 +79,8 @@ func hashFromRecord(v, domainKey []byte, entry int, rid uint32, nt bool) (hash [
 		if err != nil {
 			return hash, true, false
 		}
-		return hashUnderRID(plain[:16], rid, true), true, true
+		h, err := hashUnderRID(plain[:16], rid, true)
+		return h, true, err == nil
 	case revisionRC4Legacy:
 		if len(rec) < legacyRecordOffset+16 {
 			return hash, false, true

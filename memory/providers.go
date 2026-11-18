@@ -39,13 +39,12 @@ func (fileProvider) Open(config AcquisitionConfig) (AcquisitionSession, error) {
 	}
 	reader, format, err := DetectFormat(file, Detectors(config.Limits)...)
 	if err != nil {
-		_ = file.Close()
-		return nil, fmt.Errorf("memory: open %s: %w", config.Source, err)
+		return nil, errors.Join(fmt.Errorf("memory: open %s: %w", config.Source, err), file.Close())
 	}
 	if n, ok := reader.(containerNoter); ok && config.Strict {
 		if repairs := n.containerRepairs(); len(repairs) > 0 {
-			_ = file.Close()
-			return nil, fmt.Errorf("memory: open %s: %w: %s", config.Source, ErrStrictRepair, strings.Join(repairs, "; "))
+			return nil, errors.Join(fmt.Errorf("memory: open %s: %w: %s", config.Source, ErrStrictRepair, strings.Join(repairs, "; ")),
+				file.Close())
 		}
 	}
 	s := &providerSession{reader: reader, closer: file}

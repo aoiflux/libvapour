@@ -264,8 +264,8 @@ func (t *Table) ReadStruct(reader memory.MemoryReader, typeName string, offset u
 			out.RawFields[f.Name] = []byte{}
 			continue
 		}
-		w, _ := t.width(f.Type)
-		if w == 0 {
+		w, err := t.width(f.Type)
+		if err != nil || w == 0 {
 			out.Unsized = append(out.Unsized, f.Name)
 			continue
 		}
@@ -291,8 +291,8 @@ func (t *Table) noElements(ref TypeRef) bool {
 	if op != opArray || ref.ArrayLength != 0 {
 		return false
 	}
-	w, _ := t.width(ref.inner())
-	return w > 0
+	w, err := t.width(ref.inner())
+	return err == nil && w > 0
 }
 
 // A value holds 64 bits; a bitfield reaching past bit 64 stays raw rather

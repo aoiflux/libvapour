@@ -146,19 +146,18 @@ func (r *run) write(m memoryranges.Mapping) (Artifact, error) {
 		return art, fmt.Errorf("%s: pid %d VAD at 0x%x: not written: %w", Name, m.PID, m.VadAddress, err)
 	}
 	res, err := extract.Region(space, m.Start, m.End, file, extract.Options{MaxSize: r.limit})
-	if cerr := file.Close(); err == nil {
-		err = cerr
-	}
-	if err != nil {
+	if err := errors.Join(err, file.Close()); err != nil {
 		// A cut file left behind would pass for a whole range.
-		extract.RemoveArtifact(r.dir, art.FileName)
+		err = errors.Join(err, extract.RemoveArtifact(r.dir, art.FileName))
 		art.Skipped = err.Error()
 		return art, fmt.Errorf("%s: pid %d VAD at 0x%x: not written: %w", Name, m.PID, m.VadAddress, err)
 	}
 	// A file of zero fill alone holds nothing from the capture.
 	if res.Captured == 0 {
-		extract.RemoveArtifact(r.dir, art.FileName)
 		art.Skipped = ErrNothingRead.Error()
+		if err := extract.RemoveArtifact(r.dir, art.FileName); err != nil {
+			return art, fmt.Errorf("%s: pid %d VAD at 0x%x: %w", Name, m.PID, m.VadAddress, err)
+		}
 		r.empty++
 		return art, nil
 	}

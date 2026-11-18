@@ -84,6 +84,8 @@ type rawEntry struct {
 	va, key, bytes, typ, flags uint64
 }
 
+// rec is a whole stride, and resolveEntryLayout accepted only integer members
+// that end within it, so no Decode here can fail.
 func (l entryLayout) decode(slot uint64, rec []byte) rawEntry {
 	e := rawEntry{slot: slot}
 	e.va, _ = l.va.Decode(rec)

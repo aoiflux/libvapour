@@ -1,7 +1,7 @@
 file: tools/gui/prototype.go
 replaces: []
 spec: S57-windows-gui-objects
-spec_sha256: 2021f18ea7c0b4dfe4c8d3309e74107c6845213b69a0fcae3bbea36805d4f042
+spec_sha256: 11ae10c71b02e50ebc10099c78864ac71cf9edf16980d20f77cd0ea5836021be
 sources:
   - title: "ntoskrnl types _MMPTE_PROTOTYPE (ProtoAddress, a signed 48-bit member at bits 63:16), _MMPTE_HARDWARE and _MMPTE_TRANSITION of builds 14393, 19045, 26100, read through the project's symbol tables"
     path: symbols/autoload

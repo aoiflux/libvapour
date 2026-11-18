@@ -88,6 +88,7 @@ func newSystemSpace(ctx tools.Context) systemSpace {
 	start, err := KernelSpaceStart(ctx, Name)
 	if err != nil {
 		start = KernelHalfStart(ctx)
+		ctx.AddDiagnostic("%s: %v: system space taken to start at 0x%x", Name, err, start)
 	}
 	return systemSpace{start: start}
 }

@@ -101,7 +101,7 @@ M1 to M14 come from `libraryfacts -v`, run on 2026-11-12 over mem1_win11 (26100)
 1. The process rows are the process list (S25) narrowed by the PID set, or the processes the process scan finds at `windows.library.list.offset`.
 2. For each process, read `_EPROCESS.Peb` in kernel memory. A PEB of 0 is a process with no user-mode loader (M1) and gives no rows, silently. Then open the process space. If it does not open, report and go on.
 3. Read `_PEB.Ldr` in the process space (T1). If it does not read, or is 0, report and go on (M1).
-4. Walk each of the three lists of T2 with the S03 recovering walk (a table that describes only the in-load-order list, as a hand-built test table may, walks that one and says so), in the process space, with the native `_LIST_ENTRY` layout. The record of a list entry is its container by that list's link member (T3, D16). A link whose container would fall below address 0 is skipped silently: it is not counted and gives no diagnostic (O10). A head that does not read is reported; the other lists still walk.
+4. Walk each of the three lists of T2 with the S03 recovering walk (a table that describes only the in-load-order list, as a hand-built test table may, walks that one and says so), in the process space, with the native `_LIST_ENTRY` layout. The record of a list entry is its container by that list's link member (T3, D16). A link whose container would fall below address 0 is skipped and counted; the process gets one diagnostic, `windows.library.list: process <pid> at 0x<addr>: <n> loader list links skipped: librarylist: a link's record would start below address 0` (`ErrLinkBelowZero`), and strict mode fails with it (O10). A head that does not read is reported; the other lists still walk.
 5. The rows are the records of the in-load-order list in walk order, then those found only by the in-memory-order walk, then those found only by the in-initialization-order walk (M2, M4). Each row says in which of the three lists its record was found.
 6. For each record read `DllBase` (pointer width), `SizeOfImage`, `BaseDllName` and `FullDllName` (D4, T3). A record whose `DllBase` does not read is listed with `Base` 0 and `BaseUnreadable` set, and counted (M5); its other fields are still read. A field that does not read is flagged. A base filter cannot match such a row and drops it.
 7. `LoadCount` is `DdagNode->LoadCount` (T3). A table without `DdagNode` or `_LDR_DDAG_NODE.LoadCount` gives no load counts, reported once. `LoadTime` is the record's FILETIME (D6, M7); 0 or a value with the top bit set is no time.
@@ -153,7 +153,7 @@ M1 to M14 come from `libraryfacts -v`, run on 2026-11-12 over mem1_win11 (26100)
 | Rule | Justification | On failure |
 |---|---|---|
 | Loader list links agree (S03 4.3) | D16 | The walk breaks, is reported, and the backward walk recovers what it can |
-| Record container not below 0 | D16 | The entry is skipped silently: no count, no diagnostic, no strict-mode error (O10) |
+| Record container not below 0 | D16 | The entry is skipped and counted; diagnostic; strict mode fails with `ErrLinkBelowZero` (O10) |
 | `DllBase` reads | M5 | Row flagged `BaseUnreadable`, `Base` 0; counted |
 | A parent created after its child is not its parent, except the initial system process | D7, M11 | The child is a root, flagged `ParentPIDReused` |
 | A self-parented process is a root without children | Owner decision | As stated |
@@ -171,7 +171,7 @@ No rule tests an image header, a name or a count: M9 shows `MZ` missing only whe
 | Process space does not open | Diagnostic `windows.library.list: process <pid> at 0x<eprocess>: no process space, no libraries listed: <error>` |
 | PEB pointer or `Ldr` does not read, or `Ldr` is 0 | Diagnostic `windows.library.list: process <pid> at 0x<eprocess>: PEB pointer does not read: <error>`, `windows.library.list: process <pid> at 0x<eprocess>: PEB at 0x<peb>: loader data does not read: <error>` or `…: PEB at 0x<peb>: loader data pointer is 0`; in strict mode the run returns the error |
 | List break | The S03 diagnostic; in strict mode the run returns it |
-| A loader link whose record container falls below 0 | The entry is skipped; no diagnostic, no count, no strict-mode error (O10) |
+| A loader link whose record container falls below 0 | The entry is skipped and counted; one diagnostic per process; strict: `ErrLinkBelowZero` (O10) |
 | Records flagged for an unreadable `DllBase` | Diagnostic `windows.library.list: process <pid> at 0x<eprocess>: <n> loader records flagged: librarylist: DllBase does not read`; strict: error |
 | Names unreadable | One diagnostic with the counts; rows flagged |
 | No 32-bit layout in the table | Diagnostic `windows.library.list: librarylist: symbol table lacks _PEB32 or LIST_ENTRY32: ...: no 32-bit libraries listed` |
@@ -277,7 +277,7 @@ The library rows equal the union of M2 plus the WoW64 records of M8, with the on
 | O7 | The tree exempts only the initial system process from the creation-time rule (M11). A kernel-started process other than those of M11 whose parent's `CreateTime` is late would be cut from its parent. | More captures |
 | O8 | A record whose `DllBase` does not read is left out (one of 24,593 records, M5). Owner decision 2026-11-12: list with a flag. Done: 4.1 step 6, 5, 6, 7.1 (`DLL.BaseUnreadable`), 9; the record is kept with `Base` 0 and its other fields read (`tools/windows/librarylist/loader.go`, `library_list.go`, test in `s56_test.go`); M5 re-measured. Callers that read at `Base` pass such rows over: `windows.library.compare` leaves them out of its index (fuzz target extended), `windows.pe.dump` skips them with `DllBase does not read`, `windows.pe.read_version` counts them in a new diagnostic `<n> process modules passed over: DllBase does not read`; `windows.pe.list_imports`, `windows.pe.resolve_symbols` and `windows.process.dump` already pass over a `Base` of 0. S55 4.6 and S66 name the flag (S55 O12, owner decision 2026-11-12, follow-up D14). | Owner decision |
 | O9 | The shared test fixture `internal/testsupport/processfixture.go` linked its loader lists by Flink only and had no `_PEB32` or `LIST_ENTRY32`; it now writes Blinks and declares both types, so that the S03 walk accepts its lists. | Reviewer check |
-| O10 | A loader list link whose record container falls below 0 is skipped silently: `walkLoader` (`tools/windows/librarylist/loader.go`) adds no count and reports no diagnostic, so strict mode does not fail on it. Owner decision 2026-11-12: kept for v0.1.0; count the entry and report it in a diagnostic (strict: error) in v0.2.0. | v0.2.0 |
+| O10 | A loader list link whose record container falls below 0 is skipped silently: `walkLoader` (`tools/windows/librarylist/loader.go`) adds no count and reports no diagnostic, so strict mode does not fail on it. Owner decision 2026-11-12: kept for v0.1.0; count the entry and report it in a diagnostic (strict: error) in v0.2.0. Done 2026-11-18, brought forward to v0.1.1 by the plan of 2026-11-16: 4.1 step 4, sections 5 and 6; `TestALinkWhoseRecordWouldStartBelowZeroIsCountedAndReported`. | Done |
 
 ### Owner decisions, 2026-11-12
 

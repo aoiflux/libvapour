@@ -1,6 +1,8 @@
 package testsupport
 
 import (
+	"fmt"
+
 	"github.com/aoiflux/libvapour/symbols"
 )
 
@@ -168,7 +170,10 @@ type S69Processes struct {
 
 func NewS69Processes(procs []FixtureProcess) *S69Processes {
 	f := &S69Processes{ProcessFixture: BuildProcessFixture(procs), jobs: s69JobVA, sessions: s69SessionVA, names: s69NameVA}
-	st, _ := f.Table.Struct("_EPROCESS")
+	st, err := f.Table.Struct("_EPROCESS")
+	if err != nil {
+		panic(fmt.Sprintf("s69 fixture: %v", err))
+	}
 	st.Fields = append(append([]symbols.Field(nil), st.Fields...),
 		s64Ptr("Job", S69ProcessJob, "_EJOB"), s64Field("JobLinks", S69ProcessJobLinks, "_LIST_ENTRY"),
 		s64Field("SeAuditProcessCreationInfo", S69ProcessAudit, "_SE_AUDIT_PROCESS_CREATION_INFO"),

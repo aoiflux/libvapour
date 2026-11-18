@@ -1,7 +1,7 @@
 file: tools/windows/handlelist/names.go
 replaces: [tools/windows/handlelist/names.go]
 spec: S30-windows-handle-names
-spec_sha256: 70179e09d6238e3a0806720b46c5470d0e1bb326dd5b076b44eb3ea987479259
+spec_sha256: 55ee49c111074ed7911c146c00cecbbd532642c660111b1ec031e323128aceb2
 sources:
   - title: "Microsoft Learn, Object Names"
     url: https://learn.microsoft.com/windows-hardware/drivers/kernel/object-names
@@ -33,4 +33,6 @@ decisions:
     justification: "S30 4.3, D4, M4, M5, O3"
   - rule: "Process and thread forms from ImageFileName, UniqueProcessId and Cid"
     justification: "S30 4.4, 4.5, M6, O1"
-date: 2026-11-12
+  - rule: "A root directory pointer that is missing or does not read is reported once"
+    justification: "S30 4.1 step 3, section 6"
+date: 2026-11-18

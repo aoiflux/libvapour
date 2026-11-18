@@ -36,4 +36,6 @@ decisions:
     justification: "S58 4.4, 4.6, V8, O4"
   - rule: "Integers: pointers, bitfields ending by bit 64, named types up to 8 bytes that are not records, floats or big-endian"
     justification: "S58 4.5 steps 1-3, V10-V12, F4"
-date: 2026-11-12
+  - rule: "A member whose width does not resolve is unsized, its error checked rather than dropped"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

@@ -65,9 +65,8 @@ func LoadSnapshotCSV(path string) ([]SnapshotProcess, error) {
 	if err != nil {
 		return nil, fmt.Errorf("processlist: open snapshot csv: %w", err)
 	}
-	defer f.Close()
 	rows, err := ParseSnapshotCSV(f)
-	if err != nil {
+	if err := errors.Join(err, f.Close()); err != nil {
 		return nil, fmt.Errorf("processlist: read snapshot csv %s: %w", path, err)
 	}
 	return rows, nil
@@ -81,13 +80,26 @@ var (
 
 func ParseSnapshotCSV(r io.Reader) ([]SnapshotProcess, error) {
 	in := bufio.NewReader(r)
-	if lead, err := in.Peek(3); err == nil && bytes.Equal(lead, []byte("\xef\xbb\xbf")) {
-		_, _ = in.Discard(3)
+	lead, err := peek(in, 3)
+	if err != nil {
+		return nil, err
+	}
+	if bytes.Equal(lead, []byte("\xef\xbb\xbf")) {
+		if _, err := in.Discard(len(lead)); err != nil {
+			return nil, err
+		}
 	}
 	skipped := 0
-	if lead, err := in.Peek(5); err == nil && string(lead) == "#TYPE" {
-		if _, err := in.ReadString('\n'); err != nil {
+	if lead, err = peek(in, 5); err != nil {
+		return nil, err
+	}
+	if string(lead) == "#TYPE" {
+		_, err := in.ReadString('\n')
+		if errors.Is(err, io.EOF) {
 			return nil, nil
+		}
+		if err != nil {
+			return nil, err
 		}
 		skipped = 1
 	}
@@ -129,6 +141,15 @@ func ParseSnapshotCSV(r io.Reader) ([]SnapshotProcess, error) {
 		row.EPROCESS, _ = parseAddress(field(record, addressAt))
 		rows = append(rows, row)
 	}
+}
+
+// A source shorter than n bytes is not an error here; the CSV reader decides.
+func peek(in *bufio.Reader, n int) ([]byte, error) {
+	b, err := in.Peek(n)
+	if err != nil && !errors.Is(err, io.EOF) {
+		return nil, err
+	}
+	return b, nil
 }
 
 func headerIndex(header, names []string) int {

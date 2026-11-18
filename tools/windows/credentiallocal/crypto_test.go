@@ -31,9 +31,12 @@ func pkcs7Pad(b []byte) []byte {
 func TestRIDWrapRoundTrips(t *testing.T) {
 	hash := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}
 	for _, rid := range []uint32{500, 501, 1001} {
-		wrapped := hashUnderRID(hash, rid, false)
-		got := hashUnderRID(wrapped[:], rid, true)
-		if !bytes.Equal(got[:], hash) {
+		wrapped, err := hashUnderRID(hash, rid, false)
+		if err != nil {
+			t.Fatal(err)
+		}
+		got, err := hashUnderRID(wrapped[:], rid, true)
+		if err != nil || !bytes.Equal(got[:], hash) {
 			t.Errorf("rid %d: round trip = %x, want %x", rid, got, hash)
 		}
 	}

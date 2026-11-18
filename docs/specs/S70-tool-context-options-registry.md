@@ -120,7 +120,7 @@ Leading-zero octal is not accepted as octal: `010` is ten, as an examiner readin
 | `DumpLimit` | The smaller of `max_dump_size` (when above 0) and `Bounds().MaxArtifactBytes`. The Limits cap holds even when the option asks for more (owner decision: Limits caps are enforced). |
 | `PhysicalMemory` | The `physical_memory` reader, or nil. |
 | `KernelBase`, `KernelDTB` | The value and true; false when absent or unreadable. |
-| `PagingMode`, `NetworkScanLayout` | The string, or `""`. |
+| `PagingMode`, `NetworkScanLayout` | The string, or `""` when absent or not a string. A value of the wrong form is reported by `Validate` (4.1 step 1), which each tool calls before it reads, and by the session's open (S76), so the accessor does not report it again. |
 
 ### 4.6 Pool-scan build gate
 

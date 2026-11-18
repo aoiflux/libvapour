@@ -137,7 +137,7 @@ The sock's own members, including those of its family type, are read from the re
 2. **Namespace.** `net` is `skc_net.net`, or the `init_net` symbol when `possible_net_t` has no members (F6). The namespace is `net.ns.inum`.
 3. **Filter.** Read `sk_filter` (B1). Null gives an empty filter. Otherwise read `prog`; when `prog.orig_prog` is not null the filter is `classic len=<orig_prog.len>` (B3); otherwise it is `ebpf id=<aux.id>`, followed by ` name=<aux.name>` when the name is not empty (B4).
 4. **State.** Read `skc_state`.
-5. **Family.** The family type is found from `sk` by the offset of its member `sk` (F4). When the table has no such type, only steps 1 to 4 and the family's protocol and state apply, and the coverage is **no family type**. `AF_BLUETOOTH` is the exception: its branch reads only the common fields and never checks the table for `bt_sock`, so its coverage stays `full` (O9).
+5. **Family.** The family type is found from `sk` by the offset of its member `sk` (F4). When the table has no such type, only steps 1 to 4 and the family's protocol and state apply, and the coverage is **no family type**. `AF_BLUETOOTH` reads only the common fields, and its coverage is **no family type** too when the table has no `bt_sock` (O9).
 
 | Family | Protocol | Local address, port | Remote address, port | State |
 |---|---|---|---|---|
@@ -177,7 +177,7 @@ Rows are not required to have a decoded family: every sock that passes the links
 | Option of the wrong type | `tools.ErrOptionType` |
 | Task walk losses | S01 diagnostics |
 | A files pointer, descriptor table, slot, `f_op` or `comm` does not read, or the table is over the cap | Counted per kind, one diagnostic with the first case |
-| `TaskFDs` returns an error, or a task that holds a socket has a `tgid` or `pid` that does not read | The whole tool stops: `linux.socket.list: <error>`, no rows (O10) |
+| `TaskFDs` returns an error, or a task that holds a socket has a `tgid` or `pid` that does not read | The task's sockets are left out and counted: `linux.socket.list: <n> tasks whose descriptor table does not read, first: task at 0x<addr>: <error>` or `<n> tasks holding sockets whose tgid or pid does not read, first: …`; the other tasks are listed; strict mode fails (O10) |
 | A back link fails (section 5) | Counted per kind, one diagnostic with the first case: `<object> at 0x<addr>: <member>: socketlist: link does not lead back: it holds 0x<value>` |
 | The sock's family, type or protocol does not read | Counted ("socks that do not read") |
 | A family member does not read | The field is absent; coverage **partial**; one diagnostic per member with its count |
@@ -257,8 +257,8 @@ Each listening TCP port therefore appears once per sock: no sock is listed twice
 | O6 | `sk_type` and `sk_protocol` as v4.19 bit-fields are read through the table's bit offsets; no capture has them. | A v4.19 capture (Q7) |
 | O7 | Section 4 reaches socks only through `socket.sk` of an open file, so a sock no open file holds is not listed. The Filter field is `sk_filter` alone (4.1 step 3, B1 to B4), so a reuseport program is not named. Owner decision 2026-11-12 (follow-up PQ3): keep the spec. Done: recorded; no change. | Owner decision |
 | O8 | A unix sock's namespace is read from its own `skc_net` (4.1 step 2, F6), as for every other family, so it can differ from the namespace of the task that holds the file. Owner decision 2026-11-12 (follow-up PQ4): accept. Done: recorded; no change. | Owner decision |
-| O9 | The `AF_BLUETOOTH` branch of the decoder (`tools/linux/socketlist/decode.go`) never checks the table for `bt_sock`, so a Bluetooth row keeps coverage `full` where the other decoded families give **no family type**. Owner decision 2026-11-12: kept for v0.1.0; check for `bt_sock` and set the coverage in v0.2.0. | v0.2.0 |
-| O10 | In `linux.socket.list` (`tools/linux/socketlist/socket_list.go`) a `TaskFDs` error, or one task holding a socket whose `tgid` or `pid` does not read, stops the whole tool with no rows. Owner decision 2026-11-12: kept for v0.1.0; count such a task as a loss, report it and go on in v0.2.0. | v0.2.0 |
+| O9 | The `AF_BLUETOOTH` branch of the decoder (`tools/linux/socketlist/decode.go`) never checks the table for `bt_sock`, so a Bluetooth row keeps coverage `full` where the other decoded families give **no family type**. Owner decision 2026-11-12: kept for v0.1.0; check for `bt_sock` and set the coverage in v0.2.0. Done 2026-11-18, brought forward to v0.1.1 by the plan of 2026-11-16: 4.1 step 5; `TestABluetoothSockWithoutItsTypeSaysSo`. | Done |
+| O10 | In `linux.socket.list` (`tools/linux/socketlist/socket_list.go`) a `TaskFDs` error, or one task holding a socket whose `tgid` or `pid` does not read, stops the whole tool with no rows. Owner decision 2026-11-12: kept for v0.1.0; count such a task as a loss, report it and go on in v0.2.0. Done 2026-11-18, brought forward to v0.1.1 by the plan of 2026-11-16: section 6; `TestATaskWhoseIDsDoNotReadIsALossNotAFailure`. | Done |
 
 ### Owner decisions, 2026-11-12
 

@@ -142,6 +142,9 @@ func (m *model) pages(in inode) []linuxobj.CachedPage {
 	t := mp.Tree
 	if n := mp.Rejects.Total() + t.Unread + t.Inconsistent; n > 0 || mp.Capped || t.Capped {
 		m.lost.pages += n
+		if mp.Capped || t.Capped {
+			m.lost.walks++
+		}
 		m.diag("%s: address_space at %#x: %d entries left out (outside %d, misaligned %d, unread %d, "+
 			"other mapping %d, wrong index %d, unread nodes %d, inconsistent nodes %d), capped %v",
 			m.tool, in.Mapping, n, mp.Rejects.Outside, mp.Rejects.Misaligned, mp.Rejects.Unread, mp.Rejects.Foreign,

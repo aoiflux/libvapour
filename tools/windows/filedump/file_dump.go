@@ -525,8 +525,7 @@ func writeChunks(ctx tools.Context, outputDir string, reader memory.MemoryReader
 	for _, c := range kept {
 		data, gaps := extract.ReadPadded(reader, c.source, c.size)
 		if _, err := file.WriteAt(data, int64(c.fileOffset)); err != nil {
-			file.Close()
-			extract.RemoveArtifact(outputDir, art.FileName)
+			err = errors.Join(err, file.Close(), extract.RemoveArtifact(outputDir, art.FileName))
 			art.Skipped = err.Error()
 			ctx.AddDiagnostic("%s: %s at 0x%x: %v", Name, art.Cache, art.MemoryObject, err)
 			return
@@ -537,19 +536,17 @@ func writeChunks(ctx tools.Context, outputDir string, reader memory.MemoryReader
 	if art.FileSizeKnown {
 		total = min(art.FileSize, ceiling)
 	}
-	err = file.Truncate(int64(total))
-	if cerr := file.Close(); err == nil {
-		err = cerr
-	}
-	if err != nil {
-		extract.RemoveArtifact(outputDir, art.FileName)
+	if err := errors.Join(file.Truncate(int64(total)), file.Close()); err != nil {
+		err = errors.Join(err, extract.RemoveArtifact(outputDir, art.FileName))
 		art.Skipped = err.Error()
 		ctx.AddDiagnostic("%s: %s at 0x%x: %v", Name, art.Cache, art.MemoryObject, err)
 		return
 	}
 	if covered.Bytes() == 0 {
-		extract.RemoveArtifact(outputDir, art.FileName)
 		art.Skipped = "no cached page reads"
+		if err := extract.RemoveArtifact(outputDir, art.FileName); err != nil {
+			ctx.AddDiagnostic("%s: %s at 0x%x: %s: %v", Name, art.Cache, art.MemoryObject, art.Skipped, err)
+		}
 		return
 	}
 	art.Size = total

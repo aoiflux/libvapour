@@ -286,3 +286,24 @@ func TestATableWithOnlyTheLoadOrderListWalksIt(t *testing.T) {
 		t.Errorf("diagnostics %q", img.Diagnostics)
 	}
 }
+
+func TestALinkWhoseRecordWouldStartBelowZeroIsCountedAndReported(t *testing.T) {
+	img := ts.BuildS56Image([]ts.S56Process{{PID: 8, Name: "a.exe", Libraries: []ts.S56Library{lib("a.dll", 0x10000000)}}})
+	user := img.UserOf(8)
+	head, low := ts.S56LdrVA+ts.S56LdrHeads+0x10, uint64(0x8)
+	user.WriteU64(head, low)
+	user.WriteU64(head+8, low)
+	user.WriteU64(low, head)
+	user.WriteU64(low+8, head)
+	rows := runRows(t, img)
+	if got := names(rows); got != "a.dll" {
+		t.Fatalf("rows %s", got)
+	}
+	if !hasDiagnostic(img, "process 8 at 0x") || !hasDiagnostic(img, "1 loader list links skipped: "+ErrLinkBelowZero.Error()) {
+		t.Errorf("diagnostics %q", img.Diagnostics)
+	}
+	img.Options["strict"] = true
+	if _, err := RunAny(img.Context()); !errors.Is(err, ErrLinkBelowZero) {
+		t.Errorf("strict error %v", err)
+	}
+}

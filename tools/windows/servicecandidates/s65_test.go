@@ -127,3 +127,13 @@ func TestSplittingACommandLine(t *testing.T) {
 		t.Error("argumentAfter")
 	}
 }
+
+func TestTheToolIsRegisteredAsAPlaceholder(t *testing.T) {
+	tool, err := tools.Get(Name)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.HasPrefix(tool.Spec.Description, "Placeholder: ") {
+		t.Errorf("description %q", tool.Spec.Description)
+	}
+}

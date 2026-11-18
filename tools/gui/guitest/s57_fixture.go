@@ -438,3 +438,21 @@ func Typical(l gui.Layout) Spec {
 		{Name: "Service-0x0-3e7$", Session: 0, Desktops: []DesktopSpec{{Name: "Default"}}},
 	}}
 }
+
+func (f *Fixture) Objects() []uint64 {
+	var out []uint64
+	for _, st := range f.Stations {
+		out = append(out, st.Address)
+		for _, d := range st.Desktops {
+			out = append(out, d.Address, d.Info)
+			out = append(out, d.Threads...)
+		}
+	}
+	return out
+}
+
+func (f *Fixture) PatchPage(object uint64, at uint16, patch []byte) {
+	off := uint64(at) % pageSize
+	n := min(uint64(len(patch)), pageSize-off)
+	f.PutBytes(object&^(pageSize-1)+off, patch[:n])
+}

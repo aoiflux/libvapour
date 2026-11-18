@@ -21,4 +21,6 @@ decisions:
     justification: "S62 4 step 7, step 8, 6"
   - rule: "Files are named by S00 with kind framebuffer"
     justification: "owner decision 2026-11-12, S62 FB-O2; S62 4 step 8, S00 4.1"
-date: 2026-11-12
+  - rule: "A partial picture that cannot be removed is named in the diagnostic"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

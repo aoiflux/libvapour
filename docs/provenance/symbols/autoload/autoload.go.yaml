@@ -1,7 +1,7 @@
 file: symbols/autoload/autoload.go
 replaces: [symbols/autoload/autoload.go]
 spec: S32-pdb-and-symbol-identity
-spec_sha256: fcef363edefcb7f2942cee24c06a4d9a8b281b8e3c0e7ea45dea333acc4bbcb9
+spec_sha256: 8e653aa37eba76f0178b72ebc8a4a931b1652006ea36a82701e2416d00c802d8
 sources:
   - title: "Microsoft Learn, Symbol Store Folder Tree"
     url: https://learn.microsoft.com/windows-hardware/drivers/debugger/symbol-store-folder-tree
@@ -24,4 +24,6 @@ decisions:
     justification: "S32 4.6 steps 4-5, section 9"
   - rule: "Kernel PDB names after the four kernel images"
     justification: "S32 4.6 step 6"
-date: 2026-11-12
+  - rule: "A body close and a temporary-file removal that fail are joined to the result; the temporary file is removed only on failure"
+    justification: "Project rule: no error is dropped"
+date: 2026-11-18

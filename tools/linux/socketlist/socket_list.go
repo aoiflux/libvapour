@@ -72,9 +72,7 @@ func Run(ctx tools.Context) ([]Socket, error) {
 	w := &walk{k: k, dec: dec, ops: ops.Address, netns: netns, tables: map[uint64]bool{}, lost: map[string]int{},
 		first: map[string]string{}}
 	for _, t := range tasks.Tasks {
-		if err := w.task(linuxobj.Task{Addr: t}); err != nil {
-			return nil, fmt.Errorf("%s: %w", Name, err)
-		}
+		w.task(linuxobj.Task{Addr: t})
 	}
 	dec.Report(ctx.AddDiagnostic, Name)
 	for _, why := range sortedKeys(w.lost) {
@@ -112,25 +110,26 @@ func (w *walk) lose(why string, err error) {
 // Threads made with CLONE_FILES share one files_struct (S13 T2), so each
 // table is listed once, under the first task that holds it: the leader, as
 // the task walk gives a leader before its threads.
-func (w *walk) task(t linuxobj.Task) error {
+func (w *walk) task(t linuxobj.Task) {
 	k := w.k
 	files, err := k.Pointer(k.Memory(), t.Addr, "task_struct", "files")
 	if err != nil {
 		w.lose("tasks whose files pointer does not read", fmt.Errorf("task at %#x: %w", k.Masked(t.Addr), err))
-		return nil
+		return
 	}
 	if files == 0 || w.tables[files] {
-		return nil
+		return
 	}
 	w.tables[files] = true
 	tab, ok, err := k.TaskFDs(t)
 	if err != nil {
-		return err
+		w.lose("tasks whose descriptor table does not read", fmt.Errorf("task at %#x: %w", k.Masked(t.Addr), err))
+		return
 	}
 	if !ok {
 		w.lose("descriptor tables that do not read or are over Limits.MaxTableEntries",
 			fmt.Errorf("task at %#x: files at %#x", k.Masked(t.Addr), k.Masked(files)))
-		return nil
+		return
 	}
 	open, err := k.OpenFiles(tab)
 	if err != nil {
@@ -149,11 +148,12 @@ func (w *walk) task(t linuxobj.Task) error {
 			if process, err = k.Comm(t); err != nil {
 				w.lose("tasks whose comm does not read", fmt.Errorf("task at %#x: %w", k.Masked(t.Addr), err))
 			}
-			if pid, err = k.TGID(t); err != nil {
-				return err
+			if pid, err = k.TGID(t); err == nil {
+				tid, err = k.PID(t)
 			}
-			if tid, err = k.PID(t); err != nil {
-				return err
+			if err != nil {
+				w.lose("tasks holding sockets whose tgid or pid does not read", fmt.Errorf("task at %#x: %w", k.Masked(t.Addr), err))
+				return
 			}
 		}
 		sock.PID, sock.TID, sock.Process, sock.FD = pid, tid, process, f.FD
@@ -162,7 +162,6 @@ func (w *walk) task(t linuxobj.Task) error {
 		}
 		w.out = append(w.out, sock)
 	}
-	return nil
 }
 
 // socket follows a socket file to its sock (S13 F1-F3): f_op is

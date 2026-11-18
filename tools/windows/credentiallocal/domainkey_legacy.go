@@ -72,5 +72,6 @@ func legacyDecryptHash(enc, domainKey []byte, rid uint32, nt bool) ([16]byte, bo
 	}
 	wrapped := make([]byte, 16)
 	c.XORKeyStream(wrapped, enc[:16])
-	return hashUnderRID(wrapped, rid, true), true
+	h, err := hashUnderRID(wrapped, rid, true)
+	return h, err == nil
 }

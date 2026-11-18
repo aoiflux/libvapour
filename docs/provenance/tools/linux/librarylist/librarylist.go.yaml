@@ -1,7 +1,7 @@
 file: tools/linux/librarylist/librarylist.go
 replaces: [tools/linux/librarylist/librarylist.go (old)]
 spec: S61-linux-process-tools
-spec_sha256: aef658bee29e97cd45cc38fbe1ce63fb86ec79ce39148f7930cbffdd3c632b31
+spec_sha256: 324caae9a1ab456d22fc713b6e2f9e82f726524a8f71360ee193f483d5716278
 sources:
   - title: "System V ABI, ELF gABI chapters 4 and 5 (sco.com edition)"
     url: https://www.sco.com/developers/gabi/latest/contents.html

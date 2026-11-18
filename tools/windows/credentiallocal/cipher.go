@@ -38,18 +38,21 @@ func ridDESKeys(rid uint32) (key1, key2 []byte) {
 	return key1, key2
 }
 
-func hashUnderRID(enc []byte, rid uint32, decrypt bool) [16]byte {
+func hashUnderRID(enc []byte, rid uint32, decrypt bool) ([16]byte, error) {
 	var out [16]byte
 	key1, key2 := ridDESKeys(rid)
 	for half, key := range [2][]byte{key1, key2} {
-		c, _ := des.NewCipher(expandDESKey(key))
+		c, err := des.NewCipher(expandDESKey(key))
+		if err != nil {
+			return [16]byte{}, err
+		}
 		if decrypt {
 			c.Decrypt(out[8*half:], enc[8*half:8*half+8])
 		} else {
 			c.Encrypt(out[8*half:], enc[8*half:8*half+8])
 		}
 	}
-	return out
+	return out, nil
 }
 
 func AESCBCDecrypt(key, iv, data []byte) ([]byte, error) {

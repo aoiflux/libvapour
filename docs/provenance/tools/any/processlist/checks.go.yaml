@@ -1,7 +1,7 @@
 file: tools/any/processlist/checks.go
 replaces: [tools/any/processlist/isvalid.go, tools/any/processlist/threadvalid.go, the time and structure tests of the any.process.list sanity filter in process_list.go]
 spec: S17-windows-process-thread-checks
-spec_sha256: c4cf54b5615be05251c9b21b7e7967fbf730a56e185412023b3832993d65d291
+spec_sha256: af2e68ea7edaf20faf4d633a42f059934721d680f09efce069c0be380be889a7
 sources:
   - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
     url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
@@ -40,4 +40,6 @@ decisions:
     justification: "S17 4.2 step 6, F5, F8, M5"
   - rule: "Checks return bare sentinels; callers add the tool and address"
     justification: "S17 section 6"
-date: 2026-11-12
+  - rule: "Identify returns the IDs the thread check read, so callers do not read them again"
+    justification: "S17 4.3, section 7"
+date: 2026-11-18

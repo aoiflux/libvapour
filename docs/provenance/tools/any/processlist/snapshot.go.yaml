@@ -1,7 +1,7 @@
 file: tools/any/processlist/snapshot.go
 replaces: [tools/any/processlist/crosscheck.go, tools/any/processlist/snapshot_csv.go, tools/any/processlist/doc.go]
 spec: S65-process-scan-environment-wow64
-spec_sha256: e78807a943a75e929828240896d75f437858555cf501dd889c303cac5b260464
+spec_sha256: 83533e54574389d1e92ba4ba56ed3ce1636ae7eb5da9648b683e09ec5e4b9cf4
 sources:
   - title: "Microsoft Learn, Win32_Process class"
     url: https://learn.microsoft.com/windows/win32/cimwin32prov/win32-process
@@ -34,4 +34,6 @@ decisions:
     justification: "S65 D10, O7"
   - rule: "Names match ignoring case or by the 14-byte ImageFileName prefix"
     justification: "S65 D11, M8"
-date: 2026-11-12
+  - rule: "A read failure other than the end of the source fails the snapshot parse; a file that does not close fails the load"
+    justification: "S65 4.9 step 1"
+date: 2026-11-18
