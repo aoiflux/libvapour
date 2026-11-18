@@ -1,7 +1,7 @@
 file: layers/windows_entries.go
 replaces: [layers/pte.go]
 spec: S53-address-translation-layers
-spec_sha256: bb4b32945e466187b294daeacb0c8cc440ad934c2e509650ded62f71e927f13b
+spec_sha256: a04fa5f71c6dc3b4703d948e8e6fc2ad1c1396ee8b727970cc0735dc0cea7509
 sources:
   - title: "ntoskrnl types _MMPTE_HARDWARE, _MMPTE_TRANSITION, _MMPTE_SOFTWARE, _MMPTE_PROTOTYPE, _MMPTE_SUBSECTION, _MI_HARDWARE_STATE, _EPROCESS, _KPROCESS, _LIST_ENTRY of builds 14393, 19045, 26100, read through the project's symbol tables"
     path: symbols/autoload
@@ -14,8 +14,12 @@ decisions:
     justification: "S53 4.3, W4"
   - rule: "PageFileHigh non-zero is in a pagefile, Protection non-zero demand-zero, else not mapped"
     justification: "S53 4.3, O3"
-  - rule: "Pagefile number bits 4:1 and offset PageFileHigh x 4096, accepted only without SwizzleBit and InvalidPteMask"
-    justification: "S53 4.3, W3, W5, M5"
+  - rule: "Pagefile number PageFileLow and offset PageFileHigh x 4096, at the bits the kernel's _MMPTE_SOFTWARE declares; bits 4:1 and 63:32 without a table"
+    justification: "S53 4.3, W3, O3; owner decision 2026-11-16"
+  - rule: "A table's pagefile fields may not overlap each other, Valid, Protection, Prototype or Transition"
+    justification: "S53 4.3"
+  - rule: "Pagefiles are accepted only without SwizzleBit and InvalidPteMask"
+    justification: "S53 4.3, W3, W5, M5, O3"
   - rule: "A prototype target is read valid first"
     justification: "S53 4.3"
   - rule: "A prototype entry's target address is ProtoAddress (bits 63:16) sign-extended"

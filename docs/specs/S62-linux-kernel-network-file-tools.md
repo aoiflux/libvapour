@@ -348,7 +348,9 @@ Tags checked: v4.19, v6.1, v6.4, v6.14 and v6.17 unless a row names fewer.
 | SS4 | A pointer is 8 bytes with 8-byte alignment under LP64 (S54 L1); a structure is aligned to its widest member, and slab and kmalloc objects are aligned to at least `__alignof__(unsigned long long)` (`ARCH_KMALLOC_MINALIGN`, `ARCH_SLAB_MINALIGN`). A pointer member of a sock or a file therefore sits at an 8-byte-aligned address, and a direct-map page keeps that alignment in its physical address. | x86-64 psABI 3.1.2; `include/linux/slab.h`, every tag. |
 | SS5 | `sock_graft` sets `sk->sk_socket = parent` and `parent->sk = sk`; `sock_orphan` sets `sk_socket` to null when the socket is released while the sock lives on (for example a closing TCP connection). | `include/net/sock.h`, every tag; S13 F3. |
 | SS6 | A file is a socket's when `f_op == &socket_file_ops`, and then `private_data` is the `struct socket` (S13 F1, F2). | S13. |
+| SS7 | `sk_refcnt` is `__sk_common.skc_refcnt`, a `refcount_t`, whose `refs` member is an `atomic_t` holding the count in `counter`. `sock_init_data_uid` sets the count to 1 before the sock is used; `sock_hold` adds one, and `sock_put` takes one away and calls `sk_free` when that leaves none. A sock whose count reads 0 is one the kernel has dropped its last reference to. | `include/net/sock.h`, `net/core/sock.c`, `include/linux/refcount_types.h`, `include/linux/types.h`, v6.17, accessed 2026-11-16. |
 | SSM1 | Both tables list all eight SS1 destructors and `socket_file_ops`; `sock.sk_destruct` is at 0x2d8 (mem3) and 0x2d0 (mem4), `sock.sk_socket` at 0x120, `socket.sk` at 0x18, `file.f_op` and `file.private_data` at 0x8/0x18 (mem3) and 0x10/0x20 (mem4). | `linuxkernfacts -only g3types`. |
+| SSM2 | `sk_refcnt` of every scanned sock (`socketfacts -refcount`, 2026-11-16; `sock_common.skc_refcnt` at 0x80 on all three). mem3_ubuntu24, mem4_fedora40, mem8_fedora40: socks whose socket points back 821, 926, 727, every count at least 1; socks with no socket 135, 394, 187, of which 135, 392 and 185 read 0, the others 1; socks whose socket does not read 2, 2, 0, both counts 2. The socks with no socket and a count of 0 include 27, 2 and 32 whose state reads `TCP_ESTABLISHED`. |
 
 ### Mounts and open files
 
@@ -490,7 +492,8 @@ Tags checked: v4.19, v6.1, v6.4, v6.14 and v6.17 unless a row names fewer.
 4. **Link.** Read `sk_socket` from physical memory: null is **no socket**; with no translator, **not translated**; else read `socket.sk` in kernel space and translate it: the candidate's own physical address is **socket points back**, another is **socket points elsewhere**, a failure is **socket does not read** (SS5).
 5. **File word** at physical `p` (needs a translator): the file is `p − offset(f_op)`; `private_data` is the socket (SS6). Read `socket.sk` and that sock's `sk_socket` in kernel space; the sock is kept only when `sk_socket` is the socket, and then its translated address is a candidate with link **socket points back**. Count each file passed over by cause.
 6. Merge candidates by physical address; `Found` holds both ways that found it. Decode each with the S13 decoder over physical memory; a sock whose family, type or protocol does not read is counted and gives no row.
-7. Rows are in physical address order.
+7. **Reference count.** Read `counter` of `sk_refcnt.refs` from physical memory (SS7). A count of 0 marks the row as released; the row is kept (SS-O1).
+8. Rows are in physical address order.
 
 ### Mounts and open files
 
@@ -615,6 +618,7 @@ S40 section 5, plus: a device whose current hardware address is absent is counte
 | Family is one the destructor is set on, never `AF_UNSPEC` | SS1, SS2 | Not a sock; counted per destructor |
 | `sk_type` is a named `SOCK_*` value | SS3 | Not a sock; counted |
 | A file's socket's sock points back at the socket | SS5, SS6 | File passed over; counted |
+| A count of 0 is a released sock | SS7, SSM2 | `RefCount` 0 with `RefCountRead`; the row is still listed |
 
 A sock whose socket does not point back is still a row: the link says what was found (SS5). The S13 decoder's rules apply to the decoded fields.
 
@@ -783,6 +787,8 @@ A sock whose socket does not point back is still a row: the link says what was f
 | Part of physical memory does not read | Diagnostic with the window counts; in strict mode an error |
 | Rejected words, passed-over files, socks that do not decode | One diagnostic per kind with its count |
 | Decoder losses | S13 6, through the decoder's report |
+| `sk_refcnt`, `refs` or `counter` not in the symbol table | One diagnostic; no count is read |
+| A count does not read | `RefCountRead` false; counted in one diagnostic |
 
 ### Mounts and open files
 
@@ -944,7 +950,7 @@ Also exported: `Layout` and `Picture` (step 7), `VisualName`, `StateName`, `Four
 
 #### linux.socket.scan
 
-`Socket`: `SockPhysical` (uint, the sock's physical address), `Found` (`FoundBy` bits: `FoundByDestructor` 1, `FoundByFile` 2), `Link` (`socket points back`, `no socket`, `socket points elsewhere`, `socket does not read`, `not translated`), `SocketAddress` (uint, `sk_socket` masked, 0 when null), and the S13 `Decoded` fields (`Family` to `Coverage`). Rows in physical address order.
+`Socket`: `SockPhysical` (uint, the sock's physical address), `Found` (`FoundBy` bits: `FoundByDestructor` 1, `FoundByFile` 2), `Link` (`socket points back`, `no socket`, `socket points elsewhere`, `socket does not read`, `not translated`), `SocketAddress` (uint, `sk_socket` masked, 0 when null), `RefCount` (uint32, `sk_refcnt`; 0 is a released sock, SS7), `RefCountRead` (bool), and the S13 `Decoded` fields (`Family` to `Coverage`). Rows in physical address order.
 
 ### Mounts and open files
 
@@ -1200,7 +1206,7 @@ Every NH3, NH4 and NH5 invariant holds on both captures, so the other checks are
 
 #### linux.socket.scan
 
-- Fixtures (`tools/linux/socketscan/scan_test.go`): a unix sock found both ways that points back; an orphaned TCP sock; a UDPv6 sock whose socket belongs to another sock; an `AF_QIPCRTR` sock with the default destructor that is not decoded; words rejected for family and for type; a file whose sock does not lead back; a kernel layer that cannot translate; no physical memory and no needles.
+- Fixtures (`tools/linux/socketscan/scan_test.go`): a unix sock found both ways that points back; an orphaned TCP sock; a UDPv6 sock whose socket belongs to another sock; an `AF_QIPCRTR` sock with the default destructor that is not decoded; words rejected for family and for type; a file whose sock does not lead back; a kernel layer that cannot translate; no physical memory and no needles; reference counts of live and released socks, a count that does not read, and a table without `sk_refcnt`.
 - Fuzz target `FuzzSweep`: arbitrary words around a destructor value; every row is aligned and inside memory. 30 s, about 4,500 executions, no failure.
 - Ground truth: every sock `linux.socket.list` reaches (S13) is translated and looked up among the scan's rows.
 
@@ -1304,7 +1310,7 @@ Open points marked "Owner decision" are settled by the owner at the final stage 
 | NH-O3 | A removed entry is recognised by `accept_all` only; `dummy_ops` is not in either capture's table (NHM1). Neither capture holds a removed entry, a device chain entry, an ARP or bridge entry, or a chain out of order. | A capture taken while a hook is unregistered |
 | SS-O1 | Owner decision: the scan now keeps every sock that passes the SS1 to SS3 rules, with its link, where rows with no addresses and zero ports were dropped; this lists the kernel's own sockets and socks whose socket is gone (section 9). `Offset` is renamed `SockPhysical`, `Proto`/`SrcAddr`/`SrcPort`/`DstAddr`/`DstPort` follow S13's `Protocol`/`LocalAddress`/`LocalPort`/`RemoteAddress`/`RemotePort`, and `Link`, `SocketAddress`, `NetNS`, `NetNSKnown` and `Coverage` are added. | Owner choice (Q2) |
 | SS-O2 | Families whose destructor is not in SS1 (for example vsock, Bluetooth, SCTP or MPTCP sockets) are found only through a file, so a closed one is not found. | A spec revision per family |
-| SS-O3 | A freed sock whose slab object was reused keeps a destructor word until overwritten; the family and type rules reject some, and the link says **no socket** or **socket points elsewhere**, but a stale sock can still look whole. The slab state of the object is not read. | A spec revision reading slab freelists |
+| SS-O3 | A freed sock whose slab object was reused keeps a destructor word until overwritten; the family and type rules reject some, and the link says **no socket** or **socket points elsewhere**, but a stale sock can still look whole. The slab state of the object is not read. | A spec revision reading slab freelists. Done in part (owner decision 2026-11-16): a count of 0 marks the row released (SS7, SSM2). Remains: a sock whose object was freed with a non-zero count, or reused; the slab state is still not read. |
 | SS-O4 | The mem3 rejected words (one per destructor) were not traced to their holder. | An experiment that names the page holding them |
 
 ### Mounts and open files
@@ -1360,7 +1366,7 @@ The owner answered every point above. Where a point and this table differ, this 
 | NH-O3 | Defer to v0.2.0 |
 | SS-O1 | Keep every sock with link |
 | SS-O2 | Defer to v0.2.0 |
-| SS-O3 | Defer to v0.2.0 |
+| SS-O3 | Defer to v0.2.0 (2026-11-12); mark socks with a reference count of 0 (2026-11-16) |
 | SS-O4 | Defer to v0.2.0 |
 | MT-O1 | Keep S39 names |
 | MT-O2 | Mounts option column |

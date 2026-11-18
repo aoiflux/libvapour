@@ -1,7 +1,7 @@
 file: layers/codeview.go
 replaces: [layers/kernel_base.go]
 spec: S53-address-translation-layers
-spec_sha256: bb4b32945e466187b294daeacb0c8cc440ad934c2e509650ded62f71e927f13b
+spec_sha256: a04fa5f71c6dc3b4703d948e8e6fc2ad1c1396ee8b727970cc0735dc0cea7509
 sources:
   - title: "Microsoft Learn, PE Format: MS-DOS stub, COFF file header, optional header data directories, Debug Directory (Image Only), Debug Type"
     url: https://learn.microsoft.com/windows/win32/debug/pe-format

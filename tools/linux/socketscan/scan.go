@@ -49,6 +49,8 @@ type Socket struct {
 	Found         FoundBy
 	Link          Link
 	SocketAddress uint64
+	RefCount      uint32
+	RefCountRead  bool
 	socketlist.Decoded
 }
 
@@ -146,11 +148,15 @@ type scan struct {
 	width   uint64
 
 	destructAt, socketAt, fileOpAt, commonAt uint64
+	refAt                                    uint64
+	refHolder                                string
 
 	found     map[uint64]*candidate
 	fileMiss  map[string]int
 	decodeErr int
 	firstErr  string
+	refMiss   int
+	refFirst  string
 }
 
 func newScan(ctx tools.Context, k *linuxobj.Kernel, phys memory.MemoryReader) (*scan, error) {
@@ -170,6 +176,11 @@ func newScan(ctx tools.Context, k *linuxobj.Kernel, phys memory.MemoryReader) (*
 			return nil, fmt.Errorf("%s.%s: %w", m.typ, m.member, err)
 		}
 		*m.to = f.Offset
+	}
+	if at, holder, err := refCounter(k); err == nil {
+		s.refAt, s.refHolder = at, holder
+	} else {
+		ctx.AddDiagnostic("%s: %v, so no reference count is read", Name, err)
 	}
 	var missing []string
 	for _, d := range destructors {
@@ -367,10 +378,44 @@ func (s *scan) rows() []Socket {
 			s.decodeErr++
 			continue
 		}
-		out = append(out, Socket{SockPhysical: b, Found: c.found, Link: c.link, SocketAddress: c.socket, Decoded: d})
+		row := Socket{SockPhysical: b, Found: c.found, Link: c.link, SocketAddress: c.socket, Decoded: d}
+		row.RefCount, row.RefCountRead = s.refCount(b)
+		out = append(out, row)
 	}
 	slices.SortStableFunc(out, func(a, b Socket) int { return cmp.Compare(a.SockPhysical, b.SockPhysical) })
 	return out
+}
+
+// S62 SS7: sock_put frees a sock when sk_refcnt leaves none, so a count of 0
+// tells a released sock from a live one even when its words still look whole.
+func refCounter(k *linuxobj.Kernel) (uint64, string, error) {
+	ref, err := k.Member("sock_common", "skc_refcnt")
+	if err != nil {
+		return 0, "", fmt.Errorf("sock_common.skc_refcnt: %w", err)
+	}
+	refs, err := k.Member(ref.Type.Name, "refs")
+	if err != nil {
+		return 0, "", fmt.Errorf("%s.refs: %w", ref.Type.Name, err)
+	}
+	if _, err := k.Member(refs.Type.Name, "counter"); err != nil {
+		return 0, "", fmt.Errorf("%s.counter: %w", refs.Type.Name, err)
+	}
+	return ref.Offset + refs.Offset, refs.Type.Name, nil
+}
+
+func (s *scan) refCount(base uint64) (uint32, bool) {
+	if s.refHolder == "" {
+		return 0, false
+	}
+	v, err := s.k.Uint(s.phys, base+s.commonAt+s.refAt, s.refHolder, "counter")
+	if err != nil {
+		if s.refMiss == 0 {
+			s.refFirst = fmt.Sprintf("sock at physical %#x: %v", base, err)
+		}
+		s.refMiss++
+		return 0, false
+	}
+	return uint32(v), true
 }
 
 func (s *scan) report() {
@@ -386,6 +431,9 @@ func (s *scan) report() {
 	}
 	if s.decodeErr > 0 {
 		s.ctx.AddDiagnostic("%s: %d socks do not decode; first: %s", Name, s.decodeErr, s.firstErr)
+	}
+	if s.refMiss > 0 {
+		s.ctx.AddDiagnostic("%s: %d reference counts do not read; first: %s", Name, s.refMiss, s.refFirst)
 	}
 	s.dec.Report(s.ctx.AddDiagnostic, Name)
 }

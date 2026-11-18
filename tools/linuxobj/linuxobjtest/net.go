@@ -98,6 +98,7 @@ const (
 	SkcFamily     = 0x10
 	SkcState      = 0x12
 	SkcV6Daddr    = 0x38
+	SkcRefcnt     = 0x80
 	SockSize      = 0xb0
 	SkProtocol    = 0x9a
 	SkType        = 0x98
@@ -245,8 +246,12 @@ func AddNetTypes(k *Kernel) *Net {
 		f("skc_daddr", SkcDaddr, u32), f("skc_rcv_saddr", SkcRcvSaddr, u32),
 		f("skc_portpair", SkcPortpair, u32), f("skc_dport", SkcPortpair, u16), f("skc_num", SkcPortpair+2, u16),
 		f("skc_family", SkcFamily, u16), f("skc_state", SkcState, u8),
-		f("skc_v6_daddr", SkcV6Daddr, scalar("in6_addr")),
+		f("skc_v6_daddr", SkcV6Daddr, scalar("in6_addr")), f("skc_refcnt", SkcRefcnt, scalar("refcount_struct")),
 	}})
+	t.AddStruct(symbols.StructType{Name: "refcount_struct", Size: 4, Fields: []symbols.Field{f("refs", 0, scalar("atomic_t"))}})
+	if _, err := t.Struct("atomic_t"); err != nil {
+		t.AddStruct(symbols.StructType{Name: "atomic_t", Size: 4, Fields: []symbols.Field{f("counter", 0, scalar("int"))}})
+	}
 	t.AddStruct(symbols.StructType{Name: "sock", Size: SockSize, Fields: []symbols.Field{
 		f("__sk_common", 0, scalar("sock_common")), f("sk_filter", SkFilter, ptr("sk_filter")),
 		f("sk_socket", SkSocket, ptr("socket")), f("sk_type", SkType, u16), f("sk_protocol", SkProtocol, u16),
@@ -488,6 +493,7 @@ type Sock struct {
 	State       uint8
 	SocketState uint32
 	Ino         uint64
+	RefCount    uint32
 }
 
 // AddSock lays out a sock of s.Size bytes (SockSize when 0), its
@@ -506,6 +512,7 @@ func (n *Net) AddSock(s Sock) (sock, file uint64) {
 	k.Mem.U64(alloc+NetSocketAllocInode+NetInodeIno, s.Ino)
 	k.Mem.u16(sock+SkcFamily, s.Family)
 	k.Mem.Write(sock+SkcState, []byte{s.State})
+	k.Mem.U32(sock+SkcRefcnt, s.RefCount)
 	k.Mem.u16(sock+SkProtocol, s.Protocol)
 	k.Mem.u16(sock+SkType, s.Type)
 	k.Mem.U64(sock+SkSocket, alloc)

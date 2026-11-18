@@ -72,6 +72,9 @@ func TestAWindowsSessionWithItsOwnTableFindsRootAndBase(t *testing.T) {
 	if ctx.PagingMode() != layers.ModeX64.Name() {
 		t.Errorf("paging mode %q", ctx.PagingMode())
 	}
+	if !hasNote(s.Diagnostics(), "14393 layout", "_MMPTE_SOFTWARE") {
+		t.Errorf("a table without _MMPTE_SOFTWARE left no note: %q", s.Diagnostics())
+	}
 	if ctx.PhysicalMemory() == nil || ctx.LoadPDB == nil || ctx.ProcessMemory == nil {
 		t.Error("context lacks a physical reader, PDB loader or process spaces")
 	}
@@ -221,6 +224,7 @@ func TestPagefilesAreReadOnlyInTheLayoutTheyAreDecodedIn(t *testing.T) {
 		t.Error("a pagefile that does not open was ignored")
 	}
 
+	k.setEntry(pagedOutVA+0x1000, 2<<32|1<<12)
 	s, err = openWithTable(t, k, winDeclaration(&build, pte19045, false),
 		OpenConfig{PagefilePaths: []string{filepath.Join(t.TempDir(), "absent.sys")}})
 	if err != nil {
@@ -229,7 +233,11 @@ func TestPagefilesAreReadOnlyInTheLayoutTheyAreDecodedIn(t *testing.T) {
 	if _, err := s.Context().Memory.ReadAt(pagedOutVA, 9); !errors.Is(err, layers.ErrPageInPagefile) {
 		t.Errorf("read through a refused layout: %v", err)
 	}
-	if !hasNote(s.Diagnostics(), "pagefiles not read", "PageFileLow") {
+	var miss layers.UnmappedPageError
+	if _, err := s.Context().Memory.ReadAt(pagedOutVA+0x1000, 9); !errors.As(err, &miss) || miss.PageFileNumber != 1 {
+		t.Errorf("pagefile number read past the table's PageFileLow: %v (%+v)", err, miss)
+	}
+	if !hasNote(s.Diagnostics(), "pagefiles not read", "SwizzleBit") {
 		t.Errorf("notes %q", s.Diagnostics())
 	}
 }

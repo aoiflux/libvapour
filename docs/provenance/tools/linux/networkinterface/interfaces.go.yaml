@@ -1,7 +1,7 @@
 file: tools/linux/networkinterface/interfaces.go
 replaces: [tools/linux/networkinterface/ip.go (old)]
 spec: S62-linux-kernel-network-file-tools
-spec_sha256: b33116d5dbcb69442ab7d72c8f1b37067e6f5bdd691cea71c49a3d7c847fdb03
+spec_sha256: 53cf75b1b3995f8c348ca556f73a8924983575cbc95fc312ba3e22ce10ab4349
 sources:
   - title: "Project specification S40 (Linux network namespaces, devices and interface addresses)"
     path: docs/specs/S40-linux-network-objects.md

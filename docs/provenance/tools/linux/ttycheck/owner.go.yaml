@@ -1,7 +1,7 @@
 file: tools/linux/ttycheck/owner.go
 replaces: []
 spec: S62-linux-kernel-network-file-tools
-spec_sha256: b33116d5dbcb69442ab7d72c8f1b37067e6f5bdd691cea71c49a3d7c847fdb03
+spec_sha256: 53cf75b1b3995f8c348ca556f73a8924983575cbc95fc312ba3e22ce10ab4349
 sources:
   - title: "Project specification S06 (Linux module model), owner lookup"
     path: docs/specs/S06-linux-module-model.md

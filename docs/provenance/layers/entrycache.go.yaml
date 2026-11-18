@@ -1,7 +1,7 @@
 file: layers/entrycache.go
 replaces: [layers/pte_cache.go]
 spec: S53-address-translation-layers
-spec_sha256: bb4b32945e466187b294daeacb0c8cc440ad934c2e509650ded62f71e927f13b
+spec_sha256: a04fa5f71c6dc3b4703d948e8e6fc2ad1c1396ee8b727970cc0735dc0cea7509
 sources:
   - title: "Project measurement: pagetablefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
     path: pagetablefacts

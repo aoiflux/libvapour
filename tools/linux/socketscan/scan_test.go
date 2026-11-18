@@ -86,7 +86,7 @@ func newFixture() *fixture {
 
 func (f *fixture) sock(family, typ uint16, destructor string, withFile bool) (sock, socket uint64) {
 	m := f.k.Mem
-	sock, file := f.n.AddSock(lt.Sock{Size: lt.ChildSockSize, Family: family, Type: typ, State: 7, Ino: 9})
+	sock, file := f.n.AddSock(lt.Sock{Size: lt.ChildSockSize, Family: family, Type: typ, State: 7, Ino: 9, RefCount: 1})
 	socket = f.read(sock + lt.SkSocket)
 	m.U64(socket+socketFile, file)
 	m.U64(file+filePriv, socket)
@@ -163,6 +163,76 @@ func TestRunFindsSocksTheTwoWaysAndSaysHowTheyLink(t *testing.T) {
 		if !strings.Contains(joined, w) {
 			t.Errorf("diagnostics lack %q: %q", w, *diags)
 		}
+	}
+}
+
+type holed struct {
+	physical
+	hole uint64
+}
+
+func (h holed) ReadAt(off, size uint64) ([]byte, error) {
+	if off == h.hole {
+		return nil, memory.ErrUnmapped
+	}
+	return h.physical.ReadAt(off, size)
+}
+
+func TestEachRowCarriesItsSocksReferenceCount(t *testing.T) {
+	f := newFixture()
+	live, _ := f.sock(1, 1, "unix_sock_destructor", true)
+	f.k.Mem.U32(live+lt.SkcRefcnt, 3)
+	released, _ := f.sock(2, 1, "inet_sock_destruct", false)
+	f.k.Mem.U64(released+lt.SkSocket, 0)
+	f.k.Mem.U32(released+lt.SkcRefcnt, 0)
+	unread, _ := f.sock(10, 2, "udpv6_destruct_sock", false)
+	options := f.context(nil)
+	options["physical_memory"] = holed{physical{f.k.Mem}, unread - directMap + lt.SkcRefcnt}
+	ctx, diags := f.k.Context(options)
+	ctx.Memory = kernelSpace{f.k.Mem}
+	rows, err := Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	type count struct {
+		at   uint64
+		refs uint32
+		read bool
+	}
+	var have []count
+	for _, r := range rows {
+		have = append(have, count{r.SockPhysical, r.RefCount, r.RefCountRead})
+	}
+	want := []count{{live - directMap, 3, true}, {released - directMap, 0, true}, {unread - directMap, 0, false}}
+	if !slices.Equal(have, want) {
+		t.Errorf("got %+v, want %+v; diagnostics %q", have, want, *diags)
+	}
+	if !strings.Contains(strings.Join(*diags, "\n"), "1 reference counts do not read") {
+		t.Errorf("diagnostics %q", *diags)
+	}
+}
+
+func TestATableWithoutTheReferenceCountStillListsItsSocks(t *testing.T) {
+	f := newFixture()
+	sock, _ := f.sock(1, 1, "unix_sock_destructor", true)
+	common, err := f.k.Table.Struct("sock_common")
+	if err != nil {
+		t.Fatal(err)
+	}
+	common.Fields = slices.DeleteFunc(slices.Clone(common.Fields), func(m symbols.Field) bool { return m.Name == "skc_refcnt" })
+	f.k.Table.AddStruct(common)
+	ctx, diags := f.k.Context(f.context(nil))
+	ctx.Memory = kernelSpace{f.k.Mem}
+	rows, err := Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(rows) != 1 || rows[0].SockPhysical != sock-directMap || rows[0].RefCountRead {
+		t.Errorf("rows %+v", rows)
+	}
+	joined := strings.Join(*diags, "\n")
+	if !strings.Contains(joined, "sock_common.skc_refcnt") || !strings.Contains(joined, "no reference count is read") {
+		t.Errorf("diagnostics %q", *diags)
 	}
 }
 

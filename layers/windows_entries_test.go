@@ -1,9 +1,11 @@
 package layers
 
 import (
+	"encoding/binary"
 	"errors"
 	"testing"
 
+	"github.com/aoiflux/libvapour/memory"
 	"github.com/aoiflux/libvapour/symbols"
 )
 
@@ -23,14 +25,15 @@ func softwareTable(low, high [2]uint8, members ...string) *symbols.Table {
 func TestThePagefileLayoutIsCheckedAgainstTheKernelsTypes(t *testing.T) {
 	old := [2]uint8{1, 4}
 	high := [2]uint8{32, 32}
-	if err := CheckPagefilePTELayout(softwareTable(old, high)); err != nil {
-		t.Fatalf("the pre-17134 layout: %v", err)
+	for name, low := range map[string][2]uint8{"14393": old, "19045": {12, 4}} {
+		if err := CheckPagefilePTELayout(softwareTable(low, high)); err != nil {
+			t.Errorf("the %s layout without a swizzle member: %v", name, err)
+		}
 	}
 	for name, table := range map[string]*symbols.Table{
-		"PageFileLow at 15:12": softwareTable([2]uint8{12, 4}, high),
-		"PageFileHigh short":   softwareTable(old, [2]uint8{32, 28}),
-		"SwizzleBit":           softwareTable(old, high, "SwizzleBit"),
-		"no type":              symbols.NewTable("s53", 8),
+		"PageFileLow on Protection": softwareTable([2]uint8{5, 4}, high),
+		"SwizzleBit":                softwareTable(old, high, "SwizzleBit"),
+		"no type":                   symbols.NewTable("s53", 8),
 	} {
 		if err := CheckPagefilePTELayout(table); err == nil {
 			t.Errorf("%s: accepted", name)
@@ -43,6 +46,55 @@ func TestThePagefileLayoutIsCheckedAgainstTheKernelsTypes(t *testing.T) {
 	}
 	if err := CheckPagefilePTELayout(nil); err == nil {
 		t.Error("no table: accepted")
+	}
+}
+
+func TestThePagefileFieldsAreReadAtTheBitsTheKernelDeclares(t *testing.T) {
+	high := [2]uint8{32, 32}
+	layout19045, err := ReadSoftwareLayout(softwareTable([2]uint8{12, 4}, high, "SwizzleBit"))
+	if err != nil {
+		t.Fatalf("the 19045 layout: %v", err)
+	}
+	layout14393, err := ReadSoftwareLayout(softwareTable([2]uint8{1, 4}, high))
+	if err != nil || layout14393 != DefaultSoftwareLayout {
+		t.Fatalf("the 14393 layout: %+v, %v", layout14393, err)
+	}
+	entry := uint64(0x0000001200000000) | 5<<12 | 3<<1 | 4<<5
+	for _, c := range []struct {
+		name   string
+		layout SoftwareLayout
+		file   int
+	}{{"19045", layout19045, 5}, {"14393", layout14393, 3}} {
+		img := newPhys(0x100000)
+		pt := newTables(img, ModeX64.WithSoftwareLayout(c.layout), 0x1000, 0x2000)
+		pt.set(3, kva, entry)
+		pagefile := newPhys(0x13000)
+		pagefile.put8(0x12008, 0x1122334455667788)
+		v := NewVirtualMemoryLayer(img, pt.translator())
+		v.SetPagefiles(map[int]memory.MemoryReader{c.file: pagefile})
+		b, err := v.ReadAt(kva+8, 8)
+		if err != nil || binary.LittleEndian.Uint64(b) != 0x1122334455667788 {
+			t.Errorf("%s: page read from pagefile %d at 0x12000: %x, %v", c.name, c.file, b, err)
+		}
+		_, err = c.layout.ResolveProtoPTE(entry, kva)
+		if miss, ok := missOf(err); !ok || miss.Kind != PageInPagefile || miss.PageFileNumber != c.file {
+			t.Errorf("%s prototype target: %v (%+v), want file %d", c.name, err, miss, c.file)
+		}
+	}
+	for name, table := range map[string]*symbols.Table{
+		"PageFileLow on Valid":     softwareTable([2]uint8{0, 4}, high),
+		"PageFileLow on Prototype": softwareTable([2]uint8{10, 1}, high),
+		"PageFileHigh past bit 63": softwareTable([2]uint8{12, 4}, [2]uint8{32, 33}),
+		"PageFileHigh on Low":      softwareTable([2]uint8{12, 4}, [2]uint8{14, 50}),
+		"PageFileLow of zero bits": softwareTable([2]uint8{12, 0}, high),
+		"no _MMPTE_SOFTWARE":       symbols.NewTable("s53", 8),
+	} {
+		if l, err := ReadSoftwareLayout(table); err == nil {
+			t.Errorf("%s: read as %+v", name, l)
+		}
+	}
+	if _, err := ReadSoftwareLayout(nil); err == nil {
+		t.Error("no table: read")
 	}
 }
 

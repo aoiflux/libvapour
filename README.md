@@ -401,7 +401,7 @@ themselves.
 | `linux.network.list_addresses`  | Linux    | The IPv4 and IPv6 addresses of every device, with prefix length and the kernel's route scope.                                                                                                                                      |
 | `linux.network.list_interfaces` | Linux    | Every network device in every namespace, with the flags, state, hardware address and queueing discipline the kernel reports.                                                                                                       |
 | `linux.socket.list`             | Linux    | Open sockets per process, followed from descriptor to socket to sock and checked both ways, with namespace, inode and socket filter. Decodes AF_INET, AF_INET6, AF_UNIX, AF_NETLINK, AF_PACKET, AF_XDP, AF_VSOCK and AF_BLUETOOTH. |
-| `linux.socket.scan`             | Linux    | Socks in physical memory, live or freed, found by destructor and by file, with whether their socket points back.                                                                                                                   |
+| `linux.socket.scan`             | Linux    | Socks in physical memory, live or freed, found by destructor and by file, with whether their socket points back and their reference count (0: released).                                                                           |
 
 </details>
 

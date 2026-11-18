@@ -1,7 +1,7 @@
 file: windows_kernel.go
 replaces: [kernel_identity.go]
 spec: S76-root-session
-spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+spec_sha256: c7850a10b526db88ed0648ba1d76d258ceb1119d1959234d3b5bf05bb725e074
 sources:
   - title: "Microsoft Learn, PE Format (MS-DOS stub, COFF header, optional header data directories, debug directory)"
     url: https://learn.microsoft.com/windows/win32/debug/pe-format

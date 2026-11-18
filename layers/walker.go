@@ -50,7 +50,7 @@ func (t *IntelTranslator) walk(va uint64, path *[]uint64) walkEnd {
 		case stepPage:
 			return walkEnd{physical: s.addr | va&(s.size-1), entry: e, atLeaf: true}
 		case stepSoftware:
-			return walkEnd{entry: e, atLeaf: true, err: softwareFault(e, va)}
+			return walkEnd{entry: e, atLeaf: true, err: m.software.fault(e, va)}
 		}
 		miss := UnmappedPageError{VirtualAddress: va, Kind: PageInvalid}
 		if !last {

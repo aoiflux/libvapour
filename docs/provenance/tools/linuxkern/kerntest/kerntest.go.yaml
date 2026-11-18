@@ -1,7 +1,7 @@
 file: tools/linuxkern/kerntest/kerntest.go
 replaces: [tools/linuxkern/kerntest/kerntest.go (old)]
 spec: S80-linux-test-fixtures
-spec_sha256: c953530aa6dc9bb0fb95b8dab334df253cb938520e7f28b35e554ca496a6b123
+spec_sha256: c792142ae2f5c8ed5a95191c83245be681bfa3617b0519aa347cb8801ab3822f
 sources:
   - title: "Linux kernel source, arch/x86/include/asm/page_64_types.h, arch/x86/include/asm/pgtable_64_types.h at v4.19, v6.17"
     url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/

@@ -1,7 +1,7 @@
 file: windows_session.go
 replaces: [session.go (OpenWindowsMemory), kernel_identity.go (kernelBaseMethods)]
 spec: S76-root-session
-spec_sha256: 095960d522d442d96ab22c384b89cbb30968673cf4ce9233feaa8da5e8779076
+spec_sha256: c7850a10b526db88ed0648ba1d76d258ceb1119d1959234d3b5bf05bb725e074
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), paging chapter: CR0/CR4/EFER paging-mode controls, CR3 format, 4-level entry formats"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
@@ -24,6 +24,8 @@ decisions:
     justification: "S76 4.2 step 4, F1, M4"
   - rule: "Pagefiles opened only when CheckPagefilePTELayout accepts the table"
     justification: "S76 4.2 step 5, S53 4.3"
+  - rule: "A 64-bit table's _MMPTE_SOFTWARE gives the pagefile fields of not-present entries; without it the 14393 layout and a diagnostic"
+    justification: "S53 4.3, O3; owner decision 2026-11-16"
   - rule: "Base candidates cheapest first: identification base, list Blink, process list, image scan, debugger data block scan"
     justification: "S76 4.3, S53 9.2"
   - rule: "tcpip layout merged as extra types when one is measured for the build"

@@ -1,7 +1,7 @@
 file: layers/modes.go
 replaces: [layers/paging_mode.go, layers/doc.go]
 spec: S53-address-translation-layers
-spec_sha256: bb4b32945e466187b294daeacb0c8cc440ad934c2e509650ded62f71e927f13b
+spec_sha256: a04fa5f71c6dc3b4703d948e8e6fc2ad1c1396ee8b727970cc0735dc0cea7509
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging: 5.3, 5.4, 5.5, 5.7, 5.10.3.3, Tables 5-4 to 5-20"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
@@ -18,6 +18,8 @@ sources:
 decisions:
   - rule: "Four presets: x64 and la57 with 8-byte entries and frame field 51:12, PAE with a 31:5 root, 32-bit with PSE-36"
     justification: "S53 4.1, P1, P4, P5, A5, W1, W2, M3"
+  - rule: "The 64-bit presets carry the 14393 pagefile layout until a kernel's table gives another"
+    justification: "S53 4.3, W3"
   - rule: "The zero mode is 4-level paging"
     justification: "S53 4.1"
   - rule: "LinuxMode reads present entries only; frame field below MAX_PHYSMEM_BITS less the SME bit"

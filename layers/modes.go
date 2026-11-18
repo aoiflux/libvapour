@@ -22,6 +22,7 @@ type PagingMode struct {
 	// The x64 presets give a not-present entry the meanings of the Windows
 	// _MMPTE union; LinuxMode and the 32-bit presets give it none.
 	windowsEntries bool
+	software       SoftwareLayout
 }
 
 var (
@@ -32,6 +33,7 @@ var (
 		rootMask:       bitRange(51, 12),
 		frameMask:      bitRange(51, 12),
 		windowsEntries: true,
+		software:       DefaultSoftwareLayout,
 	}
 	ModeLA57 = PagingMode{
 		name:           "la57",
@@ -40,6 +42,7 @@ var (
 		rootMask:       bitRange(51, 12),
 		frameMask:      bitRange(51, 12),
 		windowsEntries: true,
+		software:       DefaultSoftwareLayout,
 	}
 	ModeX86PAE = PagingMode{
 		name:       "x86pae",
@@ -59,6 +62,11 @@ var (
 )
 
 func (m PagingMode) Name() string { return m.name }
+
+func (m PagingMode) WithSoftwareLayout(l SoftwareLayout) PagingMode {
+	m.software = l
+	return m
+}
 
 func PagingModeByName(name string) (PagingMode, bool) {
 	for _, m := range []PagingMode{ModeX64, ModeLA57, ModeX86PAE, ModeX86NonPAE} {

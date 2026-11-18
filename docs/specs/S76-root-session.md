@@ -38,7 +38,7 @@ This specification covers package `libvapour` (the repository root): `OpenWindow
 | F7 | `KUSER_SHARED_DATA` carries `NtBuildNumber`, `NtMajorVersion`, `NtMinorVersion` at 0x260, 0x26C, 0x270; the kernel's own `NtBuildNumber` carries the build in its low 28 bits and a decoration in its top 4. | S03 B3, B4, 4.7 steps 2 to 4, O1 |
 | F8 | tcpip layouts are measured for builds 14393, 19041 to 19045 and 26100; `LayoutForBuild` refuses every other build. | S28 section 3, S67 4.1 |
 | F9 | Of the four Windows base methods, the list head and the process list take under 20 ms; the image scan found the base on all five captures in 0.5 to 2.6 s; the debugger data block scan found it on two of five in 1.5 to 7.8 s. | S53 9.2 |
-| F10 | A paged-out entry is decoded in the pre-17134 layout only; `CheckPagefilePTELayout` accepts a table only in that layout. | S53 4.3 |
+| F10 | A paged-out entry's pagefile number and offset are read at the bits the table's `_MMPTE_SOFTWARE` declares (`ReadSoftwareLayout`); `CheckPagefilePTELayout` refuses a table that declares a swizzle member. | S53 4.3, O3 |
 | F11 | Only the Linux kernel image window [0xFFFFFFFF80000000, 0xFFFFFFFFC0000000) moves with the KASLR shift; `SYMBOL()` values outside it are stored pointers. A table built from the image is in link-time space. | S75 L10, 4.10 steps 3 to 5; Linux `arch/x86/include/asm/page_64_types.h` at v4.19, v6.1, v6.4, v6.14, v6.17 (through S75) |
 | F12 | The Linux root is `SYMBOL(swapper_pg_dir)` − 0xFFFFFFFF80000000 + `NUMBER(phys_base)`. | S05 4.4 step 6 |
 | F13 | The kernel layer's user half belongs to whichever task was current when the capture was taken, so per-process reads need that process's own root. | S70 F10 |
@@ -84,7 +84,7 @@ M3 shows the scan is the costly step of a Windows open whenever it runs (up to 6
 3. Root: the identity's root when it has one (crash dump header or start page, F6, M3), else the System process scan (S53 4.8). CR3 flag bits are dropped (F2). A non-zero `KernelCR3` whose frame differs refuses the open. The root and its source are noted.
 4. Paging mode: S04 on the root with the table's pointer width; undecided is read as 4-level (M4) with a note giving S04's evidence.
 5. Pagefiles, when any path is non-empty: refused with a note when `CheckPagefilePTELayout` refuses the table (F10); else each non-empty path is opened as the pagefile of its index, and one that does not open fails the session.
-6. Address spaces: one translator per root in the kernel's mode (F1), with the entry cache when the capture is immutable (F14) and the pagefiles when accepted. The kernel space is the one for the root.
+6. Address spaces: one translator per root in the kernel's mode (F1), with a 64-bit table's pagefile layout (F10; the 14393 layout and a note when the table does not give it), with the entry cache when the capture is immutable (F14) and the pagefiles when accepted. The kernel space is the one for the root.
 
 ### 4.3 Windows: kernel base
 

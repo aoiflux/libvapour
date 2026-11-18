@@ -1,7 +1,7 @@
 file: layers/framemap.go
 replaces: [layers/frames.go]
 spec: S53-address-translation-layers
-spec_sha256: bb4b32945e466187b294daeacb0c8cc440ad934c2e509650ded62f71e927f13b
+spec_sha256: a04fa5f71c6dc3b4703d948e8e6fc2ad1c1396ee8b727970cc0735dc0cea7509
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), chapter 5 Paging: 5.3, 5.4, 5.5, 5.7, 5.10.3.3, Tables 5-4 to 5-20"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

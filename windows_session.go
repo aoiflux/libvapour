@@ -30,7 +30,7 @@ func OpenWindowsMemory(imagePath string, cfg OpenConfig) (*Session, error) {
 	if err != nil {
 		return o.fail(err)
 	}
-	mode := o.windowsPagingMode(root, table)
+	mode := o.windowsSoftwareLayout(o.windowsPagingMode(root, table), table)
 	pagefiles, err := o.windowsPagefiles(table)
 	if err != nil {
 		return o.fail(err)
@@ -165,9 +165,23 @@ func (o *opening) windowsPagingMode(root uint64, table symbols.SymbolTable) laye
 	return decision.Mode
 }
 
-// A paged-out entry is decoded in one layout only (S53 4.3); on a kernel
-// using another, reading the pagefile would return the wrong page, so the
-// files stay closed and such pages stay unread.
+// Only the 64-bit presets give not-present entries Windows meanings (S53
+// 4.3), so a 32-bit table is not asked for their layout.
+func (o *opening) windowsSoftwareLayout(mode layers.PagingMode, table symbols.SymbolTable) layers.PagingMode {
+	if table == nil || table.PointerSize() != 8 {
+		return mode
+	}
+	layout, err := layers.ReadSoftwareLayout(table)
+	if err != nil {
+		o.note("libvapour: pagefile fields of not-present entries decoded in the 14393 layout: %v", err)
+		return mode.WithSoftwareLayout(layers.DefaultSoftwareLayout)
+	}
+	return mode.WithSoftwareLayout(layout)
+}
+
+// No public source states how a swizzled entry is decoded (S53 4.3, O3); a
+// pagefile read through one could return another page, so the files stay
+// closed and such pages stay unread.
 func (o *opening) windowsPagefiles(table symbols.SymbolTable) (map[int]memory.MemoryReader, error) {
 	if !slices.ContainsFunc(o.cfg.PagefilePaths, func(p string) bool { return p != "" }) {
 		return nil, nil
