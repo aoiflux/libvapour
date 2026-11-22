@@ -257,10 +257,10 @@ func TestTheListRefusesWhatItCannotRead(t *testing.T) {
 	}
 	ctx = w.ctx(nil)
 	ctx.Symbols = symbols.NewTable("kernel", 8)
-	if _, err := RunNetworkList(ctx); !errors.Is(err, ErrLayout) {
+	if _, err := RunNetworkList(ctx); !errors.Is(err, ErrUnmeasuredBuild) {
 		t.Errorf("no layout: %v", err)
 	}
-	if _, err := Run(ctx); !errors.Is(err, ErrLayout) {
+	if _, err := Run(ctx); !errors.Is(err, ErrUnmeasuredBuild) {
 		t.Errorf("scan without layout: %v", err)
 	}
 	old, err := LayoutForBuild(14393)
@@ -287,5 +287,43 @@ func TestEndpointIPsAreValidOnEveryListedRow(t *testing.T) {
 		if !e.LocalIP.IsValid() || e.Kind == KindConnection && !e.RemoteIP.IsValid() || e.Kind != KindConnection && e.RemoteIP != (netip.Addr{}) {
 			t.Errorf("addresses of %+v", e)
 		}
+	}
+}
+
+func kernelWithBuild(w *world, build uint32) *symbols.Table {
+	t := symbols.NewTable("kernel", 8)
+	t.AddStruct(symbols.StructType{Name: "_KUSER_SHARED_DATA", Size: 0x720, Fields: []symbols.Field{
+		{Name: "NtBuildNumber", Offset: 0x260, Type: ref32},
+		{Name: "NtMajorVersion", Offset: 0x26c, Type: ref32},
+		{Name: "NtMinorVersion", Offset: 0x270, Type: ref32}}})
+	at := w.alloc(4)
+	w.k.u32(at, 0xf<<28|build)
+	t.AddSymbol(symbols.Symbol{Name: "NtBuildNumber", Address: at})
+	w.k.u32(fxSharedData+0x260, build)
+	w.k.u32(fxSharedData+0x26c, 10)
+	w.k.u32(fxSharedData+0x270, 0)
+	return t
+}
+
+func TestATableWithoutALayoutIsRefusedByItsBuild(t *testing.T) {
+	w := newWorld(t)
+	ctx := w.ctx(nil)
+	ctx.Symbols = kernelWithBuild(w, 22631)
+	want := "kernel build 22631; shared build 22631 (measured: 14393 scan only, 19041-19045, 26100)"
+	for name, run := range map[string]func(tools.Context) ([]Endpoint, error){NetworkListName: RunNetworkList, Name: Run} {
+		_, err := run(ctx)
+		if !errors.Is(err, ErrUnmeasuredBuild) || errors.Is(err, ErrLayout) || err == nil || !strings.Contains(err.Error(), want) {
+			t.Errorf("%s: %v, want %q", name, err, want)
+		}
+	}
+	ctx.Symbols = kernelWithBuild(w, 26100)
+	if _, err := Run(ctx); !errors.Is(err, ErrLayout) || errors.Is(err, ErrUnmeasuredBuild) {
+		t.Errorf("a measured build whose layout is not in the table: %v", err)
+	}
+	partial := symbols.NewTable("partial", 8)
+	partial.AddStruct(symbols.StructType{Name: typeTCPEndpoint, Size: 8})
+	ctx.Symbols = partial
+	if _, err := Run(ctx); !errors.Is(err, ErrLayout) || errors.Is(err, ErrUnmeasuredBuild) {
+		t.Errorf("a layout without its members: %v", err)
 	}
 }

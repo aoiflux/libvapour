@@ -59,13 +59,24 @@ func run(stdout, stderr io.Writer, image string, flags cli.Flags, f filters) err
 	if !ok {
 		return fmt.Errorf("%s: result is %T, not []processlist.Process", processlist.Name, result.Result)
 	}
-	printProcesses(stdout, processes)
+	printProcesses(stdout, processes, flags.Windows())
 	return nil
 }
 
-func printProcesses(w io.Writer, processes []processlist.Process) {
+// The column holds the kernel virtual address of the process object, so it
+// is named after that object on each system.
+const (
+	windowsObject = "EPROCESS"
+	linuxObject   = "task_struct"
+)
+
+func printProcesses(w io.Writer, processes []processlist.Process, windows bool) {
+	object := linuxObject
+	if windows {
+		object = windowsObject
+	}
 	tw := cli.NewTable(w)
-	fmt.Fprintln(tw, "PID\tPPID\tName\tObject\tCreated")
+	fmt.Fprintf(tw, "PID\tPPID\tName\t%s\tCreated\n", object)
 	for _, p := range processes {
 		ppid, created := cli.Decimal(p.PPID, p.PPIDUnreadable), cli.Time(p.CreateTime, p.CreateTimeUnreadable)
 		if p.Linux.Read {

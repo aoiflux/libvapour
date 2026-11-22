@@ -24,8 +24,11 @@ func TestAProcessRowSaysWhatDidNotRead(t *testing.T) {
 			CreateTime: time.Date(2026, 5, 26, 20, 0, 0, 0, time.UTC)}},
 		{PID: 900, Name: "x\x1b.exe", EPROCESS: 0xffffb000, Columns: processlist.Columns{
 			PPIDUnreadable: true, CreateTimeUnreadable: true}},
-	})
+	}, true)
 	lines := strings.Split(strings.TrimSpace(out.String()), "\n")
+	if f := strings.Fields(lines[0]); strings.Join(f, " ") != "PID PPID Name EPROCESS Created" {
+		t.Errorf("header %q", lines[0])
+	}
 	if f := strings.Fields(lines[1]); strings.Join(f, " ") != "4 0 System 0xffffa000 2026-05-26T20:00:00Z" {
 		t.Errorf("row %q", lines[1])
 	}
@@ -37,8 +40,11 @@ func TestAProcessRowSaysWhatDidNotRead(t *testing.T) {
 func TestALinuxRowTakesTheTasksOwnColumns(t *testing.T) {
 	var out strings.Builder
 	printProcesses(&out, []processlist.Process{{PID: 3, Name: "pool_workqueue_", EPROCESS: 0xffff8d00,
-		Linux: processlist.LinuxColumns{Read: true, PPID: 2, PPIDRead: true, CreationTime: time.Date(2026, 8, 22, 13, 0, 0, 0, time.UTC)}}})
+		Linux: processlist.LinuxColumns{Read: true, PPID: 2, PPIDRead: true, CreationTime: time.Date(2026, 8, 22, 13, 0, 0, 0, time.UTC)}}}, false)
 	lines := strings.Split(strings.TrimSpace(out.String()), "\n")
+	if f := strings.Fields(lines[0]); strings.Join(f, " ") != "PID PPID Name task_struct Created" {
+		t.Errorf("header %q", lines[0])
+	}
 	if f := strings.Fields(lines[1]); strings.Join(f, " ") != "3 2 pool_workqueue_ 0xffff8d00 2026-08-22T13:00:00Z" {
 		t.Errorf("row %q", lines[1])
 	}

@@ -107,7 +107,7 @@ Each program parses its flags, opens one session, prints its tables to standard 
 
 | Program | Steps |
 |---|---|
-| `processlist` | `AnalyzeMemory` with the one name `any.process.list`, so the tool runs by name; the result is asserted to `[]processlist.Process`. One row per process: PID, parent PID, name, object address, creation time. A Linux row takes PPID and creation time from its Linux columns. |
+| `processlist` | `AnalyzeMemory` with the one name `any.process.list`, so the tool runs by name; the result is asserted to `[]processlist.Process`. One row per process: PID, parent PID, name, the kernel virtual address of the process object (headed `EPROCESS` on Windows and `task_struct` on Linux), creation time. A Linux row takes PPID and creation time from its Linux columns. |
 | `processes` | `any.process.tree`, flattened in tree order, each row joined to `any.process.read_arguments` by object address (two processes can share a PID). Then the kernel's modules: `windows.module.list` or `linux.module.list`. With `-pid`, on a context narrowed to that PID: `windows.library.list` and `windows.thread.list`, or `linux.library.list`. |
 | `memory` | Requires `-pid`; refuses `-out` on Linux before opening the image. `any.memory.list` with the session's PID. With `-out` on Windows, `windows.process.dump` and `windows.memory.dump` into that directory. |
 | `registry` | Windows only, refused before opening the image otherwise. `windows.registry.read_key` with the hive, key and recurse options; rows grouped by hive address, one heading per hive. |
@@ -161,7 +161,7 @@ Tables are aligned columns (two spaces between), each under a heading line `== <
 
 | Program | Columns |
 |---|---|
-| `processlist` | PID, PPID, Name, Object, Created |
+| `processlist` | PID, PPID, Name, EPROCESS (`task_struct` with `-os linux`), Created |
 | `processes` | tree: PID, PPID, Name (indented by `. ` per level), Command line; modules: Base, Size, Name; DLLs: Base, Size, Loaded, Path; threads: TID, State, Created, Start, Start file; Linux libraries: Base, Route (`linker list` or `mapped image`, S61 4.10), Path |
 | `memory` | ranges: Start, End (inclusive), Protection, Type, File; minidump: File, Bytes, Modules, Threads, Regions, From image, Zero-filled, Not written because; range files: Start, End, File, Bytes, From image, Not written because |
 | `registry` | per hive `<path>, hive at 0x…`: Last written, Key, Name (indented by depth), Type, Data |
@@ -223,6 +223,10 @@ The owner answered every point above. Where a point and this table differ, this 
 | O5 | Schedule now |
 | O6 | Schedule now |
 | O7 | Keep reversible rule |
+
+### Owner decision, 2026-11-22
+
+A reviewer read `processlist`'s Object column as unclear. The column is now headed by the object it addresses, `EPROCESS` on Windows and `task_struct` on Linux (4.5, 7.4), with the kernel virtual address unchanged. This replaces O4's column name. The address naming across result types is a v0.2.0 step.
 
 ## 11. Provenance
 

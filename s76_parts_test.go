@@ -14,7 +14,6 @@ import (
 	"github.com/aoiflux/libvapour/memory"
 	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/symbols/autoload"
-	"github.com/aoiflux/libvapour/tools/winkernel"
 )
 
 func TestOneSpacePerRootFrame(t *testing.T) {
@@ -273,36 +272,6 @@ func TestBuildsCompareByGUIDAgeAndNameWhenBothHaveOne(t *testing.T) {
 	for path, want := range map[string]string{`d:\a\ntkrnlmp.pdb`: "ntkrnlmp.pdb", "a/b/hal.pdb": "hal.pdb", "x.pdb": "x.pdb"} {
 		if got := pdbBaseName(path); got != want {
 			t.Errorf("pdbBaseName(%q) = %q", path, got)
-		}
-	}
-}
-
-func layoutName(t *testing.T, b winkernel.Build) string {
-	t.Helper()
-	table, err := tcpipLayout(b)
-	if err != nil {
-		return "error: " + err.Error()
-	}
-	return table.Name()
-}
-
-func TestTheKernelBuildComesBeforeTheSharedCopy(t *testing.T) {
-	unread := errors.New("unread")
-	for _, c := range []struct {
-		name string
-		b    winkernel.Build
-		want string
-	}{
-		{"kernel", winkernel.Build{Kernel: 26100, Major: 10, Shared: 14393}, "tcpip-26100"},
-		{"kernel range", winkernel.Build{Kernel: 19044, VersionErr: unread, SharedErr: unread}, "tcpip-19041-19045"},
-		{"shared", winkernel.Build{KernelErr: unread, Major: 10, Shared: 14393}, "tcpip-14393"},
-		{"unmeasured kernel", winkernel.Build{Kernel: 22000, Major: 10, Shared: 26100}, "tcpip-26100"},
-		{"not nt 10.0", winkernel.Build{KernelErr: unread, Major: 6, Minor: 3, Shared: 26100}, "nt version 6.3"},
-		{"nothing", winkernel.Build{KernelErr: unread, VersionErr: unread}, "kernel build: unread; shared build: unread"},
-		{"unmeasured both", winkernel.Build{Kernel: 9600, Major: 10, Shared: 9600}, "shared build 9600"},
-	} {
-		if got := layoutName(t, c.b); !strings.Contains(got, c.want) {
-			t.Errorf("%s: %q, want %q", c.name, got, c.want)
 		}
 	}
 }

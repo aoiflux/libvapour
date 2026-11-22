@@ -102,7 +102,7 @@ Data (mem2, PID 3804), reading the console at K1 with the layout: S33's C1-C5 pa
 
 ### 4.1 tcpip layout (`tcpiplayouts.go`)
 
-1. One record per build range: 14393; 19041 to 19045; 26100. `LayoutForBuild(build)` returns the record's symbol table, other builds an error.
+1. One record per build range: 14393; 19041 to 19045; 26100. `LayoutForBuild(build)` returns the record's symbol table; any other build is refused with `ErrUnmeasuredBuild`, and the message names the build and the measured ranges, listed from the records (a record without walk members is "scan only"). `LayoutFor(build)` takes the S03 build reading and asks for the kernel build first, then the shared copy (S76 4.7); a refusal names every attempt.
 2. Each record lists, per member, the offset and the captures it was measured on (section 3). A member is in a record only when it has at least one capture.
 3. The table holds the types `tcpEndpoint`, `tcpListener`, `udpEndpoint`, `inetAF`, `addressInfo`, `localAddress` and, when the record has walk members, `partition`, `compartmentSet`, `compartment`, `protocolCompartment`, `portPool`, `portAssignment`, `portAssignmentList`, `portAssignmentEntry`. A struct's size is the end of its last member; `partition` and `portAssignmentEntry` are the measured strides (C1, C16).
 4. 26100 carries both owner offsets, 0x348 first (M6); the table names the first and S28 reads the rest from the record (`layoutNamed`).
@@ -126,13 +126,13 @@ Data (mem2, PID 3804), reading the console at K1 with the layout: S33's C1-C5 pa
 | An offset is kept only when the capture's code reads the member there and the data admits it | Section 3 method | The member stays out; a build missing a member S28 or S33 needs is refused |
 | An object starts after the pool header whose tag and block cover its link | D3 | The link is reported and not used |
 | A hash bucket entry's Blink names the entry before it | `_LIST_ENTRY` (S03), M4 | The bucket walk stops |
-| A build without a measured module is refused | Section 1 | `LayoutForBuild` error; `ErrUnsupportedVersion` |
+| A build without a measured module is refused | Section 1 | `ErrUnmeasuredBuild` (tcpip); `ErrUnsupportedVersion` (conhost) |
 
 ## 6. Failure modes
 
 | Case | Result |
 |---|---|
-| tcpip build outside the measured ranges | `no measured tcpip.sys layout for Windows build <n>` (S28 then reports its `ErrLayout`) |
+| tcpip build outside the measured ranges | `network: no measured tcpip.sys layout for this windows build: build <n> (measured: 14393 scan only, 19041-19045, 26100)` (`ErrUnmeasuredBuild`); S28 returns the same refusal from both tools |
 | conhost build 14393, 26100 or any other unmeasured | `consolelist: no measured conhost layout for this windows build` (`ErrUnsupportedVersion`) |
 | Measuring program: routine on an unread page or instruction not found | `code <member> …: MISSING in <routine>: <instruction>` |
 
@@ -146,7 +146,7 @@ None: the layouts are tables. The measuring programs bound a bucket walk at 4,09
 
 ## 9. Acceptance
 
-1. Tests: `tools/windows/network/s67_layout_test.go` (every offset of section 3 per build; strides; the two 26100 owners and the size covering the second; refusal of unmeasured builds; every build has the members every decode needs). `tools/windows/consolelist/s67_layout_test.go` (every member of section 3; history members inside the node; adjacent aligned settings; list sizes after heads; 14393, 17763, 22000, 22631 and 26100 refused). No parser is added, so no fuzz target is added; the S28 and S33 fuzz targets run on the new layouts.
+1. Tests: `tools/windows/network/s67_layout_test.go` (every offset of section 3 per build; strides; the two 26100 owners and the size covering the second; refusal of unmeasured builds, naming the build and the measured ranges; the kernel build asked before the shared copy; every build has the members every decode needs). `tools/windows/consolelist/s67_layout_test.go` (every member of section 3; history members inside the node; adjacent aligned settings; list sizes after heads; 14393, 17763, 22000, 22631 and 26100 refused). No parser is added, so no fuzz target is added; the S28 and S33 fuzz targets run on the new layouts.
 2. Gate, `-gate` before and after the change, 2026-11-12, rows identical on every capture:
 
 | Capture | `network.list` | `network.scan` | `network.scan` include_corrupt | `console.list` | `console.scan_history` |

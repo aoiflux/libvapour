@@ -12,10 +12,13 @@ import (
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/any/processlist"
 	"github.com/aoiflux/libvapour/tools/windows/pesymbols"
+	"github.com/aoiflux/libvapour/tools/winkernel"
 	"github.com/aoiflux/libvapour/util"
 )
 
 const pointerBytes = 8
+
+const buildReader = "network"
 
 type connectionMembers struct {
 	size                                                          uint64
@@ -100,8 +103,15 @@ func (m *memberReader) field(typ, member string) symbols.Field {
 
 // The session merges the measured layout into the kernel table; a layout for
 // another build would decode plausible rows from the wrong places, so a
-// missing member stops the tool.
+// missing member stops the tool. A table with no layout at all is reported by
+// the build that has none, not by the first member it lacks.
 func resolveLayout(ctx tools.Context) (*objectLayout, error) {
+	if _, err := ctx.Symbols.Struct(typeTCPEndpoint); err != nil {
+		if _, refused := LayoutFor(winkernel.ReadBuild(buildReader, ctx.Memory, ctx.Symbols)); refused != nil {
+			return nil, refused
+		}
+		return nil, fmt.Errorf("%s: %w: %w", typeTCPEndpoint, ErrLayout, err)
+	}
 	m := &memberReader{t: ctx.Symbols}
 	l := &objectLayout{name: ctx.NetworkScanLayout()}
 	c := &l.connection

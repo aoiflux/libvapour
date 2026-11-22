@@ -12,6 +12,7 @@ import (
 	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/symbols/autoload"
 	"github.com/aoiflux/libvapour/tools"
+	"github.com/aoiflux/libvapour/tools/windows/network"
 	"github.com/aoiflux/libvapour/tools/winkernel"
 )
 
@@ -59,7 +60,7 @@ func OpenWindowsMemory(imagePath string, cfg OpenConfig) (*Session, error) {
 		options[optionStartFlink] = boot.ListFlink
 	}
 
-	if extra, err := tcpipLayout(winkernel.ReadBuild("libvapour", kernel, running)); err != nil {
+	if extra, err := network.LayoutFor(winkernel.ReadBuild("libvapour", kernel, running)); err != nil {
 		o.note("libvapour: windows.network.scan and windows.network.list have no layout: %v", err)
 	} else {
 		running = layeredTable{kernel: running, extra: extra}

@@ -1,7 +1,7 @@
 file: profiles/doc.go
 replaces: [profiles/doc.go]
 spec: S77-objects-profiles-examples
-spec_sha256: d166d44c754fa59e03f5850a83dc727de13556f9121aeddefa52754bfa8d8b4e
+spec_sha256: 2666695e7ee94cae966d29e77d219662e1c4d0bb172e6526be333706f0fbd031
 sources:
   - title: "Microsoft Learn, Abstract Data Models (LLP64), updated 2025-03-13"
     url: https://learn.microsoft.com/windows/win32/winprog64/abstract-data-models

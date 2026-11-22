@@ -7,6 +7,7 @@ import (
 
 	"github.com/aoiflux/libvapour/symbols/autoload"
 	"github.com/aoiflux/libvapour/tools"
+	"github.com/aoiflux/libvapour/tools/winkernel"
 )
 
 // Offsets from S67 section 3, one column per measured build.
@@ -115,9 +116,13 @@ func TestTheSecond26100OwnerIsKeptAndCoveredByTheSize(t *testing.T) {
 
 func TestUnmeasuredBuildsAreRefused(t *testing.T) {
 	for _, b := range []uint32{0, 10240, 14392, 14394, 17763, 19040, 19046, 22000, 22631, 26099, 26101} {
-		if _, err := LayoutForBuild(b); err == nil {
-			t.Errorf("build %d has a layout", b)
+		if _, err := LayoutForBuild(b); !errors.Is(err, ErrUnmeasuredBuild) {
+			t.Errorf("build %d: %v", b, err)
 		}
+	}
+	_, err := LayoutForBuild(22631)
+	if want := "build 22631 (measured: 14393 scan only, 19041-19045, 26100)"; err == nil || !strings.Contains(err.Error(), want) {
+		t.Errorf("refusal %v, want it to name %q", err, want)
 	}
 	if first, last, ok := LayoutBuilds("tcpip-19041-19045"); !ok || first != 19041 || last != 19045 {
 		t.Errorf("19041 range %d %d %v", first, last, ok)
@@ -208,5 +213,38 @@ func TestWithoutTcpipInTheModuleListTheTablesOffsetStays(t *testing.T) {
 	if !strings.Contains(joined, "windows.network.list: tcpip.sys: ") ||
 		!strings.Contains(joined, "so connection creation times are read at 0x360") {
 		t.Errorf("diagnostics %q", w.diags)
+	}
+}
+
+func layoutName(b winkernel.Build) string {
+	table, err := LayoutFor(b)
+	if err != nil {
+		return "error: " + err.Error()
+	}
+	return table.Name()
+}
+
+func TestTheKernelBuildComesBeforeTheSharedCopy(t *testing.T) {
+	unread := errors.New("unread")
+	for _, c := range []struct {
+		name string
+		b    winkernel.Build
+		want string
+	}{
+		{"kernel", winkernel.Build{Kernel: 26100, Major: 10, Shared: 19044}, "tcpip-26100"},
+		{"kernel range", winkernel.Build{Kernel: 19044, VersionErr: unread, SharedErr: unread}, "tcpip-19041-19045"},
+		{"shared", winkernel.Build{KernelErr: unread, Major: 10, Shared: 19044}, "tcpip-19041-19045"},
+		{"unmeasured kernel", winkernel.Build{Kernel: 22631, Major: 10, Shared: 26100}, "tcpip-26100"},
+		{"not nt 10.0", winkernel.Build{KernelErr: unread, Major: 6, Minor: 3, Shared: 26100}, "nt version 6.3 is not 10.0"},
+		{"nothing", winkernel.Build{KernelErr: unread, VersionErr: unread}, "kernel build: unread; shared build: unread"},
+		{"unmeasured both", winkernel.Build{Kernel: 22631, Major: 10, Shared: 22631},
+			"kernel build 22631; shared build 22631 (measured: 14393 scan only, 19041-19045, 26100)"},
+	} {
+		if got := layoutName(c.b); !strings.Contains(got, c.want) {
+			t.Errorf("%s: %q, want %q", c.name, got, c.want)
+		}
+	}
+	if _, err := LayoutFor(winkernel.Build{KernelErr: unread, VersionErr: unread}); !errors.Is(err, ErrUnmeasuredBuild) {
+		t.Errorf("an unread build: %v", err)
 	}
 }

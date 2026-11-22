@@ -84,7 +84,7 @@ M1 to M13 come from `netfacts` on 2026-11-12 over mem1_win11 (26100), mem2_win10
 ### 4.1 Layout
 
 1. The context must hold memory, symbols and a Windows profile, and the table's pointer size must be 8: every measured layout is for x64 (`ErrNotWindows`, `ErrPointerSize`).
-2. Resolve the endpoint members of section 3 from the table. A missing member is `ErrLayout` and ends the run: offsets of another build would decode plausible rows from the wrong places.
+2. Resolve the endpoint members of section 3 from the table. A table without the type `tcpEndpoint` holds no measured layout: read the build (S03 4.7) and refuse with the reason S67 4.1 step 1 gives for it, which names the build and the measured builds (`ErrUnmeasuredBuild`). A member missing from a table that holds the type is `ErrLayout`. Either ends the run: offsets of another build would decode plausible rows from the wrong places.
 3. Owner offsets: the table's `tcpEndpoint.owner`, then any other offset the named layout record holds (M10).
 4. Creation-time offset: when the named layout record keeps creation-time offsets by tcpip.pdb (S67 4.1 step 5), read the CodeView record of the kernel module named `tcpip.sys` and take the offset recorded for its GUID and age. When no such module is listed, its record does not read, or the record holds no offset for that PDB, the table's `tcpEndpoint.createTime` stays and one diagnostic names why: `<tool>: tcpip.sys: <what failed>, so connection creation times are read at 0x<offset>`.
 5. The table members (`partition` … `portAssignmentEntry`, `_RTL_DYNAMIC_HASH_TABLE`, `_RTL_BITMAP`, `_LIST_ENTRY`) are resolved only when `listEntry` and both `next` members exist. Without them the list refuses the build (`ErrNoTables`).
@@ -152,7 +152,8 @@ Listener and UDP endpoint: step 2, then the local port must be nonzero (`ErrPort
 | Case | Result |
 |---|---|
 | Not Windows, or pointer size not 8 | `ErrNotWindows`, `ErrPointerSize` |
-| No measured layout merged, or a member missing | `<tool>: <type>.<member>: network: symbol table lacks a member of the measured tcpip layout: …` (`ErrLayout`) |
+| No measured layout in the table | `<tool>: network: no measured tcpip.sys layout for this windows build: kernel build <n> (measured: <builds>)`, with the shared build when it was asked too (`ErrUnmeasuredBuild`) |
+| A member missing from the table's layout | `<tool>: <type>.<member>: network: symbol table lacks a member of the measured tcpip layout: …` (`ErrLayout`) |
 | Layout without tables (14393) | `windows.network.list: layout "tcpip-14393": …` (`ErrNoTables`); the scan runs |
 | tcpip.sys publics missing | `windows.network.list: network: tcpip.sys symbols not resolved: …` (`ErrTcpipSymbols`) |
 | Partition table, endpoint table, compartment chain or bitmap unread | Diagnostic `windows.network.list: <object> at 0x<addr>: <what failed>: %w`; that part is skipped. In strict mode the run returns the error. |
@@ -189,7 +190,7 @@ Listener and UDP endpoint: step 2, then the local port must be nonzero (`ErrPort
 
 ## 9. Acceptance
 
-1. Synthetic fixtures (`s28_fixture_test.go`, on the 26100 measured layout): every rule of section 5 passing and failing alone; IPv4 and IPv6 connections; wildcard and bound listeners; the second owner offset; the creation-time offset chosen by tcpip.pdb, and the table's offset kept for an unmeasured PDB or a missing tcpip.sys; the capture window; two partitions with a broken bucket and a `NumEntries` mismatch; a `TableSize` above 128; a TCP pool with a flag-1 entry, a two-listener chain and a port mismatch; a UDP pool; `include_corrupt`; the `pid` filter; the scan over a physical buffer with one object per tag and a garbage candidate; refusal without a layout, without tables and without tcpip symbols.
+1. Synthetic fixtures (`s28_fixture_test.go`, on the 26100 measured layout): every rule of section 5 passing and failing alone; IPv4 and IPv6 connections; wildcard and bound listeners; the second owner offset; the creation-time offset chosen by tcpip.pdb, and the table's offset kept for an unmeasured PDB or a missing tcpip.sys; the capture window; two partitions with a broken bucket and a `NumEntries` mismatch; a `TableSize` above 128; a TCP pool with a flag-1 entry, a two-listener chain and a port mismatch; a UDP pool; `include_corrupt`; the `pid` filter; the scan over a physical buffer with one object per tag and a garbage candidate; refusal without a layout (naming the unmeasured build, both tools), with a layout that lacks a member, without tables and without tcpip symbols.
 2. Fuzz targets, 30 s each on 2026-11-12: `FuzzDecodeEndpoint` (arbitrary body for each kind, with marked words replaced by real or garbage pointers; no panic, only rule errors, every accepted row satisfies section 5 as recomputed and its problems agree with its empty values): 1,955,610 executions. `FuzzPortPoolChain` (arbitrary entry and chain links with arbitrary flags among real listeners, a listener on another port, 0 and an unmapped address; no panic, no endpoint listed twice, every row's port equals its bit, no chain walked from an entry without flags 2): 418,626 executions.
 3. On the captures, `netfacts`, 2026-11-12:
 
@@ -220,7 +221,7 @@ Listener and UDP endpoint: step 2, then the local port must be nonzero (`ErrPort
 | O7 | Owner decision (Q2): row fields are renamed from the 0.1.0 schema (`Proto`, `LocalAddr`, `RemoteAddr`, `StateName`, `StateKnown`, `Listener`, `PID`, `Owner`, `Created`, `Offset`, `VirtualOffset`, `OtherCopy`, `LocalAddrUnreadable`, `RemoteAddrUnreadable`) to section 7's names; tool names and option keys are kept. | Owner decision |
 | O8 | Owner decision (Q8): delete `tools/windows/network/testdata/golden_endpoints.json`; no test reads it after S28. | Owner decision |
 | O9 | The list does not walk the second partition table (M4), which holds the same connections; it could cross-check a smeared first table. | Measurement on a smeared capture |
-| O10 | x86 kernels and builds other than 14393, 19041 to 19045 and 26100 have no measured layout and are refused. | A capture per build (Q7) and a re-measurement step |
+| O10 | x86 kernels and builds other than 14393, 19041 to 19045 and 26100 have no measured layout and are refused. Since 2026-11-22 the refusal names the build and the measured builds (`ErrUnmeasuredBuild`, 4.1 step 2); before, it named the first member it could not find, which read as a missing Windows structure. | A capture per build (Q7) and a re-measurement step |
 
 ### Owner decisions, 2026-11-12
 

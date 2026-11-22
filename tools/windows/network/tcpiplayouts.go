@@ -2,9 +2,12 @@ package network
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/symbols/autoload"
+	"github.com/aoiflux/libvapour/tools/winkernel"
 )
 
 // tcpip.pdb carries publics only, so the session merges these measured
@@ -205,13 +208,70 @@ var tcpipBuildLayouts = []tcpipBuildLayout{
 	},
 }
 
-func LayoutForBuild(build uint32) (symbols.SymbolTable, error) {
+func layoutForBuild(build uint32) *tcpipBuildLayout {
 	for i := range tcpipBuildLayouts {
 		if l := &tcpipBuildLayouts[i]; build >= l.first && build <= l.last {
-			return l.symbolTable(), nil
+			return l
 		}
 	}
-	return nil, fmt.Errorf("no measured tcpip.sys layout for Windows build %d", build)
+	return nil
+}
+
+func LayoutForBuild(build uint32) (symbols.SymbolTable, error) {
+	if l := layoutForBuild(build); l != nil {
+		return l.symbolTable(), nil
+	}
+	return nil, fmt.Errorf("%w: build %d (measured: %s)", ErrUnmeasuredBuild, build, measuredBuilds())
+}
+
+// Every measured layout is from an NT 10.0 kernel.
+const (
+	measuredMajor = 10
+	measuredMinor = 0
+)
+
+// The kernel's own NtBuildNumber is preferred; the KUSER_SHARED_DATA copy is
+// taken only when the same page reads NT 10.0, so a page that is not the
+// shared data is not taken for a build (S76 4.7).
+func LayoutFor(b winkernel.Build) (symbols.SymbolTable, error) {
+	var tried []string
+	if b.KernelErr == nil {
+		if l := layoutForBuild(b.Kernel); l != nil {
+			return l.symbolTable(), nil
+		}
+		tried = append(tried, fmt.Sprintf("kernel build %d", b.Kernel))
+	} else {
+		tried = append(tried, fmt.Sprintf("kernel build: %v", b.KernelErr))
+	}
+	switch {
+	case b.VersionErr != nil:
+		tried = append(tried, fmt.Sprintf("shared build: %v", b.VersionErr))
+	case b.Major != measuredMajor || b.Minor != measuredMinor:
+		tried = append(tried, fmt.Sprintf("shared build: nt version %d.%d is not %d.%d", b.Major, b.Minor, measuredMajor, measuredMinor))
+	case b.SharedErr != nil:
+		tried = append(tried, fmt.Sprintf("shared build: %v", b.SharedErr))
+	default:
+		if l := layoutForBuild(b.Shared); l != nil {
+			return l.symbolTable(), nil
+		}
+		tried = append(tried, fmt.Sprintf("shared build %d", b.Shared))
+	}
+	return nil, fmt.Errorf("%w: %s (measured: %s)", ErrUnmeasuredBuild, strings.Join(tried, "; "), measuredBuilds())
+}
+
+func measuredBuilds() string {
+	out := make([]string, len(tcpipBuildLayouts))
+	for i, l := range tcpipBuildLayouts {
+		s := strconv.FormatUint(uint64(l.first), 10)
+		if l.last != l.first {
+			s += "-" + strconv.FormatUint(uint64(l.last), 10)
+		}
+		if l.tables == nil {
+			s += " scan only"
+		}
+		out[i] = s
+	}
+	return strings.Join(out, ", ")
 }
 
 func LayoutBuilds(name string) (first, last uint32, ok bool) {

@@ -1,7 +1,7 @@
 file: examples/memory/main.go
 replaces: [examples/memory/main.go]
 spec: S77-objects-profiles-examples
-spec_sha256: d166d44c754fa59e03f5850a83dc727de13556f9121aeddefa52754bfa8d8b4e
+spec_sha256: 2666695e7ee94cae966d29e77d219662e1c4d0bb172e6526be333706f0fbd031
 sources:
   - title: "Tool specifications S07, S13, S24, S25, S26, S28, S35, S39, S50, S55, S56, S60, S61, S63, S68, S73: registered names, option keys, row fields"
     path: docs/specs

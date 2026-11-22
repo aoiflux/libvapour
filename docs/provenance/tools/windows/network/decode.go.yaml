@@ -1,7 +1,7 @@
 file: tools/windows/network/decode.go
 replaces: [tools/windows/network/network_scan.go, tools/windows/network/network_list.go]
 spec: S28-windows-network
-spec_sha256: 33966caa1338c04aae3fe6238c59551d6345219a1ca003844183f3794223cbf5
+spec_sha256: fb6f0325db85ab30affb29c75f5f9cbaf5830abbf2ba58dcbcc16dce1f188d45
 sources:
   - title: "Microsoft Learn, TCPSTATE (mstcpip.h), dated 2018-12-05"
     url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
@@ -43,4 +43,6 @@ decisions:
     justification: "S28 4.2, D3, D4, M7, M12"
   - rule: "Owner by the S17 process check; creation time in the S17 capture window"
     justification: "S28 4.2 steps 6-7, S17, M13"
-date: 2026-11-18
+  - rule: "A table without the tcpEndpoint type is refused by the build's own reason (LayoutFor), not by its first missing member; a layout missing a member is ErrLayout"
+    justification: "S28 4.1 step 2, 6, O10 (owner decision 2026-11-22)"
+date: 2026-11-22

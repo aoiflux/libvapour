@@ -1,7 +1,7 @@
 file: examples/internal/cli/text.go
 replaces: [examples/internal/cli/text.go]
 spec: S77-objects-profiles-examples
-spec_sha256: d166d44c754fa59e03f5850a83dc727de13556f9121aeddefa52754bfa8d8b4e
+spec_sha256: 2666695e7ee94cae966d29e77d219662e1c4d0bb172e6526be333706f0fbd031
 sources:
   - title: "RFC 20, ASCII format for Network Interchange, sections 2, 4.1, 5.2"
     url: https://www.rfc-editor.org/rfc/rfc20.txt

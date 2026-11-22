@@ -228,7 +228,9 @@ the region's file (File) in place of Header.
 ## `processlist`
 
 The smallest single-tool example: list processes and print a table of PID,
-PPID, Name, Object (the process's kernel address) and Created.
+PPID, Name, EPROCESS (`task_struct` on Linux) and Created. The fourth column is
+the kernel virtual address of the process object, the value other tools' rows
+carry for the same process.
 
 ```bash
 go run ./examples/processlist memory.raw

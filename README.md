@@ -44,6 +44,7 @@ a shared registry.
 - [Writing a tool](#writing-a-tool)
 - [Examples](#examples)
 - [Validation](#validation)
+- [Changes since 0.1.1](#changes-since-011)
 - [Changes since 0.1.0](#changes-since-010)
 - [Project status](#project-status)
 - [License](#license)
@@ -734,6 +735,23 @@ captures and are not published. The captures:
 
 `any.timeline.list` and `any.image.dump_layers` have no real-image test. Images
 and test outputs stay local and are never committed.
+
+## Changes since 0.1.1
+
+### Additions
+
+- `network.ErrUnmeasuredBuild` and `network.LayoutFor`, which chooses the
+  tcpip.sys layout for a build reading the way a Windows session does.
+
+### Behaviour changes
+
+- `windows.network.scan` and `windows.network.list` on a build with no
+  measured tcpip.sys layout refuse with `network.ErrUnmeasuredBuild`. The
+  message names the build and the measured builds. In 0.1.1 they named a
+  missing `tcpEndpoint` type, which read as a missing Windows structure.
+- `examples/processlist` heads its address column `EPROCESS` (`task_struct`
+  on Linux) instead of `Object`. The value, the kernel virtual address of the
+  process object, is unchanged.
 
 ## Changes since 0.1.0
 

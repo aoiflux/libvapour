@@ -15,6 +15,7 @@ import (
 	"github.com/aoiflux/libvapour/symbols/autoload"
 	"github.com/aoiflux/libvapour/tools"
 	toolprocesslist "github.com/aoiflux/libvapour/tools/any/processlist"
+	"github.com/aoiflux/libvapour/tools/windows/network"
 )
 
 type refuseRequests struct{ asked *[]string }
@@ -262,6 +263,30 @@ func TestTheKernelBuildPicksTheNetworkLayout(t *testing.T) {
 	}
 	if head, err := ctx.Symbols.LookupSymbol("PsActiveProcessHead"); err != nil || head.Address != k.headVA {
 		t.Errorf("kernel symbol through the layered table: 0x%x, %v", head.Address, err)
+	}
+}
+
+func TestAnUnmeasuredBuildIsTheReasonTheNetworkToolsGive(t *testing.T) {
+	const unmeasured = 22631
+	k := newWinKernel(fxGUID)
+	k.addBuildNumber(fxNtBuildNumber&^(1<<28-1) | unmeasured)
+	build := fxBuild(fxGUID)
+	s, err := openWithTable(t, k, winDeclaration(&build, noPTELayout, true), OpenConfig{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	ctx := s.Context()
+	if got := ctx.NetworkScanLayout(); got != "" {
+		t.Fatalf("layout %q for build %d", got, unmeasured)
+	}
+	if !hasNote(s.Diagnostics(), "have no layout", "kernel build 22631") {
+		t.Errorf("notes %q", s.Diagnostics())
+	}
+	for name, run := range map[string]func(tools.Context) ([]network.Endpoint, error){
+		network.Name: network.Run, network.NetworkListName: network.RunNetworkList} {
+		if _, err := run(ctx); !errors.Is(err, network.ErrUnmeasuredBuild) || !strings.Contains(err.Error(), "kernel build 22631") {
+			t.Errorf("%s: %v", name, err)
+		}
 	}
 }
 

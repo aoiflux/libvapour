@@ -1,7 +1,7 @@
 file: tools/windows/network/tcpiplayouts.go
 replaces: [tools/windows/network/tcpiplayouts.go]
 spec: S67-measured-layouts-tcpip-conhost
-spec_sha256: 01bb20118645ebabc5457f6931c57b7cbda70f3fa812df7701f411c876584d91
+spec_sha256: 0b23053f833edf0cbdf63c1f90fa69f0b475e391d9d4cf85400ca7e7922ffa7c
 sources:
   - title: "Microsoft Learn, TCPSTATE (mstcpip.h) and MIB_TCPROW2 (tcpmib.h): state numbering, port byte order"
     url: https://learn.microsoft.com/windows/win32/api/mstcpip/ne-mstcpip-tcpstate
@@ -22,7 +22,7 @@ sources:
     path: tcpiplayoutfacts
     accessed: 2026-11-12
 decisions:
-  - rule: "One record per measured build range: 14393, 19041-19045, 26100; other builds refused"
+  - rule: "One record per measured build range: 14393, 19041-19045, 26100; other builds refused with ErrUnmeasuredBuild"
     justification: "S67 4.1 step 1, 5"
   - rule: "Every offset tied to an instruction of the capture's tcpip.sys and admitted by the capture's data"
     justification: "S67 3 C1-C17, M1-M3"
@@ -36,4 +36,8 @@ decisions:
     justification: "S67 M9, O3"
   - rule: "Struct sizes end at the last measured member; partition and entry sizes are strides"
     justification: "S67 4.1 step 3, C1, C16"
-date: 2026-11-18
+  - rule: "LayoutFor takes the kernel NtBuildNumber first, the shared copy only when the same page reads NT 10.0; no range test"
+    justification: "S67 4.1 step 1, S76 4.7, S03 4.7"
+  - rule: "Refusals wrap ErrUnmeasuredBuild and name the build and the measured ranges, listed from the records"
+    justification: "S67 4.1 step 1, 6; S28 O10 (owner decision 2026-11-22)"
+date: 2026-11-22
