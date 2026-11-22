@@ -839,7 +839,7 @@ and test outputs stay local and are never committed.
 
 ## Project status
 
-libvapour is at **v0.1.1**. It is early-stage, and these limits matter most:
+libvapour is at **v0.1.2**. It is early-stage, and these limits matter most:
 
 - **Narrow image support.** Only x86-64 Windows, and x86-64 Linux with
   VMCOREINFO, open; see [Supported images](#supported-images).
