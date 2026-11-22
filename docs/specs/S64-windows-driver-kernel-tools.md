@@ -243,7 +243,7 @@ The debugger data block is not read: it is stored encoded on every capture (I4) 
 
 ### 4.14 `windows.syscall.list`
 
-1. **Table.** `KeServiceDescriptorTable`'s first descriptor (S1) when its base and limit read: it is what the system-call path uses. Otherwise `KiServiceTable` with the 4-byte `KiServiceLimit`. A descriptor naming another table than `KiServiceTable` gives a diagnostic. Neither: `ErrNoServiceTable`.
+1. **Table.** `KeServiceDescriptorTable`'s first descriptor (S1) when its base and limit read: it is what the system-call path uses. Otherwise `KiServiceTable` with the 4-byte `KiServiceLimit`. A descriptor naming another table than `KiServiceTable` gives a diagnostic. Neither: `ErrNoServiceTable`; when a table symbol has no running address (S58 `ErrNotPlaced`, S76 4.4), that lookup error is returned instead, since the table has the symbols (2026-11-22).
 2. A limit above `MaxTableEntries` is `ErrTableTooLarge` in strict mode and capped otherwise.
 3. **Entries.** 4 bytes each. With 8-byte pointers the routine is the table address plus the signed entry shifted right by 4 (S2) and `ArgumentBytes` is 4 times the low 4 bits (S3); with 4-byte pointers the entry is the routine address (O8).
 4. Attribution anchored at the table (S55 4.4 step 4). Unread entries are left out with a diagnostic (strict mode fails); unowned routines are counted.

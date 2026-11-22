@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/aoiflux/libvapour/memory"
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/any/processlist"
 	"github.com/aoiflux/libvapour/tools/windows/registryhivescan"
@@ -46,7 +47,7 @@ const registryParentPID = 4
 // CmpRegistryProcess; a build without the symbol keeps every bin in kernel
 // memory, so its reader is the kernel layer alone.
 func defaultCells(ctx tools.Context) memory.MemoryReader {
-	if _, err := ctx.Symbols.LookupSymbol("CmpRegistryProcess"); err != nil {
+	if _, err := ctx.Symbols.LookupSymbol("CmpRegistryProcess"); !symbols.Declared(err) {
 		return ctx.Memory
 	}
 	return cellSpace{kernel: ctx.Memory, width: uint64(ctx.Symbols.PointerSize())}
@@ -59,7 +60,7 @@ func CellReader(ctx tools.Context) memory.MemoryReader {
 	}
 	width := uint64(ctx.Symbols.PointerSize())
 	kernelOnly := cellSpace{kernel: ctx.Memory, width: width}
-	if _, err := ctx.Symbols.LookupSymbol("CmpRegistryProcess"); err != nil {
+	if _, err := ctx.Symbols.LookupSymbol("CmpRegistryProcess"); !symbols.Declared(err) {
 		return ctx.Memory
 	}
 	procs, err := processlist.Run(ctx.WithoutPIDFilter())
@@ -94,14 +95,15 @@ func CellReader(ctx tools.Context) memory.MemoryReader {
 }
 
 func GatherHives(ctx tools.Context) []Hive {
-	hives, _ := gatherHives(ctx)
+	hives, _, _ := gatherHives(ctx)
 	return hives
 }
 
 // Listed hives come first in list order; a hive the pool scan alone found
-// may be one Windows has unloaded, so it follows them.
-func gatherHives(ctx tools.Context) ([]Hive, int) {
-	var out []Hive
+// may be one Windows has unloaded, so it follows them. When neither source
+// gives a hive, why holds their failures, so a caller's refusal names the
+// cause and not only the diagnostics (S49 4.7 step 7).
+func gatherHives(ctx tools.Context) (out []Hive, listed int, why error) {
 	at := map[uint64]int{}
 	add := func(hv Hive) {
 		if hv.Address == 0 {
@@ -119,22 +121,44 @@ func gatherHives(ctx tools.Context) ([]Hive, int) {
 		at[hv.Address] = len(out)
 		out = append(out, hv)
 	}
-	if listed, err := listHives(ctx); err == nil {
-		for _, hv := range listed {
-			add(hv)
-		}
-	} else {
-		ctx.AddDiagnostic("registryhive: hive list: %v", err)
+	fromList, listErr := listHives(ctx)
+	if listErr != nil {
+		ctx.AddDiagnostic("registryhive: hive list: %v", listErr)
 	}
-	listed := len(out)
-	if found, err := registryhivescan.Run(ctx); err == nil {
-		for _, f := range found {
-			add(Hive{Address: f.Address, FileFullPath: f.FilePath, Name: LastPathComponent(f.FilePath), RegistryPath: f.RegistryPath})
-		}
-	} else {
-		ctx.AddDiagnostic("registryhive: hive pool scan: %v", err)
+	for _, hv := range fromList {
+		add(hv)
 	}
-	return out, listed
+	listed = len(out)
+	found, scanErr := registryhivescan.Run(ctx)
+	if scanErr != nil {
+		ctx.AddDiagnostic("registryhive: hive pool scan: %v", scanErr)
+	}
+	for _, f := range found {
+		add(Hive{Address: f.Address, FileFullPath: f.FilePath, Name: LastPathComponent(f.FilePath), RegistryPath: f.RegistryPath})
+	}
+	if len(out) == 0 {
+		why = sourceFailures(listErr, scanErr)
+	}
+	return out, listed, why
+}
+
+func sourceFailures(list, scan error) error {
+	switch {
+	case list != nil && scan != nil:
+		return fmt.Errorf("hive list: %w; hive pool scan: %w", list, scan)
+	case list != nil:
+		return fmt.Errorf("hive list: %w", list)
+	case scan != nil:
+		return fmt.Errorf("hive pool scan: %w", scan)
+	}
+	return nil
+}
+
+func noHiveOpens(what string, why error) error {
+	if why != nil {
+		return fmt.Errorf("registryhive: no hive %s opens: %w", what, why)
+	}
+	return fmt.Errorf("registryhive: no hive %s opens", what)
 }
 
 type OpenedHive struct {
@@ -144,7 +168,7 @@ type OpenedHive struct {
 
 // Load order puts the boot-time hive before any later copy of the same name.
 func OpenHive(ctx tools.Context, name string, cellReader memory.MemoryReader) (*HiveLayer, error) {
-	hives, listed := gatherHives(ctx)
+	hives, listed, why := gatherHives(ctx)
 	matches := preferListed(hives, listed, nameIs(name))
 	if len(matches) > 1 {
 		where := make([]string, len(matches))
@@ -156,27 +180,27 @@ func OpenHive(ctx tools.Context, name string, cellReader memory.MemoryReader) (*
 	}
 	opened := openHives(ctx, matches, cellReader, true)
 	if len(opened) == 0 {
-		return nil, fmt.Errorf("registryhive: no hive named %q opens", name)
+		return nil, noHiveOpens(fmt.Sprintf("named %q", name), why)
 	}
 	return opened[0].Layer, nil
 }
 
 func OpenFirstHiveContaining(ctx tools.Context, sub string, cellReader memory.MemoryReader) (*HiveLayer, error) {
-	hives, listed := gatherHives(ctx)
+	hives, listed, why := gatherHives(ctx)
 	opened := openHives(ctx, preferListed(hives, listed, pathContains(sub)), cellReader, true)
 	if len(opened) == 0 {
-		return nil, fmt.Errorf("registryhive: no hive whose path contains %q opens", sub)
+		return nil, noHiveOpens(fmt.Sprintf("whose path contains %q", sub), why)
 	}
 	return opened[0].Layer, nil
 }
 
 func OpenHivesContaining(ctx tools.Context, sub string, cellReader memory.MemoryReader) []OpenedHive {
-	hives, listed := gatherHives(ctx)
+	hives, listed, _ := gatherHives(ctx)
 	return openHives(ctx, preferListed(hives, listed, pathContains(sub)), cellReader, false)
 }
 
 func OpenEveryHive(ctx tools.Context, cellReader memory.MemoryReader) []OpenedHive {
-	hives, listed := gatherHives(ctx)
+	hives, listed, _ := gatherHives(ctx)
 	return openHives(ctx, preferListed(hives, listed, func(Hive) bool { return true }), cellReader, false)
 }
 

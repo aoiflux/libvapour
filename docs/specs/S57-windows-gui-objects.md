@@ -180,6 +180,7 @@ The S31 executive scan of tag `Desk`, object type `Desktop`. A body is kept when
 | 32-bit kernel | `<tool>: gui: 64-bit kernels only` |
 | No `win32kbase.sys`, no record, or an unmeasured record | `<tool>: gui: win32kbase.sys is not in the module list`; `gui: win32kbase.sys debug record does not read: image at 0x<base>: …`, ending for a prototype page in `prototype entry at 0x<entry>: …` or `prototype frame 0x<frame>: …`; `gui: no measured layout for this win32kbase.sys: …` |
 | Kernel table lacks a type or `ObTypeIndexTable` lacks a type | `<tool>: gui: kernel table lacks a type the objects are read with: …` |
+| `ObHeaderCookie` declared but unread, or with no running address | `<tool>: gui: ObHeaderCookie does not read: …` (`ErrCookieUnread`, O11) |
 | No physical memory | `<tool>: gui: no physical memory to scan` |
 | Pool scan | S31's errors and diagnostics; one summary diagnostic `<tool>: pool tag "<tag>": <n> objects from <m> tag hits (<stats>)` |
 | Process list fails | Diagnostic `<tool>: process list: …; session objects are read through kernel memory` |
@@ -239,6 +240,7 @@ An unread value is flagged, never replaced by a placeholder. Addresses below a s
 | O8 | A rejected window ends its sibling chain (4.7 step 3), so a single bad link hides its later siblings. | Owner decision |
 | O9 | The window procedure is reported raw; whether it lies in an image of the owner, or in a kernel module for server-side windows, is not checked or attributed. | A later attribution step |
 | O10 | mem1: the address 0xFFFF9E0405FBB958 read as a window station body (M11). Owner decision 2026-11-12 (follow-up R7): probe. Result: not a bug. It has no 16-byte aligned object header in front of it and its "Wind" bytes lie inside another allocation's pool header (M11), so S31 4.2 step 1 refuses it and S2 would too. No library change. | Owner decision |
+| O11 | A declared `ObHeaderCookie` that did not read was taken as no cookie, so the TypeIndex test compared the stored byte to the slot directly and could judge every object wrongly on a damaged capture (S31 M2). The kernel facts are now refused with `ErrCookieUnread`, as an unreadable `ObTypeIndexTable` refuses them; a cookie with no running address (S58 `ErrNotPlaced`) is refused the same way. | Owner decision 2026-11-22 (reviewer feedback follow-up): refuse, in the 0.1.2 patch. Done in tools/gui/objects.go. |
 
 ### Owner decisions, 2026-11-12
 

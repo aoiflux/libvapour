@@ -1,6 +1,7 @@
 package cpulist
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"strings"
@@ -59,6 +60,9 @@ func List(ctx tools.Context) ([]Entry, error) {
 	t := ctx.Symbols
 	block, err1 := t.LookupSymbol("KiProcessorBlock")
 	number, err2 := t.LookupSymbol("KeNumberProcessors")
+	if err := cmp.Or(err1, err2); errors.Is(err, symbols.ErrNotPlaced) {
+		return nil, fmt.Errorf("%s: %w", Name, err)
+	}
 	if err1 != nil || err2 != nil {
 		return nil, fmt.Errorf("%s: %w", Name, ErrNoProcessorBlock)
 	}

@@ -1,9 +1,11 @@
 package syscalllist
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/aoiflux/libvapour/internal/testsupport"
+	"github.com/aoiflux/libvapour/symbols"
 )
 
 const kernel = uint64(0xfffff80000400000)
@@ -97,4 +99,14 @@ func FuzzServiceTable(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestServiceTablesWithNoRunningAddressAreNotCalledMissing(t *testing.T) {
+	k, _ := serviceKernel([]uint32{0x100}, 0)
+	k.Global("KeServiceDescriptorTable", 0x20)
+	ctx := k.Context()
+	ctx.Symbols = testsupport.Unplaced(k.Table)
+	if _, err := serviceTable(ctx); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrNoServiceTable) {
+		t.Errorf("err = %v", err)
+	}
 }

@@ -172,6 +172,10 @@ func (n *nameReader) rootDirectory(ctx tools.Context) uint64 {
 	if !n.rootRead {
 		n.rootRead = true
 		s, err := n.table.LookupSymbol("ObpRootDirectoryObject")
+		if errors.Is(err, symbols.ErrNotPlaced) {
+			n.rootGap = err.Error()
+			return 0
+		}
 		if err != nil {
 			n.rootGap = "no ObpRootDirectoryObject symbol"
 			return 0

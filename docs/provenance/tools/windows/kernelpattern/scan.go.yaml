@@ -1,7 +1,7 @@
 file: tools/windows/kernelpattern/scan.go
 replaces: [tools/windows/kernelpattern/scan.go]
 spec: S64-windows-driver-kernel-tools
-spec_sha256: b85a96e0157e6c1da4ee351731872bc1c8fa42b953794226a5b4fecb8a4a453d
+spec_sha256: 00994372e5cbab403586b82fc70710d54326297f035d79ad8b5561503255f128
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer Manual, Vol. 2 (RET, JMP) and Vol. 3A 4.5 (paging)"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

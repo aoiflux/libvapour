@@ -63,6 +63,16 @@ func (r *rows) unread(object string, at uint64, err error) {
 	r.ctx.AddDiagnostic("%s: %s at 0x%x: does not read: %v", Name, object, at, err)
 }
 
+// A global the build lacks gives no row; one it has but cannot place is
+// reported as a failed read is (S70 4.6).
+func (r *rows) global(name string) (symbols.Symbol, bool) {
+	sym, err := r.ctx.Symbols.LookupSymbol(name)
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		r.ctx.AddDiagnostic("%s: %s: does not read: %v", Name, name, err)
+	}
+	return sym, err == nil
+}
+
 func Run(ctx tools.Context) ([]Row, error) {
 	if err := ctx.Validate(); err != nil {
 		return nil, err
@@ -111,8 +121,8 @@ func (r *rows) imageHeader() {
 // module list head; both equal the session's on every capture (S64 I3).
 func (r *rows) versionBlock() {
 	t := r.ctx.Symbols
-	sym, err := t.LookupSymbol("KdVersionBlock")
-	if err != nil {
+	sym, ok := r.global("KdVersionBlock")
+	if !ok {
 		return
 	}
 	r.add("KdVersionBlock", "0x%x", sym.Address)
@@ -151,8 +161,8 @@ func (r *rows) versionBlock() {
 
 func (r *rows) buildStrings() {
 	for _, name := range []string{"NtBuildLab", "NtBuildLabEx"} {
-		sym, err := r.ctx.Symbols.LookupSymbol(name)
-		if err != nil {
+		sym, ok := r.global(name)
+		if !ok {
 			continue
 		}
 		s, err := readCString(r.ctx.Memory, sym.Address, 256)
@@ -190,8 +200,8 @@ func readCString(m memory.MemoryReader, at, max uint64) (string, error) {
 }
 
 func (r *rows) processors() {
-	sym, err := r.ctx.Symbols.LookupSymbol("KeNumberProcessors")
-	if err != nil {
+	sym, ok := r.global("KeNumberProcessors")
+	if !ok {
 		return
 	}
 	// WDK wdm.h declares KeNumberProcessors as CCHAR.

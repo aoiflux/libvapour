@@ -1,6 +1,7 @@
 package timerlist
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"math/bits"
@@ -296,6 +297,10 @@ func dpcKey(ctx tools.Context) (dpcKeys, bool) {
 	t := ctx.Symbols
 	never, err1 := t.LookupSymbol("KiWaitNever")
 	always, err2 := t.LookupSymbol("KiWaitAlways")
+	if err := cmp.Or(err1, err2); errors.Is(err, symbols.ErrNotPlaced) {
+		ctx.AddDiagnostic("%s: KiWaitNever or KiWaitAlways does not read: DPC pointers are taken as stored: %v", Name, err)
+		return dpcKeys{}, false
+	}
 	if err1 != nil || err2 != nil || t.PointerSize() != 8 {
 		return dpcKeys{}, false
 	}

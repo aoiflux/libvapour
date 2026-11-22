@@ -135,7 +135,14 @@ Leading-zero octal is not accepted as octal: `010` is ten, as an examiner readin
 7. Else pass, with the diagnostic `<tool>: windows build unread; pool scan not gated by build: <reason>`. The scan's own layout checks (4.7) still refuse a table without the members it needs.
 8. A refusal is `<tool>: windows <major.minor or "unread"> build <build or "unread">: ErrPoolScanUnsupportedBuild`. It is returned and added as a diagnostic, so a run that collects diagnostics shows why the scan has no rows.
 
-`HasObjectHeaderCookie` is true when the table has the global `ObHeaderCookie` (S31 T7, O4; M2).
+`HasObjectHeaderCookie` is true when the table has the global `ObHeaderCookie` (S31 T7, O4; M2), placed or not (`symbols.Declared`, S58 4.6; 2026-11-22).
+
+**Kernel symbols with no running address** (2026-11-22). A session with no kernel base answers a kernel global with `symbols.ErrNotPlaced` (S76 4.4). Every tool treats that answer by one rule:
+
+1. A tool that needs the symbol returns or reports the lookup error. It does not wrap it in a sentinel that says the table lacks the symbol.
+2. A tool that treats the symbol as optional reports a diagnostic naming the error, where it would report a read failure of the same symbol. It does not skip silently as for a build without the symbol.
+3. A tool that tests whether the build has the symbol counts it present (`symbols.Declared`).
+4. A tool that falls back when the symbol does not read takes the same fallback.
 
 ### 4.7 Pool-scan setup
 
@@ -235,6 +242,7 @@ Every exported name, signature, option key and sentinel of release 0.1.0 is kept
 | O4 | `DumpLimit` now holds `max_dump_size` to `MaxArtifactBytes`. Before, the option could exceed the cap. | Owner decision. |
 | O5 | `Execute` does not recover a tool's panic; a panic on hostile data ends the caller's run. | Owner decision: recover and return an error, or leave panics visible. Owner decision 2026-11-12: recover and return error. Done: `Execute` recovers and returns `ErrToolPanicked` naming the tool and the panic value, without the stack (4.9 step 4, section 6, acceptance 7); tools/registry.go, tools/registry_test.go. |
 | O6 | A float option value is refused even when whole (4.2). Options decoded from JSON arrive as float64. | Owner decision, if the options gain a JSON front end. |
+| O7 | A tool whose every source failed returns an empty result and puts the failures in diagnostics (the partial-walk rule): measured 2026-11-22 with the kernel base withheld, `windows.callback.list`, `windows.execution.read_userassist` and `windows.registry.list_autostart` returned no rows and no error. A caller that hides diagnostics reads that as a clean result. | Owner decision 2026-11-22: in v0.2.0 a run in which every source failed is an error wrapping those failures, with an audit of every tool that gathers from several sources. |
 
 ### Owner decisions, 2026-11-12
 

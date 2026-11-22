@@ -6,6 +6,7 @@ import (
 	"math/bits"
 	"strings"
 
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 )
 
@@ -61,10 +62,14 @@ func KernelHalfStart(ctx tools.Context) uint64 {
 // 32-bit system booted with increaseuserva, so it beats the half start.
 func KernelSpaceStart(ctx tools.Context, tool string) (uint64, error) {
 	sym, err := ctx.Symbols.LookupSymbol("MmSystemRangeStart")
+	half := KernelHalfStart(ctx)
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		ctx.AddDiagnostic("%s: MmSystemRangeStart: system space taken to start at 0x%x: %v", tool, half, err)
+		return half, nil
+	}
 	if err != nil {
 		return 0, fmt.Errorf("%w: %w", ErrNoSystemRangeStart, err)
 	}
-	half := KernelHalfStart(ctx)
 	start, err := ctx.Symbols.ReadPointer(ctx.Memory, sym.Address)
 	if err != nil {
 		ctx.AddDiagnostic("%s: MmSystemRangeStart at 0x%x does not read: system space taken to start at 0x%x: %v",

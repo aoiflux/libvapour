@@ -1,7 +1,7 @@
 file: tools/poolscan.go
 replaces: [tools/poolscan.go]
 spec: S70-tool-context-options-registry
-spec_sha256: 4472dd6a61fc89dea3c53f90c4df9235bb14528787c9162d16f49fcfe781e705
+spec_sha256: 0b5d2375cc71944f62eec75ad521144d82fc17aa504afc95a2f798034e06f575
 sources:
   - title: "Project specification S31, Windows pool and object scan (layouts, identity, O3, O4)"
     path: docs/specs/S31-windows-pool-object-scan.md
@@ -14,4 +14,6 @@ decisions:
     justification: "S70 4.7, F9, M4"
   - rule: "HasObjectHeaderCookie follows the ObHeaderCookie global"
     justification: "S70 4.6, M2"
-date: 2026-11-12
+  - rule: "HasObjectHeaderCookie counts a cookie with no running address"
+    justification: "S70 4.6"
+date: 2026-11-22

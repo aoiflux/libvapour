@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aoiflux/libvapour/internal/testsupport"
 	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/winkernel"
@@ -210,4 +211,12 @@ func FuzzLoadedModules(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestAListHeadWithNoRunningAddressIsNotCalledMissing(t *testing.T) {
+	ctx, _ := windowsContext(loaderList(threeMods), loaderTable("_KLDR_DATA_TABLE_ENTRY", true), nil)
+	ctx.Symbols = testsupport.Unplaced(ctx.Symbols.(*symbols.Table), "PsLoadedModuleList")
+	if _, err := Run(ctx); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrNoListHead) {
+		t.Errorf("err = %v", err)
+	}
 }

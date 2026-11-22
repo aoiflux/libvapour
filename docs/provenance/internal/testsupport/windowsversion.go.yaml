@@ -1,7 +1,7 @@
 file: internal/testsupport/windowsversion.go
 replaces: [internal/testsupport/windowsversion.go]
 spec: S79-windows-test-fixtures
-spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+spec_sha256: b8fd2bd538a1abcc78ef5fc037434bad2fc3b41427ff15c9a4a8736c5695a940
 sources:
   - title: "Microsoft Learn, KUSER_SHARED_DATA structure (ntddk.h)"
     url: https://learn.microsoft.com/windows-hardware/drivers/ddi/ntddk/ns-ntddk-kuser_shared_data

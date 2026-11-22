@@ -13,6 +13,7 @@ import (
 
 var (
 	ErrNoKernelTypes = errors.New("gui: kernel table lacks a type the objects are read with")
+	ErrCookieUnread  = errors.New("gui: ObHeaderCookie does not read")
 	ErrUnreadable    = errors.New("gui: member does not read")
 	ErrWrongType     = errors.New("gui: pointer does not name an object of the expected type")
 )
@@ -72,10 +73,20 @@ func resolveKernel(sym symbols.SymbolTable, mem memory.MemoryReader) (kernel, er
 		return kernel{}, fmt.Errorf("%w: _OBJECT_HEADER_NAME_INFO", ErrNoKernelTypes)
 	}
 	k.namer = namer
-	if s, err := sym.LookupSymbol("ObHeaderCookie"); err == nil {
-		if b, err := mem.ReadAt(s.Address, 1); err == nil && len(b) == 1 {
-			k.cookie, k.hasCookie = b[0], true
+	// A build with the cookie stores every TypeIndex through it, so a cookie
+	// that does not read leaves no TypeIndex to test (S57 O11).
+	if s, err := sym.LookupSymbol("ObHeaderCookie"); symbols.Declared(err) {
+		if err != nil {
+			return kernel{}, fmt.Errorf("%w: %w", ErrCookieUnread, err)
 		}
+		b, err := mem.ReadAt(s.Address, 1)
+		if err == nil && len(b) != 1 {
+			err = fmt.Errorf("%d of 1 bytes", len(b))
+		}
+		if err != nil {
+			return kernel{}, fmt.Errorf("%w: at 0x%x: %w", ErrCookieUnread, s.Address, err)
+		}
+		k.cookie, k.hasCookie = b[0], true
 	}
 	k.slots, err = typeSlots(sym, mem)
 	if err != nil {

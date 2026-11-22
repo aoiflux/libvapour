@@ -63,7 +63,7 @@ func explicitTableKernel(table *symbols.Table, running *autoload.KernelIdentity,
 		return &autoload.KernelIdentity{Fingerprint: own, Method: methodTableOwnBuild},
 			fmt.Sprintf("names %s, which the capture could not confirm (%s); the kernel base is checked against it", build, why), nil
 	default:
-		return nil, fmt.Sprintf("names no kernel build and %s, so its symbols stay at their RVAs", why), nil
+		return nil, fmt.Sprintf("names no kernel build and %s, so its kernel symbols have no running address", why), nil
 	}
 }
 

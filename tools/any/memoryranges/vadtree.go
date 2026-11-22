@@ -230,6 +230,10 @@ func userLimit(ctx tools.Context) uint64 {
 		limit = userTop32
 	}
 	sym, err := ctx.Symbols.LookupSymbol("MmHighestUserAddress")
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		ctx.AddDiagnostic("%s: MmHighestUserAddress: not read, user space taken to end at 0x%x: %v", walkLabel(ctx), limit, err)
+		return limit
+	}
 	if err != nil {
 		return limit
 	}

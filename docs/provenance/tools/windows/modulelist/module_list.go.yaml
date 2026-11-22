@@ -26,4 +26,6 @@ decisions:
     justification: "S55 4.1 steps 4 and 6"
   - rule: "Module carries Regions and SeparateRegions for Linux rows"
     justification: "owner decision 2026-11-12, S55 O5; S55 7"
-date: 2026-11-12
+  - rule: "PsLoadedModuleList with no running address returns the lookup error, not ErrNoListHead"
+    justification: "S70 4.6 rule 1"
+date: 2026-11-22

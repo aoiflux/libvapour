@@ -35,4 +35,6 @@ decisions:
     justification: "S30 4.4, 4.5, M6, O1"
   - rule: "A root directory pointer that is missing or does not read is reported once"
     justification: "S30 4.1 step 3, section 6"
-date: 2026-11-18
+  - rule: "ObpRootDirectoryObject with no running address names that error as the root gap"
+    justification: "S70 4.6 rule 2"
+date: 2026-11-22

@@ -242,7 +242,7 @@ func TestAnExplicitTableIsHeldToTheRunningKernel(t *testing.T) {
 	if id == nil || id.Method != methodTableOwnBuild || !sameBuild(id.Fingerprint, fxFingerprint(fxGUID)) || !strings.Contains(why, "no start page") {
 		t.Errorf("no running kernel: %v %q", id, why)
 	}
-	if id, why, _ := explicitTableKernel(unnamed, nil, nil); id != nil || !strings.Contains(why, "stay at their RVAs") {
+	if id, why, _ := explicitTableKernel(unnamed, nil, nil); id != nil || !strings.Contains(why, "have no running address") {
 		t.Errorf("nothing to check: %v %q", id, why)
 	}
 	if !needsKernelBase(named) || needsKernelBase(lookupTable(t, symbols.Declaration{PointerWidth: 8,
@@ -396,3 +396,31 @@ func FuzzMovedTableAgreesWithItself(f *testing.F) {
 }
 
 const math32 = 1<<32 - 1
+
+func TestATableWithAnUnknownShiftRefusesItsMovingSymbols(t *testing.T) {
+	inner := lookupTable(t, symbols.Declaration{PointerWidth: 8, Addresses: []symbols.Address{
+		{Name: "rva", Address: 0x2000}, {Name: "fixed", Address: 0xfffff80000002000},
+	}})
+	why := errors.New("libvapour: kernel x: no kernel base found")
+	m := unplacedTable(inner, why)
+	_, err := m.LookupSymbol("rva")
+	if !errors.Is(err, symbols.ErrNotPlaced) || !errors.Is(err, why) || !symbols.Declared(err) ||
+		!strings.Contains(err.Error(), `"rva" at 0x2000 in its table`) {
+		t.Errorf("rva: %v", err)
+	}
+	if s, err := m.LookupSymbol("fixed"); err != nil || s.Address != 0xfffff80000002000 {
+		t.Errorf("fixed: %#x %v", s.Address, err)
+	}
+	if _, err := m.LookupSymbol("absent"); err == nil || symbols.Declared(err) {
+		t.Errorf("absent: %v", err)
+	}
+	if got := names(m.(movedTable).SymbolsAt(0x2000)); len(got) != 0 {
+		t.Errorf("an RVA names a symbol with no running address: %q", got)
+	}
+	if got := names(m.(movedTable).SymbolsAt(0xfffff80000002000)); !slices.Equal(got, []string{"fixed@0xfffff80000002000"}) {
+		t.Errorf("SymbolsAt = %q", got)
+	}
+	if _, err := m.Struct("absent"); err == nil {
+		t.Error("type lookups not passed through")
+	}
+}

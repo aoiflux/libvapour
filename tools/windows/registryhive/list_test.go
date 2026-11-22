@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aoiflux/libvapour/internal/testsupport"
 	"github.com/aoiflux/libvapour/symbols"
 )
 
@@ -176,5 +177,25 @@ func TestCellReaderKeepsTheKernelWhenTheBuildHasNoRegistryProcess(t *testing.T) 
 	r := CellReader(img.context(nil))
 	if s, ok := r.(cellSpace); !ok || s.user != nil || len(*img.diags) == 0 {
 		t.Errorf("reader %T diagnostics %q", r, *img.diags)
+	}
+}
+
+func TestHiveSourcesWithNoRunningAddressNameTheCause(t *testing.T) {
+	img, _, _ := twoHiveImage()
+	img.table.AddSymbol(symbols.Symbol{Name: "CmpRegistryProcess", Address: 0xfffff80000002000})
+	ctx := img.context(nil)
+	ctx.Symbols = testsupport.Unplaced(img.table)
+	if _, err := Run(ctx); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrNoHiveList) {
+		t.Errorf("list: %v", err)
+	}
+	if _, err := OpenHive(ctx, "SYSTEM", nil); !errors.Is(err, symbols.ErrNotPlaced) ||
+		!strings.HasPrefix(err.Error(), `registryhive: no hive named "SYSTEM" opens: hive list: `) {
+		t.Errorf("open: %v", err)
+	}
+	if _, err := OpenFirstHiveContaining(ctx, "system", nil); !errors.Is(err, symbols.ErrNotPlaced) {
+		t.Errorf("open containing: %v", err)
+	}
+	if r := CellReader(ctx); r == img.mem {
+		t.Error("a declared CmpRegistryProcess with no running address was read as absent")
 	}
 }

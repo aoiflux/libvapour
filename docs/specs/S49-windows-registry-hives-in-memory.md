@@ -85,7 +85,7 @@ M1 to M15 come from `hivefacts` on 2026-11-12 over mem1_win11 (26100), mem2_win1
 ### 4.2 Cell reader
 
 1. A cell at a user address (D8) is read through the Registry process; any other through kernel memory.
-2. When `CmpRegistryProcess` is absent (P9), bins are in kernel memory (M4) and the kernel-only reader is used.
+2. When the table does not declare `CmpRegistryProcess` (P9), bins are in kernel memory (M4) and the kernel-only reader is used. A declared symbol with no running address (S58 `ErrNotPlaced`, S76 4.4) counts as present (`symbols.Declared`): the build keeps bins in the Registry process whether or not the kernel base is known (2026-11-22).
 3. Otherwise list processes (S25) and take the first named `Registry` whose `InheritedFromUniqueProcessId` is 4 (M3); its space reads user addresses. No such process, or a space that does not build, gives the kernel-only reader and a diagnostic. `CmpRegistryProcess` is not followed: it holds a handle (M3).
 
 ### 4.3 Translating a cell index
@@ -130,7 +130,7 @@ M1 to M15 come from `hivefacts` on 2026-11-12 over mem1_win11 (26100), mem2_win1
 4. Rows are in list order, which is load order: a boot-time hive comes before a later copy with the same name.
 5. With the name option, select (step 6) on it.
 6. **Selection.** A hive whose `Name`, last `FileFullPath` component or last `RegistryPath` component equals the filter ignoring case (D5) is an exact match. Exact matches win; otherwise hives whose `FileFullPath`, `Name` or `RegistryPath` contains the filter ignoring case.
-7. **Gathering.** List hives, then append hives the pool scan finds that the list does not hold, merged by address. Opening by name or substring prefers listed hives and falls back to scan-only hives (a scan-only hive may be unloaded). Several listed hives with one name are reported and the first that opens is used.
+7. **Gathering.** List hives, then append hives the pool scan finds that the list does not hold, merged by address. Opening by name or substring prefers listed hives and falls back to scan-only hives (a scan-only hive may be unloaded). Several listed hives with one name are reported and the first that opens is used. When neither source gives any hive, the error that no hive opens carries both sources' errors, so a cause such as a kernel global with no running address (S76 4.4) reaches the tool's error and not only the diagnostics (2026-11-22).
 
 ### 4.8 Keys by path
 
@@ -240,6 +240,7 @@ The reading API returns `KeyNode` (`CellIndex`, `Address` of the size word, `Nam
 | O9 | 32-bit kernels are not measured; the reader follows the PDB widths and D8 and is untested on one. | A 32-bit capture (Q7) |
 | O10 | Bin header checking stays off by default: on four captures it loses 2 % to 40 % of keys (M14). | Owner decision |
 | O11 | Follow-up R1: on mem2 one SOFTWARE page of the hive file, file offset 0x48ab000, was zeros. Owner decision 2026-11-12: probe before release. Result: a library bug. The page is storage block 0x48aa000; its map entry is table slot 170, whose last 8 bytes (past `PermanentBinAddress`) lie on a page out of memory, and the reader read the whole entry (M15). Done: 4.3 step 4 reads the two members only (`tools/windows/registryhive/cellmap.go`); fixture `TestAMapEntryNeedsOnlyItsBlockOffsetAndBinAddress` in `dump_test.go`; `hivefacts -block` traces one block from map entry to frame and `-hives` counts such entries; section 9 mem2 row measured again. | Closed |
+| O12 | `GatherHives` and `OpenEveryHive` return no error, so a tool that finds no hive through them (`windows.execution.read_amcache`, `windows.registry.check_cell_routine`, `windows.registry.read_key`, `windows.software.list`) names the cause of a failed hive list and pool scan only in diagnostics (measured 2026-11-22 with the kernel base withheld). | Owner decision 2026-11-22: in v0.2.0 both also return the sources' errors (an API change), and those tools return them when no hive is found. |
 
 ### Owner decisions, 2026-11-12
 

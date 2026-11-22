@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aoiflux/libvapour/internal/testsupport"
 	"github.com/aoiflux/libvapour/profiles"
 	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
@@ -159,4 +160,14 @@ func FuzzCanonicalAddress(f *testing.F) {
 			t.Fatalf("0x%x: canonical 0x%x has unequal bits from %d up", addr, c, bits-1)
 		}
 	})
+}
+
+func TestASystemRangeStartWithNoRunningAddressTakesTheUpperHalf(t *testing.T) {
+	ctx, diags := rangeContext(8, nil, "x64")
+	ctx.Symbols = testsupport.Unplaced(ctx.Symbols.(*symbols.Table))
+	got, err := KernelSpaceStart(ctx, "test")
+	if err != nil || got != 0xffff800000000000 || len(*diags) != 1 ||
+		!strings.Contains((*diags)[0], "test: MmSystemRangeStart: system space taken to start at 0xffff800000000000: symbols: symbol has no running address") {
+		t.Errorf("0x%x %v, diagnostics %q", got, err, *diags)
+	}
 }

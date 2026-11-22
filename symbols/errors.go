@@ -8,7 +8,12 @@ import (
 var (
 	ErrNotVsym       = errors.New("symbols: not a vsym symbol table")
 	ErrTableTooLarge = errors.New("symbols: symbol table file is past the size limit")
+	ErrNotPlaced     = errors.New("symbols: symbol has no running address")
 )
+
+// A symbol with no running address is still in the table, so a caller asking
+// whether the build has it must not read the refusal as absence.
+func Declared(err error) bool { return err == nil || errors.Is(err, ErrNotPlaced) }
 
 type UnknownTypeError struct {
 	TypeName string

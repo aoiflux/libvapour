@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/aoiflux/libvapour/memory"
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/windows/modulelist"
 	"github.com/aoiflux/libvapour/tools/winkernel"
@@ -163,6 +164,9 @@ func (c *collector) privateFor(build winkernel.Build) (privateLayout, error) {
 
 func (c *collector) symbol(name string) (uint64, error) {
 	sym, err := c.ctx.Symbols.LookupSymbol(name)
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		return 0, fmt.Errorf("%s: %w", Name, err)
+	}
 	if err != nil {
 		return 0, fmt.Errorf("%s: %s: %w: %w", Name, name, ErrSymbolMissing, err)
 	}

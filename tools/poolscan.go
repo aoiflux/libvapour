@@ -6,6 +6,7 @@ import (
 
 	"github.com/aoiflux/libvapour/layers"
 	"github.com/aoiflux/libvapour/scan"
+	"github.com/aoiflux/libvapour/symbols"
 )
 
 func (c Context) HasObjectHeaderCookie() bool {
@@ -13,7 +14,7 @@ func (c Context) HasObjectHeaderCookie() bool {
 		return false
 	}
 	_, err := c.Symbols.LookupSymbol("ObHeaderCookie")
-	return err == nil
+	return symbols.Declared(err)
 }
 
 // A missing residency or identity weakens a check but does not stop the

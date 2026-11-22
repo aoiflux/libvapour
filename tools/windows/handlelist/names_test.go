@@ -6,6 +6,7 @@ import (
 	"testing"
 	"unicode/utf16"
 
+	"github.com/aoiflux/libvapour/internal/testsupport"
 	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/util"
@@ -282,5 +283,17 @@ func TestAnUnreadableRootDirectoryIsReported(t *testing.T) {
 	}
 	if want := "windows.handle.list: ObpRootDirectoryObject at 0x20000 does not read, so no namespace path starts at the root"; !slices.Contains(diags, want) {
 		t.Errorf("diagnostics %q, want %q", diags, want)
+	}
+}
+
+func TestARootDirectoryWithNoRunningAddressSaysWhy(t *testing.T) {
+	var diags []string
+	ctx := s30Context(newS30Memory(), &diags)
+	table := s30Table()
+	table.AddSymbol(symbols.Symbol{Name: "ObpRootDirectoryObject", Address: 0x20000})
+	ctx.Symbols = testsupport.Unplaced(table, "ObpRootDirectoryObject")
+	n := newNameReader(ctx.Symbols, 16)
+	if root := n.rootDirectory(ctx); root != 0 || !strings.Contains(n.rootGap, "no running address") {
+		t.Errorf("root 0x%x, gap %q", root, n.rootGap)
 	}
 }

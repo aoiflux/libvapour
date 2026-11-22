@@ -96,7 +96,11 @@ func ResolveTypeIndexTest(sym symbols.SymbolTable, kernel memory.MemoryReader, o
 		return TypeIndexTest{}, err
 	}
 	t := TypeIndexTest{want: byte(slot), offset: ti.Offset, resolved: true}
-	if s, err := sym.LookupSymbol("ObHeaderCookie"); err == nil {
+	s, err := sym.LookupSymbol("ObHeaderCookie")
+	if err != nil && symbols.Declared(err) {
+		return TypeIndexTest{}, fmt.Errorf("%w: ObHeaderCookie: %w", ErrNoTypeTable, err)
+	}
+	if err == nil {
 		b, rerr := kernel.ReadAt(s.Address, 1)
 		if rerr != nil || len(b) != 1 {
 			return TypeIndexTest{}, fmt.Errorf("%w: ObHeaderCookie at 0x%x: %v", ErrNoTypeTable, s.Address, rerr)

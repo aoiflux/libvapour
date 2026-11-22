@@ -164,6 +164,9 @@ func loadedModules(ctx tools.Context) ([]Module, error) {
 		ctx.AddDiagnostic("%s: %s has no FullDllName: module paths are not read", Name, layout.typeName)
 	}
 	head, err := ctx.Symbols.LookupSymbol("PsLoadedModuleList")
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		return nil, fmt.Errorf("%s: %w", Name, err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", Name, ErrNoListHead, err)
 	}

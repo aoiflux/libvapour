@@ -105,6 +105,7 @@ Read with `fixturefacts` through the project's kernel tables: 26100 (mem1, mem6,
 2. `NewUnicodeStringMemory` and `NewUnicodeString32Memory` put a `UNICODE_STRING` at 0x1000 with its text at 0x2000, `Buffer` at 8 or 4 (T2). The 16-bit counts wrap for text over 65,535 bytes, as a damaged string would carry; `LongPath` and `LongCJKName` are such texts. `UnicodeStringSymbols` declares the T2 type.
 3. Pool headers (T6): `WritePoolHeader` writes `BlockSize` and `PoolType` as the word at 2 and the tag at 4, leaving `PreviousSize` and `PoolIndex` 0, values in the measured range (S31 M7). `BlocksFor` rounds up to 16-byte blocks (S31 M7). `ReadPoolHeader` decodes the T6 bit fields. `AddPoolHeaderSymbols` adds the T6 types.
 4. Process-space wrappers: `HoleInProcess` makes one process's reads that touch a range fail; `PatchInProcess` overlays bytes on one process's reads; `RefuseProcessSpace` refuses one page table root (compared without CR3 bits 11:0, D7) and records every kernel-layer read at a user address (at most 0x7FFF'FFFFFFFF, D10), since such a read resolves in whatever process the capture caught running.
+5. `Unplaced` wraps a table as a session with no kernel base does (S76 4.4): a lookup of a symbol the table has, every one or only those named, fails with `symbols.ErrNotPlaced`; every other call is the table's own (2026-11-22).
 
 ### 4.6 Address plan
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/winkernel"
 	"github.com/aoiflux/libvapour/util"
@@ -69,6 +70,9 @@ func listHives(ctx tools.Context) ([]Hive, error) {
 		return nil, fmt.Errorf("%s: %w: _CMHIVE.HiveList", Name, ErrLayout)
 	}
 	head, err := ctx.Symbols.LookupSymbol("CmpHiveListHead")
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		return nil, fmt.Errorf("%s: %w", Name, err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w: %w", Name, ErrNoHiveList, err)
 	}

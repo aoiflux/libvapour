@@ -1,0 +1,12 @@
+file: internal/testsupport/unplaced.go
+replaces: []
+spec: S79-windows-test-fixtures
+spec_sha256: b8fd2bd538a1abcc78ef5fc037434bad2fc3b41427ff15c9a4a8736c5695a940
+sources:
+  - title: "libvapour docs/specs/S76-root-session.md 4.4, a table whose shift is unknown (the project's own specification)"
+    path: docs/specs/S76-root-session.md
+    accessed: 2026-11-22
+decisions:
+  - rule: "Unplaced refuses every symbol, or only the named ones, with symbols.ErrNotPlaced; every other call is the wrapped table's"
+    justification: "S79 4.5 step 5, S76 4.4, S58 4.6"
+date: 2026-11-22

@@ -1,7 +1,7 @@
 file: symbols/errors.go
 replaces: [symbols/errors.go, the sentinels of symbols/vsym.go]
 spec: S58-symbol-tables
-spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+spec_sha256: 2fc11207b718f0e2964ba3e882d55eae2cdbf0b8d172744dd2c88f9e7daf65ff
 sources:
   - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
     path: symbols/FORMAT.md
@@ -9,4 +9,6 @@ sources:
 decisions:
   - rule: "UnknownTypeError and UnknownFieldError kept; UnusableTypeError for unreadable records; MissingSymbolTableError and UnsupportedArchitectureError removed"
     justification: "S58 sections 6, 10 O1, O6"
-date: 2026-11-12
+  - rule: "ErrNotPlaced for a symbol a table has but cannot place; Declared counts it present"
+    justification: "S58 4.6, 6, 7, O10"
+date: 2026-11-22

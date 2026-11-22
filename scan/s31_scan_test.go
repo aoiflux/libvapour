@@ -3,8 +3,11 @@ package scan
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/aoiflux/libvapour/symbols"
 )
 
 const fxVA = uint64(0xffffa00012340000)
@@ -473,4 +476,36 @@ func FuzzObjectScan(f *testing.F) {
 			}
 		}
 	})
+}
+
+type unplacedSymbol struct {
+	*symbols.Table
+	name string
+}
+
+func (t unplacedSymbol) LookupSymbol(name string) (symbols.Symbol, error) {
+	if name == t.name {
+		return symbols.Symbol{}, fmt.Errorf("%w: %q", symbols.ErrNotPlaced, name)
+	}
+	return t.Table.LookupSymbol(name)
+}
+
+func TestAHeaderCookieWithNoRunningAddressIsNotTakenAsAbsent(t *testing.T) {
+	_, err := ResolveTypeIndexTest(unplacedSymbol{fxTable(), "ObHeaderCookie"}, newFlat(0), "Thread")
+	if !errors.Is(err, ErrNoTypeTable) || !errors.Is(err, symbols.ErrNotPlaced) {
+		t.Errorf("err = %v", err)
+	}
+}
+
+func TestANameMaskTableWithNoRunningAddressLeavesNamesUnread(t *testing.T) {
+	mem := newFlat(1)
+	header, _ := mem.object(liveProcess(fxFirstPool, 0x0a, 0))
+	mem.ustr(header-fxOptionalSizes[1]+8, fxFirstPool+0x800, "Example")
+	n, ok := NewObjectNamer(unplacedSymbol{fxTable(), "ObpInfoMaskToOffset"})
+	if !ok {
+		t.Fatal("no namer")
+	}
+	if _, present, readable := n.ReadName(mem, mem, mem, header); !present || readable {
+		t.Errorf("present %v, readable %v", present, readable)
+	}
 }

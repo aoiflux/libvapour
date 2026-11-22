@@ -1,7 +1,7 @@
 file: scan/identity.go
 replaces: [scan/objecttype.go]
 spec: S31-windows-pool-object-scan
-spec_sha256: 78443ebe0c4dc3c1f57c1f9c313b0197f9d2ebd494e8b77938d5c2c612d6fcb7
+spec_sha256: 49ef2fc3b48b6fff482d91663dcaa929e314a6518d5d79fea3f4f3d9036600c1
 sources:
   - title: "Microsoft Learn, ExAllocatePool2 function (wdm.h)"
     url: https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-exallocatepool2
@@ -33,4 +33,6 @@ decisions:
     justification: "S31 4.5 steps 3-4, M2"
   - rule: "ObpInfoMaskToOffset read into the identity when entry 0 is 0"
     justification: "S31 4.6, M4"
-date: 2026-11-12
+  - rule: "A declared ObHeaderCookie with no running address is ErrNoTypeTable, not a table without a cookie"
+    justification: "S31 4.6"
+date: 2026-11-22

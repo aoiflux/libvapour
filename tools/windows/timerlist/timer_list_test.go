@@ -2,6 +2,7 @@ package timerlist
 
 import (
 	"math/bits"
+	"strings"
 	"testing"
 
 	"github.com/aoiflux/libvapour/internal/testsupport"
@@ -137,4 +138,17 @@ func FuzzDpcKey(f *testing.F) {
 			t.Errorf("decode(encode(0x%x)) = 0x%x", dpc, got)
 		}
 	})
+}
+
+func TestDPCKeysWithNoRunningAddressAreReported(t *testing.T) {
+	k := testsupport.NewS64Kernel()
+	k.Global("KiWaitNever", 8)
+	k.Global("KiWaitAlways", 8)
+	ctx := k.Context()
+	var diagnostics []string
+	ctx.Options["diagnostics"] = &diagnostics
+	ctx.Symbols = testsupport.Unplaced(k.Table)
+	if _, ok := dpcKey(ctx); ok || len(diagnostics) != 1 || !strings.Contains(diagnostics[0], "no running address") {
+		t.Errorf("keyed %v, diagnostics %q", ok, diagnostics)
+	}
 }

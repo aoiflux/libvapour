@@ -79,7 +79,7 @@ M3 shows the scan is the costly step of a Windows open whenever it runs (up to 6
 
 1. Symbols and the identity to check them against.
    - No `SymbolsPath`: identify the kernel (S75 4.1, including the scan) and load that build's table (S75 4.6). Note the build, method and table.
-   - With `SymbolsPath`: read the table, then ask for the running kernel without the scan (S75 4.1 step 4). A table naming a build and a running kernel of another build is refused (`errOtherKernelBuild`). A table naming no build is used with the running kernel's identity, noted as unchecked. With no running kernel, a table naming a build is checked against that build (method "build the symbol table names"); a table naming none is used as it is, its RVAs unmoved, with a note.
+   - With `SymbolsPath`: read the table, then ask for the running kernel without the scan (S75 4.1 step 4). A table naming a build and a running kernel of another build is refused (`errOtherKernelBuild`). A table naming no build is used with the running kernel's identity, noted as unchecked. With no running kernel, a table naming a build is checked against that build (method "build the symbol table names"); a table naming none has no build to check a base against, so its shift is unknown (4.4), with a note.
 2. Builds are the same when GUID (letter case aside) and age are equal and, when both name a PDB, the names are equal letter case aside (F4).
 3. Root: the identity's root when it has one (crash dump header or start page, F6, M3), else the System process scan (S53 4.8). CR3 flag bits are dropped (F2). A non-zero `KernelCR3` whose frame differs refuses the open. The root and its source are noted.
 4. Paging mode: S04 on the root with the table's pointer width; undecided is read as 4-level (M4) with a note giving S04's evidence.
@@ -88,7 +88,7 @@ M3 shows the scan is the costly step of a Windows open whenever it runs (up to 6
 
 ### 4.3 Windows: kernel base
 
-Only when the table places `PsActiveProcessHead` at an RVA (F3) and there is an identity (4.2 step 1).
+Only when the table places `PsActiveProcessHead` at an RVA (F3). With no identity (4.2 step 1) no candidate is tried and the shift is unknown (4.4).
 
 1. Candidates, in this order (F9, M3): the identity's own base; the System process's Blink less the head's RVA; the walk of the active process list from the System entry; the kernel image scan by PDB name (only when the identity names a PDB); the debugger data block scan. The System process scan runs at most once and only when a candidate needs it.
 2. Each candidate's image is asked for its CodeView records through the kernel space (S53 4.10).
@@ -97,7 +97,7 @@ Only when the table places `PsActiveProcessHead` at an RVA (F3) and there is an 
    - Records naming only other PDBs: the candidate is passed over.
    - No record that reads: the first such candidate is kept as unconfirmed, and the search goes on.
 3. A provisional identity (S75 4.4 step 3) must be confirmed; otherwise the session is refused (`errBaseUnconfirmed`), listing what each candidate gave.
-4. A confirmed or unconfirmed base moves the table (4.4); its source is noted, with the read failure when unconfirmed. No base leaves the table unmoved, with a note listing each candidate's failure.
+4. A confirmed or unconfirmed base moves the table (4.4); its source is noted, with the read failure when unconfirmed. No base leaves the shift unknown (4.4), with a note listing each candidate's failure; a tool that reads a kernel global then fails with `symbols.ErrNotPlaced` naming the kernel and that no base was found, not with a read at the symbol's RVA (O17).
 5. In strict mode (O4) a base nothing confirmed refuses the open (`errStrictKernelBase`): an unconfirmed base, naming its source and the read failure; no base, listing each candidate's failure; and a table that needs a base but has no build to check one against (4.2 step 1, an explicit table naming no build on a capture naming no running kernel). A table that places `PsActiveProcessHead` in the kernel half needs no base and is not refused.
 
 ### 4.4 Moving a table
@@ -106,6 +106,8 @@ A moved table answers `LookupSymbol` with the inner address plus the shift for e
 
 - Windows predicate: an RVA, at most 0xFFFFFFFF (F3); shift: the base.
 - Linux predicate: the image window (F11); shift: VMCOREINFO's `KERNELOFFSET` (S05).
+
+A table whose shift is unknown carries the reason instead. `LookupSymbol` of an address the predicate accepts fails with `symbols.ErrNotPlaced` wrapping that reason; every other answer is the inner table's. `SymbolsAt` keeps only the symbols that do not move. A symbol with no running address is still declared (`symbols.Declared`, S58 4.6), so a tool that asks whether the build has a symbol gets the same answer as with a base. Without this, every global would answer at its RVA, and a tool would read a user-half address and report an unmapped page, or on a capture that maps it, read a page that belongs to something else (O17).
 
 ### 4.5 Linux
 
@@ -149,6 +151,7 @@ The context's options are a copy of `ToolOptions`, then `diagnostics` (a new sin
 | In strict mode, a table that needs a base has a confirmed one | O4 | `errStrictKernelBase`, open refused |
 | `ToolOptions` values in the forms their readers take | S70 4.2 to 4.5, O7 | `tools.ErrOptionType`, open refused |
 | A table needs a base when `PsActiveProcessHead` is an RVA | F3 | Table used as it is |
+| A kernel symbol is answered only at a running address | F3, 4.4 | `symbols.ErrNotPlaced` with the reason |
 | Pagefiles only in the decoded layout | F10 | Note; paged-out pages unread |
 | A process root has a frame inside the capture | F2, S53 A13 | `ProcessMemory` error |
 | The shared build stands in only on NT 10.0 | F7, F8 | Note; no layout |
@@ -169,6 +172,7 @@ The context's options are a copy of `ToolOptions`, then `diagnostics` (a new sin
 | Root given differs | `libvapour: kernel page-table root 0x<given> was given, the capture's is 0x<root> from <source>` (Linux: `…, VMCOREINFO at 0x<offset> gives 0x<root>`) |
 | Base of another build; provisional build unconfirmed | `libvapour: kernel base: …` wrapping `errOtherKernelBuild` or `errBaseUnconfirmed` |
 | Strict mode, base nothing confirmed | `libvapour: kernel base: libvapour: strict mode refuses a kernel base nothing confirmed: 0x<base> from <source>: <read failure>`; `…: kernel <build>: no kernel base found (tried: …)`; `…: no kernel build to check a base against` |
+| Kernel global asked for with no kernel base (outside strict mode) | The tool's error or diagnostic wraps `symbols: symbol has no running address: "<name>" at 0x<rva> in its table: libvapour: kernel <build>: no kernel base found`; with no build to check against, `…: libvapour: the symbol table names no kernel build and the capture names no running kernel` |
 | Strict mode, repaired container | `libvapour: open capture <path>: …` wrapping `memory.ErrStrictRepair` (S71) |
 | Pagefile does not open | `libvapour: open pagefile <n> <path>: …` |
 | Cross-check file | `libvapour: process cross-check file <path>: …` |
@@ -194,9 +198,9 @@ The session adds no limit of its own. Cached address spaces are one per distinct
 
 ## 9. Acceptance
 
-1. Synthetic Windows captures (`s76_fixture_test.go`): 4-level tables after S53 P1 and P2, a kernel image whose header carries a CodeView record (F4), `PsActiveProcessHead`, a System process with the 26100 member offsets (M5), and optionally a start page (S32 4.7), a `NtBuildNumber` and a paged-out entry. Tests (`s76_windowssession_test.go`): root and base from the System scan with the table's own build, the start entry set; root and base from the start page with a cached table, offline, no request made, no scan; another build refused both at the base and against the running kernel; a table naming no build following the running kernel, and left unmoved without one; a given root with flag bits accepted and another refused; pagefiles read in the 14393 layout, refused in the 19045 layout, a missing file failing only when accepted; the network layout from the kernel build with kernel types and symbols still answered; options from the config over the map, the caller's map and slice untouched, a bad cross-check file refused; diagnostics in the sink in order and returned as copies; one row per tool asked for, `ExecuteAll` over the whole registry including `windows.module.list`; a second close; `AnalyzeMemory`; in strict mode a confirmed base opening, and no base, an unconfirmed base and a table with no build to check against refused, each opening outside strict mode; options of the wrong form for each checked key refused before the file is opened, every bad key named, and good options with an unknown key accepted.
+1. Synthetic Windows captures (`s76_fixture_test.go`): 4-level tables after S53 P1 and P2, a kernel image whose header carries a CodeView record (F4), `PsActiveProcessHead`, a System process with the 26100 member offsets (M5), and optionally a start page (S32 4.7), a `NtBuildNumber` and a paged-out entry. Tests (`s76_windowssession_test.go`): root and base from the System scan with the table's own build, the start entry set; root and base from the start page with a cached table, offline, no request made, no scan; another build refused both at the base and against the running kernel; a table naming no build following the running kernel, and without one its RVA symbols refused with `symbols.ErrNotPlaced` naming the missing build; a given root with flag bits accepted and another refused; pagefiles read in the 14393 layout, refused in the 19045 layout, a missing file failing only when accepted; the network layout from the kernel build with kernel types and symbols still answered; options from the config over the map, the caller's map and slice untouched, a bad cross-check file refused; diagnostics in the sink in order and returned as copies; one row per tool asked for, `ExecuteAll` over the whole registry including `windows.module.list`; a second close; `AnalyzeMemory`; in strict mode a confirmed base opening, and no base, an unconfirmed base and a table with no build to check against refused, each opening outside strict mode; outside strict mode with no base, a kernel global refused with `symbols.ErrNotPlaced` naming "no kernel base found" by the session's table, the symbol still declared, and `any.process.list` still listing from the System entry; options of the wrong form for each checked key refused before the file is opened, every bad key named, and good options with an unknown key accepted.
 2. Synthetic Linux captures (`s76_linuxsession_test.go`, on `linuxkernel/linuxtest`): the image window moved and a stored pointer not, a process space reading the banner, notes; another banner, no banner and `_stext` elsewhere refused; a given root; a damaged copy noted, refused when strict; no VMCOREINFO.
-3. Parts (`s76_parts_test.go`): the address-space cache, pagefile numbering, both table views, every base-candidate outcome, the explicit-table rules, build comparison and PDB base names, the module-PDB memo for a table and for a failure, and each open refusal including a process core (an ELF header and PT_NOTE after the gABI, F15). Every network-layout choice is tested with `network.LayoutFor` (`tools/windows/network/s67_layout_test.go`).
+3. Parts (`s76_parts_test.go`): the address-space cache, pagefile numbering, both table views and a moved table whose shift is unknown, every base-candidate outcome, the explicit-table rules, build comparison and PDB base names, the module-PDB memo for a table and for a failure, and each open refusal including a process core (an ELF header and PT_NOTE after the gABI, F15). Every network-layout choice is tested with `network.LayoutFor` (`tools/windows/network/s67_layout_test.go`).
 4. Fuzz target `FuzzMovedTableAgreesWithItself` (any shift and two addresses: every symbol `LookupSymbol` gives is named by `SymbolsAt` at that address), 30 s on 2026-11-12: 1,774,724 executions, no failure.
 5. On the captures (M6 to M10): all seven open offline; the Windows sessions take root and base from the identification, confirm the base by its CodeView record, need no System scan, and open in 56 to 86 ms; each gets the layout of its build; every session lists the processes of M7 and M10.
 6. Real-image tests (`-tags realimage`) compile.
@@ -222,6 +226,7 @@ The session adds no limit of its own. Cached address spaces are one per distinct
 | O14 | The network build range test (10240 to 30000) was dropped: `LayoutForBuild` refuses unmeasured builds (F8). | None |
 | O15 | The new sentinels `errOtherKernelBuild` and `errBaseUnconfirmed` are unexported; callers see them only in the text. | Owner decision: export them |
 | O16 | The empty `doc.go` was removed; the package has no package comment. | None |
+| O17 | With no kernel base, or no build to check one against (O12), the table was used unmoved and a note said so; every tool that read a kernel global then failed reading the RVA, and three returned no rows with the cause only in diagnostics. Measured 2026-11-22 on mem2 with the base withheld: 79 of 101 Windows and cross-OS tools failed, 51 of them with `layers: virtual address 0x<rva>: not mapped`, none naming the cause. The table now carries the reason (4.4). After, on mem2 and mem5 (14393) alike: 64 and 63 of the 79 errors name the cause, 11 and 12 need an option or are unrelated, and the 4 tools that gather hives without an error (`GatherHives`, `OpenEveryHive`) name it only in diagnostics. No tool outcome or row count changed, except that `windows.kernel.read_info` no longer lists `KdVersionBlock` at its RVA. | Owner request 2026-11-22 (reviewer feedback follow-up): done in table_views.go, windows_session.go, s76_parts_test.go, s76_windowssession_test.go. Owner decision 2026-11-22: accepted, ships in the 0.1.2 patch; the gaps left (S49 O12, S70 O7) go to v0.2.0. |
 
 ### Owner decisions, 2026-11-12
 

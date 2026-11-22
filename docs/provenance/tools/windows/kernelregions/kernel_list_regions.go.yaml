@@ -1,7 +1,7 @@
 file: tools/windows/kernelregions/kernel_list_regions.go
 replaces: [tools/windows/kernelregions/kernel_list_regions.go]
 spec: S64-windows-driver-kernel-tools
-spec_sha256: b85a96e0157e6c1da4ee351731872bc1c8fa42b953794226a5b4fecb8a4a453d
+spec_sha256: 00994372e5cbab403586b82fc70710d54326297f035d79ad8b5561503255f128
 sources:
   - title: "ntoskrnl PDB types and symbols through the project's symbol tables: _DRIVER_OBJECT, _DRIVER_EXTENSION, _DEVICE_OBJECT, _OBJECT_HEADER, _KPCR, _KPRCB, _KTIMER_TABLE, _KTIMER, _KDPC, _KOBJECTS, _KAFFINITY_EX, _MI_VISIBLE_STATE, _MI_ASSIGNED_REGION_TYPES, _MI_SYSTEM_VA_TYPE, _DBGKD_GET_VERSION64, _KUSER_SHARED_DATA and the S64 globals; builds 26100 (0D960CE103763A6097E839406D8B369F, 953A8DE880B0818C32DA2DEC1D79C2D9), 19045 (F57E740B088E5056E8AF0772F1CC5BEB), 14393 (3DFC5F7228304C26859E55E481700385)"
     path: drivertoolfacts
@@ -17,4 +17,6 @@ decisions:
     justification: "S64 4.9 step 2, K7, R2, R3"
   - rule: "SystemVaType slots split the upper half; runs named by _MI_SYSTEM_VA_TYPE"
     justification: "S64 4.9 step 3, R4"
-date: 2026-11-12
+  - rule: "MiVisibleState with no running address returns the lookup error"
+    justification: "S70 4.6 rule 1"
+date: 2026-11-22

@@ -23,4 +23,6 @@ decisions:
     justification: "S24 4.3, T3, D3, D4, M5"
   - rule: "One diagnostic per process counts the nodes left out by reason; strict mode fails on the first"
     justification: "S24 6"
-date: 2026-11-12
+  - rule: "MmHighestUserAddress with no running address gives the unread diagnostic and the documented top"
+    justification: "S70 4.6 rule 2"
+date: 2026-11-22

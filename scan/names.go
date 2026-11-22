@@ -19,6 +19,7 @@ type ObjectNamer struct {
 	infoMask   uint64
 	hasMask    bool
 	masks      uint64
+	masksKnown bool
 	nameOffset uint64
 	unicode    util.UnicodeStringLayout
 }
@@ -34,10 +35,10 @@ func NewObjectNamer(sym symbols.SymbolTable) (ObjectNamer, bool) {
 	n := ObjectNamer{name: name.Offset, unicode: util.ResolveUnicodeStringLayout(sym)}
 	if mask, err := sym.Field("_OBJECT_HEADER", "InfoMask"); err == nil {
 		table, err := sym.LookupSymbol("ObpInfoMaskToOffset")
-		if err != nil {
+		if !symbols.Declared(err) {
 			return ObjectNamer{}, false
 		}
-		n.infoMask, n.hasMask, n.masks = mask.Offset, true, table.Address
+		n.infoMask, n.hasMask, n.masks, n.masksKnown = mask.Offset, true, table.Address, err == nil
 		return n, true
 	}
 	if off, err := sym.Field("_OBJECT_HEADER", "NameInfoOffset"); err == nil {
@@ -97,7 +98,7 @@ func (n ObjectNamer) nameInfo(headerReader, tableReader memory.MemoryReader, hea
 	if b[0]&nameInfoBit == 0 {
 		return 0, false, true
 	}
-	if tableReader == nil {
+	if tableReader == nil || !n.masksKnown {
 		return 0, true, false
 	}
 	d, err := tableReader.ReadAt(n.masks+uint64(b[0]&(nameInfoBit|(nameInfoBit-1))), 1)

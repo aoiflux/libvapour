@@ -52,6 +52,9 @@ func Run(ctx tools.Context) ([]Region, error) {
 	}
 	t := ctx.Symbols
 	sym, err := t.LookupSymbol("MiVisibleState")
+	if errors.Is(err, symbols.ErrNotPlaced) {
+		return nil, fmt.Errorf("%s: %w", Name, err)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("%s: %w", Name, ErrNoVisibleState)
 	}

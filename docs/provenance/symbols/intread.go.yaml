@@ -1,7 +1,7 @@
 file: symbols/intread.go
 replaces: [symbols/fieldread.go]
 spec: S58-symbol-tables
-spec_sha256: 2c544fc537326053fc140f09c62d960e4347044fb577ceb97485d87c6c7b0d15
+spec_sha256: 2fc11207b718f0e2964ba3e882d55eae2cdbf0b8d172744dd2c88f9e7daf65ff
 sources:
   - title: "libvapour symbols/FORMAT.md, symbol tables format 1 (the project's own format)"
     path: symbols/FORMAT.md

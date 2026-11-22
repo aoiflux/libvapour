@@ -1,7 +1,7 @@
 file: address_spaces.go
 replaces: [session.go (processLayerCache, openPagefiles)]
 spec: S76-root-session
-spec_sha256: 517ad17196391194c8163a019738511549f38071996cd110cc829b1094eb5923
+spec_sha256: 3289822845a2ae22b7b8fe8b6efd3e8bceeeb70c8ec9a013a7b98e215b4c539a
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Volume 3A (253668-093US), paging chapter: CR0/CR4/EFER paging-mode controls, CR3 format, 4-level entry formats"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

@@ -1,7 +1,7 @@
 file: tools/doc.go
 replaces: [tools/doc.go]
 spec: S70-tool-context-options-registry
-spec_sha256: 4472dd6a61fc89dea3c53f90c4df9235bb14528787c9162d16f49fcfe781e705
+spec_sha256: 0b5d2375cc71944f62eec75ad521144d82fc17aa504afc95a2f798034e06f575
 sources:
   - title: "Project measurement: toolcorefacts on mem1_win11, mem2_win10, mem5_server2016, mem6_server2025, mem7_server2025, mem3_ubuntu24, mem4_fedora40"
     path: toolcorefacts

@@ -1,7 +1,7 @@
 file: tools/gui/objects.go
 replaces: [tools/gui/addr.go, env.go, kernel.go, layout.go, layouts.go, objects.go, scan.go, session.go, strings.go, version.go, windows.go]
 spec: S57-windows-gui-objects
-spec_sha256: 11ae10c71b02e50ebc10099c78864ac71cf9edf16980d20f77cd0ea5836021be
+spec_sha256: 80e122379a9249ab6efbd11fc1ca7ff1fc176882a9a1d3d601300bf78721ba49
 sources:
   - title: "Microsoft Learn, Window Stations"
     url: https://learn.microsoft.com/windows/win32/winstation/window-stations
@@ -56,4 +56,6 @@ decisions:
     justification: "S31 M1, M2; S57 4.3"
   - rule: "Process name and PID from _EPROCESS.ImageFileName and UniqueProcessId; TID from _ETHREAD.Cid.UniqueThread"
     justification: "S57 P2"
-date: 2026-11-12
+  - rule: "A declared ObHeaderCookie that does not read, or has no running address, refuses the kernel facts with ErrCookieUnread"
+    justification: "S57 6, O11 (owner decision 2026-11-22); S31 M2; S70 4.6"
+date: 2026-11-22

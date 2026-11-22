@@ -2,6 +2,7 @@ package tools
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -89,5 +90,22 @@ func TestTheCookieFollowsTheGlobal(t *testing.T) {
 	}
 	if (Context{}).HasObjectHeaderCookie() {
 		t.Error("cookie without a table")
+	}
+}
+
+type unplacedCookie struct{ *symbols.Table }
+
+func (t unplacedCookie) LookupSymbol(name string) (symbols.Symbol, error) {
+	if _, err := t.Table.LookupSymbol(name); err != nil {
+		return symbols.Symbol{}, err
+	}
+	return symbols.Symbol{}, fmt.Errorf("%w: %q", symbols.ErrNotPlaced, name)
+}
+
+func TestACookieWithNoRunningAddressIsStillTheBuildsCookie(t *testing.T) {
+	table, mem := win10.open()
+	table.AddSymbol(symbols.Symbol{Name: "ObHeaderCookie", Address: 0xFFFFF80000300000})
+	if !(Context{Memory: mem, Symbols: unplacedCookie{table}}).HasObjectHeaderCookie() {
+		t.Error("a cookie with no running address taken as absent")
 	}
 }

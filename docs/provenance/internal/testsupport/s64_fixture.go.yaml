@@ -1,7 +1,7 @@
 file: internal/testsupport/s64_fixture.go
 replaces: []
 spec: S64-windows-driver-kernel-tools
-spec_sha256: b85a96e0157e6c1da4ee351731872bc1c8fa42b953794226a5b4fecb8a4a453d
+spec_sha256: 00994372e5cbab403586b82fc70710d54326297f035d79ad8b5561503255f128
 sources:
   - title: "Specification S64-windows-driver-kernel-tools: K1 to K4 and section 9 item 1"
     path: docs/specs/S64-windows-driver-kernel-tools.md

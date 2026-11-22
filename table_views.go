@@ -12,11 +12,13 @@ var errNoTypeLookup = errors.New("libvapour: symbol table gives no type lookups"
 
 // A table states addresses in its own space (S76 4.4); the running kernel sits
 // shift bytes further on. Only addresses that moves accepts are in the moving
-// image, so constants and stored pointers keep their value.
+// image, so constants and stored pointers keep their value. A non-nil unknown
+// is why the shift is not known: the moving symbols then have no address.
 type movedTable struct {
-	inner symbols.SymbolTable
-	shift uint64
-	moves func(address uint64) bool
+	inner   symbols.SymbolTable
+	shift   uint64
+	moves   func(address uint64) bool
+	unknown error
 }
 
 func (t movedTable) Name() string       { return t.inner.Name() }
@@ -30,10 +32,14 @@ func (t movedTable) Field(typeName, fieldName string) (symbols.Field, error) {
 
 func (t movedTable) LookupSymbol(name string) (symbols.Symbol, error) {
 	s, err := t.inner.LookupSymbol(name)
-	if err == nil && t.moves(s.Address) {
-		s.Address += t.shift
+	if err != nil || !t.moves(s.Address) {
+		return s, err
 	}
-	return s, err
+	if t.unknown != nil {
+		return symbols.Symbol{}, fmt.Errorf("%w: %q at 0x%x in its table: %w", symbols.ErrNotPlaced, name, s.Address, t.unknown)
+	}
+	s.Address += t.shift
+	return s, nil
 }
 
 func (t movedTable) ReadUint32(r memory.MemoryReader, at uint64) (uint32, error) {
@@ -62,7 +68,7 @@ func (t movedTable) SymbolsAt(address uint64) []symbols.Symbol {
 	}
 	var out []symbols.Symbol
 	for _, s := range locator.SymbolsAt(address - t.shift) {
-		if t.moves(s.Address) {
+		if t.unknown == nil && t.moves(s.Address) {
 			s.Address += t.shift
 			out = append(out, s)
 		}

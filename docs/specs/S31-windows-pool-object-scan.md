@@ -111,7 +111,7 @@ For a hit at address *t* and a filter whose tag it is, the header is at *t* − 
 
 ### 4.6 Object identity resolution
 
-`ResolveObjectIdentity` reads `ObpInfoMaskToOffset` (256 bytes; entry 0 must be 0) and then the TypeIndex test unless the filter skips it or names no object type. An `ObpInfoMaskToOffset` that is missing or does not read is not an error: the type sizes serve (4.4 step 3). A type table that does not read, a type not in it, or an `ObHeaderCookie` that does not read is an error returned with the partial identity, so the caller can scan on the body type tag and say why. A table without the `ObHeaderCookie` symbol is not an error (4.5 step 2).
+`ResolveObjectIdentity` reads `ObpInfoMaskToOffset` (256 bytes; entry 0 must be 0) and then the TypeIndex test unless the filter skips it or names no object type. An `ObpInfoMaskToOffset` that is missing or does not read is not an error: the type sizes serve (4.4 step 3). A type table that does not read, a type not in it, or an `ObHeaderCookie` that does not read is an error returned with the partial identity, so the caller can scan on the body type tag and say why. A table without the `ObHeaderCookie` symbol is not an error (4.5 step 2). A table that declares `ObHeaderCookie` but gives it no running address (S58 `ErrNotPlaced`, S76 4.4) has the cookie: that is an error, not a table without one (2026-11-22).
 
 ### 4.7 Copies
 
@@ -130,7 +130,7 @@ Rows with a kernel address come first by `VirtualPool`, then the rest by physica
 
 ### 4.10 Object names
 
-`ObjectNamer` finds `_OBJECT_HEADER_NAME_INFO` at header − `ObpInfoMaskToOffset[InfoMask & 3]` when bit 1 is set (M4), or at header − `NameInfoOffset` on a table without `InfoMask` (O3). The name's descriptor is read with the header's reader, its characters from kernel memory. NULs at the end of the counted name are its terminator and are dropped; a NUL inside it is data and shows as `␀` (U+2400), as in the handle list (S30 4.1 step 2, O6), so a suffix after a NUL cannot hide. `NameInfo` gives the name info's address, for callers that walk `Directory` (S30).
+`ObjectNamer` finds `_OBJECT_HEADER_NAME_INFO` at header − `ObpInfoMaskToOffset[InfoMask & 3]` when bit 1 is set (M4), or at header − `NameInfoOffset` on a table without `InfoMask` (O3). The name's descriptor is read with the header's reader, its characters from kernel memory. NULs at the end of the counted name are its terminator and are dropped; a NUL inside it is data and shows as `␀` (U+2400), as in the handle list (S30 4.1 step 2, O6), so a suffix after a NUL cannot hide. `NameInfo` gives the name info's address, for callers that walk `Directory` (S30). An `ObpInfoMaskToOffset` the table declares but cannot place (S58 `ErrNotPlaced`) still gives a namer: a header with a name reports it present and unread, as when the table does not read, and the scans keep their rows (2026-11-22).
 
 ### 4.11 Module entry type
 
@@ -165,7 +165,7 @@ A hit refused at several positions is counted once, at the furthest stage any po
 | Table lacks `_POOL_HEADER`, `PoolTag`, `BlockSize` or `PoolType` | `ErrNoPoolHeader` |
 | Table lacks `_OBJECT_HEADER.Body` | `ErrNoObjectHeader` |
 | Filter body type not in the table | `ErrStructureUndescribed`, wrapped as `pool tag "<tag>": …` |
-| `ObTypeIndexTable`, `_OBJECT_TYPE.Name` or `ObHeaderCookie` unreadable | `ErrNoTypeTable`; scans continue on the body type tag |
+| `ObTypeIndexTable`, `_OBJECT_TYPE.Name` or `ObHeaderCookie` unreadable or with no running address | `ErrNoTypeTable`; scans continue on the body type tag |
 | Object type not in the type table | `ErrTypeNotListed`; as above |
 | Residency query fails | `place "<tag>" objects: …` (object scans), `place pool allocations: …` (structure scans) |
 | Unreadable chunk or page | skipped (4.1) |

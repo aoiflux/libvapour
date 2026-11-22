@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/aoiflux/libvapour/internal/testsupport"
+	"github.com/aoiflux/libvapour/symbols"
 )
 
 func processors(k *testsupport.S64Kernel, n int) (block uint64, pcrs []uint64) {
@@ -95,4 +96,14 @@ func FuzzProcessorBlock(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestAProcessorBlockWithNoRunningAddressIsNotCalledMissing(t *testing.T) {
+	k := testsupport.NewS64Kernel()
+	processors(k, 1)
+	ctx := k.Context()
+	ctx.Symbols = testsupport.Unplaced(k.Table)
+	if _, err := Run(ctx); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrNoProcessorBlock) {
+		t.Errorf("err = %v", err)
+	}
 }

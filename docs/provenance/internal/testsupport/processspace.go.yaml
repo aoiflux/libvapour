@@ -1,7 +1,7 @@
 file: internal/testsupport/processspace.go
 replaces: [internal/testsupport/processspace.go]
 spec: S79-windows-test-fixtures
-spec_sha256: a21ef1222e62a105a6c080f42d1c72151e6504241d41547125dca19ae8df4b42
+spec_sha256: b8fd2bd538a1abcc78ef5fc037434bad2fc3b41427ff15c9a4a8736c5695a940
 sources:
   - title: "Intel 64 and IA-32 Architectures Software Developer's Manual, Vol. 3A, sections 4.5 (4-level paging) and 4.10.1 (CR3 and PCIDs)"
     url: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html

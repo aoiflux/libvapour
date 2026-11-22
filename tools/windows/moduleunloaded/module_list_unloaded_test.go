@@ -1,10 +1,12 @@
 package moduleunloaded
 
 import (
+	"errors"
 	"testing"
 	"time"
 
 	"github.com/aoiflux/libvapour/internal/testsupport"
+	"github.com/aoiflux/libvapour/symbols"
 )
 
 const (
@@ -125,4 +127,15 @@ func FuzzRecords(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestUnloadedDriverGlobalsWithNoRunningAddressAreNotCalledMissing(t *testing.T) {
+	k := testsupport.NewS64Kernel()
+	k.Global("MmUnloadedDrivers", 8)
+	k.Global("MmLastUnloadedDriver", 4)
+	ctx := k.Context()
+	ctx.Symbols = testsupport.Unplaced(k.Table)
+	if _, err := Run(ctx); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrNoSymbols) {
+		t.Errorf("err = %v", err)
+	}
 }

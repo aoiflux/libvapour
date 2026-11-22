@@ -1,7 +1,7 @@
 file: tools/windows/cpulist/cpu_list.go
 replaces: [tools/windows/cpulist/cpu_list.go]
 spec: S64-windows-driver-kernel-tools
-spec_sha256: b85a96e0157e6c1da4ee351731872bc1c8fa42b953794226a5b4fecb8a4a453d
+spec_sha256: 00994372e5cbab403586b82fc70710d54326297f035d79ad8b5561503255f128
 sources:
   - title: "WDK 10.0.28000.0 headers km/wdm.h and km/ntddk.h (NuGet Microsoft.Windows.WDK.x64 10.0.28000.1839): DRIVER_OBJECT, DRIVER_EXTENSION, DEVICE_OBJECT, IO_TYPE_, IRP_MJ_, FILE_DEVICE_, KeNumberProcessors, KSYSTEM_TIME, KeQueryTickCount, KUSER_SHARED_DATA, KI_USER_SHARED_DATA, DPC types"
     url: https://www.nuget.org/packages/Microsoft.Windows.WDK.x64/10.0.28000.1839
@@ -22,4 +22,6 @@ decisions:
     justification: "S64 4.12 step 2, K6, C2"
   - rule: "KPCR is the PRCB minus _KPCR.Prcb; PointsBack from Self and CurrentPrcb"
     justification: "S64 4.12 steps 3-4, K3, C1"
-date: 2026-11-12
+  - rule: "KiProcessorBlock or KeNumberProcessors with no running address returns the lookup error"
+    justification: "S70 4.6 rule 1"
+date: 2026-11-22

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aoiflux/libvapour/internal/testsupport"
 	"github.com/aoiflux/libvapour/limits"
 	"github.com/aoiflux/libvapour/symbols"
 )
@@ -246,4 +247,17 @@ func symbolsWithout(img *tImage, typ, member string) symbols.StructType {
 	}
 	st.Fields = kept
 	return st
+}
+
+func TestAUserLimitWithNoRunningAddressFallsBackToTheDocumentedTop(t *testing.T) {
+	img := threeVADs()
+	ctx := img.ctx(nil)
+	ctx.Symbols = testsupport.Unplaced(img.t, "MmHighestUserAddress")
+	if vads, err := ProcessVADs(ctx, tProcess); err != nil || len(vads) != 3 {
+		t.Fatalf("%d VADs, %v", len(vads), err)
+	}
+	if len(img.diags) != 1 ||
+		!strings.Contains(img.diags[0], "MmHighestUserAddress: not read, user space taken to end at 0x7fffffffffff: symbols: symbol has no running address") {
+		t.Errorf("diagnostics %q", img.diags)
+	}
 }

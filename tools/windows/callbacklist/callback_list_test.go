@@ -6,7 +6,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/aoiflux/libvapour/internal/testsupport"
 	"github.com/aoiflux/libvapour/symbols"
+	"github.com/aoiflux/libvapour/tools"
 )
 
 func run(t *testing.T, f *fixture, strict bool) ([]Entry, error) {
@@ -260,4 +262,16 @@ func FuzzCollect(f *testing.F) {
 			}
 		}
 	})
+}
+
+func TestACallbackSymbolWithNoRunningAddressIsNotCalledMissing(t *testing.T) {
+	table := symbols.NewTable("t", 8)
+	table.AddSymbol(symbols.Symbol{Name: "PspCreateProcessNotifyRoutine", Address: 0x1000})
+	c := &collector{ctx: tools.Context{Symbols: testsupport.Unplaced(table)}}
+	if _, err := c.symbol("PspCreateProcessNotifyRoutine"); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrSymbolMissing) {
+		t.Errorf("unplaced: %v", err)
+	}
+	if _, err := c.symbol("absent"); !errors.Is(err, ErrSymbolMissing) {
+		t.Errorf("absent: %v", err)
+	}
 }

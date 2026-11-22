@@ -108,3 +108,13 @@ func FuzzSlotRuns(f *testing.F) {
 		}
 	})
 }
+
+func TestAVisibleStateWithNoRunningAddressIsNotCalledMissing(t *testing.T) {
+	k := testsupport.NewS64Kernel()
+	k.Global("MiVisibleState", 8)
+	ctx := k.Context()
+	ctx.Symbols = testsupport.Unplaced(k.Table)
+	if _, err := Run(ctx); !errors.Is(err, symbols.ErrNotPlaced) || errors.Is(err, ErrNoVisibleState) {
+		t.Errorf("err = %v", err)
+	}
+}

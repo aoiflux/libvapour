@@ -2,6 +2,7 @@ package symbols
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 	"strings"
 	"sync"
@@ -354,5 +355,13 @@ func TestAPDBBuildIsNamed(t *testing.T) {
 	table := mustBuild(t, Declaration{PointerWidth: 8, WindowsPDB: &b})
 	if got, ok := table.WindowsPDB(); !ok || got != b {
 		t.Errorf("%+v %v", got, ok)
+	}
+}
+
+func TestASymbolWithNoRunningAddressIsStillDeclared(t *testing.T) {
+	_, missing := mustBuild(t, Declaration{PointerWidth: 8}).LookupSymbol("PsActiveProcessHead")
+	unplaced := fmt.Errorf("%w: %q: base unknown", ErrNotPlaced, "PsActiveProcessHead")
+	if !Declared(nil) || !Declared(unplaced) || Declared(missing) || missing == nil {
+		t.Errorf("declared: nil %v, unplaced %v, missing %v (%v)", Declared(nil), Declared(unplaced), Declared(missing), missing)
 	}
 }

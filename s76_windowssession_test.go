@@ -3,6 +3,7 @@ package libvapour
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -178,8 +179,9 @@ func TestATableNamingNoBuildFollowsTheRunningKernel(t *testing.T) {
 	if _, ok := s.Context().KernelBase(); ok {
 		t.Error("a base was set with nothing to confirm it against")
 	}
-	if head, _ := s.Context().Symbols.LookupSymbol("PsActiveProcessHead"); head.Address != fxHeadRVA {
-		t.Errorf("head moved to 0x%x", head.Address)
+	if _, err := s.Context().Symbols.LookupSymbol("PsActiveProcessHead"); !errors.Is(err, errNoBuildForBase) ||
+		!errors.Is(err, symbols.ErrNotPlaced) || !strings.Contains(err.Error(), fmt.Sprintf("at 0x%x in its table", fxHeadRVA)) {
+		t.Errorf("head: %v", err)
 	}
 }
 
@@ -421,6 +423,13 @@ func TestStrictModeRefusesAKernelBaseNothingConfirmed(t *testing.T) {
 	if _, ok := s.Context().KernelBase(); ok || !hasNote(s.Diagnostics(), "no kernel base found") {
 		t.Errorf("no base, notes %q", s.Diagnostics())
 	}
+	if _, err := s.Context().Symbols.LookupSymbol("PsActiveProcessHead"); !errors.Is(err, symbols.ErrNotPlaced) ||
+		!symbols.Declared(err) || !strings.Contains(err.Error(), "no kernel base found") {
+		t.Errorf("no base, head: %v", err)
+	}
+	if rows, err := s.Execute("any.process.list"); err != nil || len(rows.([]toolprocesslist.Process)) == 0 {
+		t.Errorf("no base, the process list from the System entry: %v %v", rows, err)
+	}
 	if _, err := openWithTable(t, blank, named, OpenConfig{Strict: true}); !errors.Is(err, errStrictKernelBase) ||
 		!strings.Contains(err.Error(), "no kernel base found") {
 		t.Errorf("no base, strict: %v", err)
@@ -451,9 +460,13 @@ func TestStrictModeRefusesAKernelBaseNothingConfirmed(t *testing.T) {
 	id := &autoload.KernelIdentity{Fingerprint: fxFingerprint(fxGUID), Method: methodTableOwnBuild}
 	none := kernelBase{tried: []string{"the debugger data block scan: not found"}}
 	lenient := &opening{}
-	if got, base, err := lenient.acceptKernelBase(table, id, none); err != nil || base != 0 || got != symbols.SymbolTable(table) ||
-		!hasNote(lenient.notes, "no kernel base found") {
+	got, base, err := lenient.acceptKernelBase(table, id, none)
+	if err != nil || base != 0 || !hasNote(lenient.notes, "no kernel base found") {
 		t.Errorf("no base: 0x%x %v, notes %q", base, err, lenient.notes)
+	}
+	if _, err := got.LookupSymbol("PsActiveProcessHead"); !errors.Is(err, symbols.ErrNotPlaced) ||
+		!strings.Contains(err.Error(), "no kernel base found") {
+		t.Errorf("no base, head: %v", err)
 	}
 	strict := &opening{cfg: OpenConfig{Strict: true}}
 	if _, _, err := strict.acceptKernelBase(table, id, none); !errors.Is(err, errStrictKernelBase) || !strings.Contains(err.Error(), "not found") {

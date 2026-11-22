@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/windows/modulelist"
 )
@@ -134,7 +135,8 @@ func serviceTable(ctx tools.Context) (table, error) {
 	t := ctx.Symbols
 	width := uint64(t.PointerSize())
 	var direct *table
-	if ki, err := t.LookupSymbol("KiServiceTable"); err == nil {
+	ki, kiErr := t.LookupSymbol("KiServiceTable")
+	if kiErr == nil {
 		if lim, err := t.LookupSymbol("KiServiceLimit"); err == nil {
 			n, err := t.ReadUint32(ctx.Memory, lim.Address)
 			if err == nil {
@@ -144,7 +146,8 @@ func serviceTable(ctx tools.Context) (table, error) {
 			}
 		}
 	}
-	if sdt, err := t.LookupSymbol("KeServiceDescriptorTable"); err == nil {
+	sdt, sdtErr := t.LookupSymbol("KeServiceDescriptorTable")
+	if sdtErr == nil {
 		base, err1 := t.ReadPointer(ctx.Memory, sdt.Address)
 		limit, err2 := t.ReadUint32(ctx.Memory, sdt.Address+2*width)
 		switch {
@@ -158,8 +161,13 @@ func serviceTable(ctx tools.Context) (table, error) {
 			return table{base: base, limit: uint64(limit), source: "KeServiceDescriptorTable"}, nil
 		}
 	}
-	if direct == nil {
-		return table{}, fmt.Errorf("%s: %w", Name, ErrNoServiceTable)
+	if direct != nil {
+		return *direct, nil
 	}
-	return *direct, nil
+	for _, err := range []error{sdtErr, kiErr} {
+		if err != nil && symbols.Declared(err) {
+			return table{}, fmt.Errorf("%s: %w", Name, err)
+		}
+	}
+	return table{}, fmt.Errorf("%s: %w", Name, ErrNoServiceTable)
 }

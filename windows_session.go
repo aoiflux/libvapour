@@ -199,7 +199,16 @@ func (o *opening) windowsPagefiles(table symbols.SymbolTable) (map[int]memory.Me
 	return files, nil
 }
 
-var errStrictKernelBase = errors.New("libvapour: strict mode refuses a kernel base nothing confirmed")
+var (
+	errStrictKernelBase = errors.New("libvapour: strict mode refuses a kernel base nothing confirmed")
+	errNoBuildForBase   = errors.New("libvapour: the symbol table names no kernel build and the capture names no running kernel")
+)
+
+// With no base the table still answers types; its RVA symbols refuse with the
+// reason (S76 4.4), so no tool reads a global at its RVA.
+func unplacedTable(table symbols.SymbolTable, why error) symbols.SymbolTable {
+	return movedTable{inner: table, moves: isRVA, unknown: why}
+}
 
 func (o *opening) windowsKernelBase(kernel memory.MemoryReader, table symbols.SymbolTable, id *autoload.KernelIdentity,
 	root uint64, system *systemProcess) (symbols.SymbolTable, uint64, error) {
@@ -210,7 +219,7 @@ func (o *opening) windowsKernelBase(kernel memory.MemoryReader, table symbols.Sy
 		if o.cfg.Strict {
 			return nil, 0, fmt.Errorf("libvapour: kernel base: %w: no kernel build to check a base against", errStrictKernelBase)
 		}
-		return table, 0, nil
+		return unplacedTable(table, errNoBuildForBase), 0, nil
 	}
 	found, err := findKernelBase(kernel, id, o.baseCandidates(table, id, root, system))
 	if err != nil {
@@ -219,17 +228,17 @@ func (o *opening) windowsKernelBase(kernel memory.MemoryReader, table symbols.Sy
 	return o.acceptKernelBase(table, id, found)
 }
 
-// Strict mode refuses what the notes would otherwise only report: symbols at
-// their RVAs, or moved by a base no codeview record confirmed.
+// Strict mode refuses what the notes would otherwise only report: symbols with
+// no running address, or moved by a base no codeview record confirmed.
 func (o *opening) acceptKernelBase(table symbols.SymbolTable, id *autoload.KernelIdentity, found kernelBase) (symbols.SymbolTable, uint64, error) {
 	switch {
 	case found.address == 0 && o.cfg.Strict:
 		return nil, 0, fmt.Errorf("libvapour: kernel base: %w: kernel %s: no kernel base found (tried: %s)",
 			errStrictKernelBase, id.Fingerprint, strings.Join(found.tried, "; "))
 	case found.address == 0:
-		o.note("libvapour: kernel %s: no kernel base found, so kernel symbols stay at their RVAs and tools that read "+
-			"kernel globals fail (tried: %s)", id.Fingerprint, strings.Join(found.tried, "; "))
-		return table, 0, nil
+		o.note("libvapour: kernel %s: no kernel base found, so kernel symbols have no running address and tools that read "+
+			"kernel globals refuse (tried: %s)", id.Fingerprint, strings.Join(found.tried, "; "))
+		return unplacedTable(table, fmt.Errorf("libvapour: kernel %s: no kernel base found", id.Fingerprint)), 0, nil
 	case !found.confirmed && o.cfg.Strict:
 		return nil, 0, fmt.Errorf("libvapour: kernel base: %w: 0x%x from %s: %v", errStrictKernelBase, found.address, found.from, found.unread)
 	case found.confirmed:

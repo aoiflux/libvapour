@@ -1,6 +1,7 @@
 package moduleunloaded
 
 import (
+	"cmp"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/aoiflux/libvapour/memory"
+	"github.com/aoiflux/libvapour/symbols"
 	"github.com/aoiflux/libvapour/tools"
 	"github.com/aoiflux/libvapour/tools/windows/kernelinfo"
 	"github.com/aoiflux/libvapour/util"
@@ -75,6 +77,9 @@ func Run(ctx tools.Context) ([]Module, error) {
 	t := ctx.Symbols
 	arraySym, err1 := t.LookupSymbol("MmUnloadedDrivers")
 	lastSym, err2 := t.LookupSymbol("MmLastUnloadedDriver")
+	if err := cmp.Or(err1, err2); errors.Is(err, symbols.ErrNotPlaced) {
+		return nil, fmt.Errorf("%s: %w", Name, err)
+	}
 	if err1 != nil || err2 != nil {
 		return nil, fmt.Errorf("%s: %w", Name, ErrNoSymbols)
 	}

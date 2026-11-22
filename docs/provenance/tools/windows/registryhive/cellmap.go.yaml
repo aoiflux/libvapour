@@ -1,7 +1,7 @@
 file: tools/windows/registryhive/cellmap.go
 replaces: [the cell translation of tools/windows/registryhive/hive.go and tools/windows/registryhive/hivewalk.go]
 spec: S49-windows-registry-hives-in-memory
-spec_sha256: f26f7df9d184f6e543112de86ffa91b3c210c03e8c6b7bf6db2af1940f527d41
+spec_sha256: 3510f24528f58ab85d935694e60ccb4ba1084a132e1a580ee2d4dc7183536deb
 sources:
   - title: "Microsoft Learn, [MS-RRP] 2.2.5 RVALENT, updated 2024-04-23"
     url: https://learn.microsoft.com/openspecs/windows_protocols/ms-rrp/1a1489d7-e61a-48cd-9b61-bfb56a957f22

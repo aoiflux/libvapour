@@ -28,4 +28,6 @@ decisions:
     justification: "S55 4.1 step 5, M2, M3"
   - rule: "The upper-half fallback without MmSystemRangeStart is reported"
     justification: "S55 4.3 step 4, O15"
-date: 2026-11-18
+  - rule: "MmSystemRangeStart with no running address takes the upper-half start with a diagnostic, as an unread one does"
+    justification: "S70 4.6 rule 4"
+date: 2026-11-22

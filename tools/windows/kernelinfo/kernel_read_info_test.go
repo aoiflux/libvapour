@@ -3,6 +3,7 @@ package kernelinfo
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -146,4 +147,27 @@ func FuzzSharedTime(f *testing.F) {
 			t.Errorf("value 0x%x", v)
 		}
 	})
+}
+
+func TestAGlobalWithNoRunningAddressIsReportedNotListed(t *testing.T) {
+	k := testsupport.NewS64Kernel()
+	k.Write(k.Global("NtBuildLab", 64), []byte("26100.ge_release"))
+	ctx := k.Context()
+	var diagnostics []string
+	ctx.Options["diagnostics"] = &diagnostics
+	ctx.Symbols = testsupport.Unplaced(k.Table, "NtBuildLab")
+	rows, err := Run(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, r := range rows {
+		if r.Variable == "NtBuildLab" {
+			t.Errorf("row %q from a global with no running address", r.Value)
+		}
+	}
+	if !slices.ContainsFunc(diagnostics, func(d string) bool {
+		return strings.Contains(d, "NtBuildLab: does not read: symbols: symbol has no running address")
+	}) {
+		t.Errorf("diagnostics %q", diagnostics)
+	}
 }

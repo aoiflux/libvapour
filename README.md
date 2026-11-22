@@ -742,6 +742,10 @@ and test outputs stay local and are never committed.
 
 - `network.ErrUnmeasuredBuild` and `network.LayoutFor`, which chooses the
   tcpip.sys layout for a build reading the way a Windows session does.
+- `symbols.ErrNotPlaced`, for a symbol a table has but cannot place in the
+  running image, and `symbols.Declared`, true for a lookup that found the name,
+  placed or not.
+- `gui.ErrCookieUnread`.
 
 ### Behaviour changes
 
@@ -752,6 +756,18 @@ and test outputs stay local and are never committed.
 - `examples/processlist` heads its address column `EPROCESS` (`task_struct`
   on Linux) instead of `Object`. The value, the kernel virtual address of the
   process object, is unchanged.
+- A Windows session that finds no kernel base, or has no kernel build to check
+  one against, no longer answers kernel globals at their RVAs. A lookup fails
+  with `symbols.ErrNotPlaced`, giving the reason. A tool that reads a kernel
+  global now fails or reports that reason. In 0.1.1 it read the RVA and
+  reported an unmapped page. Types, and tests for whether the build has a
+  symbol, answer as before.
+- `registryhive.OpenHive` and `OpenFirstHiveContaining` add both sources'
+  errors to "no hive … opens" when neither the hive list nor the pool scan gives
+  a hive.
+- The `windows.gui.*` tools refuse with `gui.ErrCookieUnread` when the table
+  has `ObHeaderCookie` but it does not read. In 0.1.1 they ran the object type
+  test without the cookie, which could judge every object wrongly.
 
 ## Changes since 0.1.0
 

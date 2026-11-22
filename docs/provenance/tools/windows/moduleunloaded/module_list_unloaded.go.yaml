@@ -1,7 +1,7 @@
 file: tools/windows/moduleunloaded/module_list_unloaded.go
 replaces: [tools/windows/moduleunloaded/module_list_unloaded.go, tools/windows/moduleunloaded/layout.go]
 spec: S64-windows-driver-kernel-tools
-spec_sha256: b85a96e0157e6c1da4ee351731872bc1c8fa42b953794226a5b4fecb8a4a453d
+spec_sha256: 00994372e5cbab403586b82fc70710d54326297f035d79ad8b5561503255f128
 sources:
   - title: "Microsoft Learn, FILETIME structure (minwinbase.h)"
     url: https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime
@@ -22,4 +22,6 @@ decisions:
     justification: "S64 4.8 step 5, O6"
   - rule: "Clock placed by range: interrupt time below InterruptTime, FILETIME below SystemTime"
     justification: "S64 4.8 step 6, U3, W7, W9"
-date: 2026-11-12
+  - rule: "Unloaded-driver globals with no running address return the lookup error"
+    justification: "S70 4.6 rule 1"
+date: 2026-11-22
